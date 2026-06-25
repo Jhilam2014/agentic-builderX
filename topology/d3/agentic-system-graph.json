@@ -1,0 +1,360 @@
+{
+  "metadata": {
+    "project_name": "agentic-builderX",
+    "generated_at": "2026-06-25T16:00:00+05:30",
+    "workflow_id": "builderx-layout-agentic-d3-001",
+    "source": "orchestrator",
+    "graph_version": "1.1.0",
+    "time_zone": "Asia/Kolkata"
+  },
+  "nodes": [
+    {
+      "id": "agent:builderx-fullstack-agent",
+      "type": "agent",
+      "label": "BuilderX Fullstack Agent",
+      "group": "agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "",
+      "metadata": {
+        "level": 1,
+        "domain": "fullstack",
+        "capabilityScore": 60
+      }
+    },
+    {
+      "id": "functionality:frontend-control-surface",
+      "type": "cluster",
+      "label": "Frontend Control Surface",
+      "group": "functionality",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "description": "MCP chat, playground preview, right-side Agentic BuilderX panel, activity logs, and status controls."
+      }
+    },
+    {
+      "id": "functionality:mcp-chat",
+      "type": "feature",
+      "label": "MCP Builder Chat",
+      "group": "frontend",
+      "risk_level": "low",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "file": "apps/frontend/src/App.jsx"
+      }
+    },
+    {
+      "id": "functionality:playground-preview",
+      "type": "feature",
+      "label": "Playground Preview",
+      "group": "frontend",
+      "risk_level": "low",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "aspectRatio": "16:9",
+        "fitMode": "toggle"
+      }
+    },
+    {
+      "id": "functionality:runtime-observability",
+      "type": "feature",
+      "label": "Runtime Observability",
+      "group": "observability",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "timeZone": "Asia/Kolkata",
+        "currentSessionHighlight": "light_green"
+      }
+    },
+    {
+      "id": "functionality:backend-generation-api",
+      "type": "cluster",
+      "label": "Backend Generation API",
+      "group": "functionality",
+      "risk_level": "high",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "backend_generation_api",
+      "metadata": {
+        "description": "Express server, runtime log endpoint, SSE stream, and deterministic generation runtime."
+      }
+    },
+    {
+      "id": "api:mcp",
+      "type": "api",
+      "label": "MCP /mcp",
+      "group": "api",
+      "risk_level": "high",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "mcp_generation_endpoint",
+      "metadata": {
+        "tools": [
+          "tools/list",
+          "tools/call generate_webpage"
+        ]
+      }
+    },
+    {
+      "id": "functionality:orchestrator-restructure",
+      "type": "feature",
+      "label": "Instruction Restructure",
+      "group": "backend",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "mcp_generation_endpoint",
+      "metadata": {
+        "file": "apps/backend/src/orchestratorAgent.js"
+      }
+    },
+    {
+      "id": "functionality:file-operation-runtime",
+      "type": "feature",
+      "label": "File Operation Runtime",
+      "group": "backend",
+      "risk_level": "high",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "backend_generation_api",
+      "metadata": {
+        "writesOnly": "apps/generated-site/src/generated"
+      }
+    },
+    {
+      "id": "functionality:generated-site-runtime",
+      "type": "cluster",
+      "label": "Generated Site Runtime",
+      "group": "functionality",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "generated_site_runtime",
+      "metadata": {
+        "runtime": "Vite",
+        "refresh": "hot_reload"
+      }
+    },
+    {
+      "id": "service:frontend",
+      "type": "service",
+      "label": "Frontend Container",
+      "group": "runtime",
+      "risk_level": "medium",
+      "status": "running",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "port": 5173
+      }
+    },
+    {
+      "id": "service:backend",
+      "type": "service",
+      "label": "Backend Container",
+      "group": "runtime",
+      "risk_level": "high",
+      "status": "running",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "backend_generation_api",
+      "metadata": {
+        "port": 8080
+      }
+    },
+    {
+      "id": "service:generated-site",
+      "type": "service",
+      "label": "Generated Site Container",
+      "group": "runtime",
+      "risk_level": "medium",
+      "status": "running",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "generated_site_runtime",
+      "metadata": {
+        "port": 5174
+      }
+    },
+    {
+      "id": "vector:chroma-fallback",
+      "type": "vector_store",
+      "label": "ChromaDB Fallback",
+      "group": "memory",
+      "risk_level": "medium",
+      "status": "pending_install",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "provider": "chroma_local_generated"
+      }
+    },
+    {
+      "id": "graph:neo4j-artifacts",
+      "type": "graph_store",
+      "label": "Neo4j Artifacts",
+      "group": "memory",
+      "risk_level": "medium",
+      "status": "pending_credentials",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "sync": "local_artifacts"
+      }
+    },
+    {
+      "id": "human:operator",
+      "type": "human_review",
+      "label": "Human Operator",
+      "group": "governance",
+      "risk_level": "medium",
+      "status": "available",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "approvalRequiredFor": [
+          "external LLM APIs",
+          "arbitrary code execution",
+          "public deploy"
+        ]
+      }
+    }
+  ],
+  "links": [
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "functionality:frontend-control-surface",
+      "type": "owns",
+      "weight": 2,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:frontend-control-surface",
+      "target": "functionality:mcp-chat",
+      "type": "contains",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:frontend-control-surface",
+      "target": "functionality:playground-preview",
+      "type": "contains",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:frontend-control-surface",
+      "target": "functionality:runtime-observability",
+      "type": "contains",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "functionality:backend-generation-api",
+      "type": "owns",
+      "weight": 2,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:backend-generation-api",
+      "target": "api:mcp",
+      "type": "exposes",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "api:mcp",
+      "target": "functionality:orchestrator-restructure",
+      "type": "calls",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "api:mcp",
+      "target": "functionality:file-operation-runtime",
+      "type": "calls",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "functionality:generated-site-runtime",
+      "type": "owns",
+      "weight": 2,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:mcp-chat",
+      "target": "api:mcp",
+      "type": "consumes",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:playground-preview",
+      "target": "functionality:generated-site-runtime",
+      "type": "visualizes",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:file-operation-runtime",
+      "target": "functionality:generated-site-runtime",
+      "type": "writes",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:frontend",
+      "target": "functionality:frontend-control-surface",
+      "type": "implements",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:backend",
+      "target": "functionality:backend-generation-api",
+      "type": "implements",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:generated-site",
+      "target": "functionality:generated-site-runtime",
+      "type": "implements",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:runtime-observability",
+      "target": "vector:chroma-fallback",
+      "type": "syncs_to",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "graph:neo4j-artifacts",
+      "type": "visualized_by",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "human:operator",
+      "target": "agent:builderx-fullstack-agent",
+      "type": "reviews",
+      "weight": 1,
+      "metadata": {}
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "vector_store_id": "",
+  "checked_at": "2026-06-25T00:00:00+05:30",
+  "attached_file_count": 0,
+  "uploaded_files": [],
+  "status": "skipped",
+  "reason": "OpenAI Vector Store was not configured for this app."
+}

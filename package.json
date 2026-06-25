@@ -1,0 +1,18 @@
+{
+  "name": "agentic-builderx",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Containerized agentic webpage builder with React frontend, Node backend, Codex workflow API, and isolated generated-site runtime.",
+  "scripts": {
+    "dev:frontend": "npm --prefix apps/frontend run dev",
+    "dev:backend": "npm --prefix apps/backend run dev",
+    "dev:generated": "npm --prefix apps/generated-site run dev",
+    "validate": "python3 scripts/validate_project.py",
+    "compose:config": "docker compose config"
+  },
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend",
+    "apps/generated-site"
+  ]
+}

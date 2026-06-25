@@ -1,0 +1,25 @@
+{
+  "workflow_id": "builderx-layout-agentic-d3-001",
+  "generated_at": "2026-06-25T16:00:00+05:30",
+  "agents": [
+    {
+      "agent_id": "builderx-fullstack-agent",
+      "owns": [
+        "frontend_control_surface",
+        "mcp_builder_chat",
+        "playground_preview",
+        "runtime_observability",
+        "backend_generation_api",
+        "mcp_generation_endpoint",
+        "orchestrator_instruction_restructure",
+        "file_operation_runtime",
+        "generated_site_runtime",
+        "container_orchestration"
+      ],
+      "validates": [
+        "project_validation",
+        "docker_compose_config"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "metadata": {
+    "project_name": "agentic-builderX",
+    "generated_at": "2026-06-25T00:00:00+05:30",
+    "workflow_id": "builderx-large-001",
+    "source": "orchestrator",
+    "graph_version": "1.0.0"
+  },
+  "nodes": [
+    {
+      "id": "agent:builderx-fullstack-agent",
+      "type": "agent",
+      "label": "BuilderX Fullstack Agent",
+      "group": "agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "builderx-fullstack-agent",
+      "metadata": {}
+    },
+    {
+      "id": "service:frontend",
+      "type": "service",
+      "label": "Frontend Container",
+      "group": "runtime",
+      "risk_level": "medium",
+      "status": "implemented",
+      "metadata": {}
+    },
+    {
+      "id": "service:backend",
+      "type": "service",
+      "label": "Backend Container",
+      "group": "runtime",
+      "risk_level": "high",
+      "status": "implemented",
+      "metadata": {}
+    },
+    {
+      "id": "service:generated-site",
+      "type": "service",
+      "label": "Generated Site Container",
+      "group": "runtime",
+      "risk_level": "medium",
+      "status": "implemented",
+      "metadata": {}
+    },
+    {
+      "id": "endpoint:mcp",
+      "type": "api",
+      "label": "POST /mcp",
+      "group": "api",
+      "risk_level": "high",
+      "status": "implemented",
+      "metadata": {}
+    }
+  ],
+  "links": [
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "service:frontend",
+      "type": "owns",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "service:backend",
+      "type": "owns",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "service:generated-site",
+      "type": "owns",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:frontend",
+      "target": "service:backend",
+      "type": "calls",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:frontend",
+      "target": "service:generated-site",
+      "type": "depends_on",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:backend",
+      "target": "endpoint:mcp",
+      "type": "exposes",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:backend",
+      "target": "service:generated-site",
+      "type": "writes",
+      "weight": 1,
+      "metadata": {}
+    }
+  ]
+}

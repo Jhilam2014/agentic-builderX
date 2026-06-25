@@ -1,0 +1,77 @@
+{
+  "buildId": "build_vogue_elegance_bags_20260625_76d271bb",
+  "instructionHash": "76d271bbb3674083e95217094196ee8273f739d7a895770a93af84050228702a",
+  "generatedAt": "2026-06-25T00:00:00.000Z",
+  "title": "Vogue Elegance",
+  "orchestrator": "builderx-fullstack-agent",
+  "objective": "Generate a commerce landing page for bag.",
+  "orchestrated": {
+    "pageType": "commerce_landing_page",
+    "topic": "bag",
+    "audience": [
+      "professional users"
+    ],
+    "tone": [
+      "professional",
+      "premium"
+    ],
+    "sections": [
+      "hero",
+      "proof",
+      "new_arrivals",
+      "regular_items",
+      "materials",
+      "contact",
+      "map_location",
+      "admin_hidden"
+    ]
+  },
+  "admin": {
+    "allowedEmail": "jhilam.astro@gmail.com",
+    "behavior": "No public login entry is rendered. Admin inventory controls render only when localStorage has vogueEleganceAdmin=true or vogueEleganceUserEmail matching the allowed email."
+  },
+  "dataNotes": {
+    "shopBrand": "The public storefront is branded as Vogue Elegance.",
+    "productSource": "New-arrival product names, INR prices, compare-at prices, and sale or sold-out labels were checked from public Magnolia Bags new-arrivals pages on June 25, 2026.",
+    "imagery": "Product photos are stored locally under src/generated/assets so the app does not request remote images at runtime.",
+    "map": "The contact section links to the requested real Google Maps location and uses a local themed map illustration instead of a tracking iframe.",
+    "security": "No credentials, tracking scripts, or backend calls are embedded."
+  },
+  "fileOperations": [
+    {
+      "action": "modify",
+      "path": "src/generated/generatedPage.jsx",
+      "reason": "Render the Vogue Elegance storefront with separate new-arrival and regular product sections, contact icons, map location, and hidden admin-only controls."
+    },
+    {
+      "action": "modify",
+      "path": "src/generated/generatedPage.css",
+      "reason": "Apply responsive premium storefront styling and themed map/card layouts."
+    },
+    {
+      "action": "add",
+      "path": "src/generated/catalogData.js",
+      "reason": "Store brand, contact, product, material, and source data separately from the React page."
+    },
+    {
+      "action": "add",
+      "path": "src/generated/assets/*.jpg",
+      "reason": "Store local product photos for self-contained rendering."
+    },
+    {
+      "action": "add",
+      "path": "src/generated/README.generated.md",
+      "reason": "Document the generated app handoff and current orchestrator plan."
+    },
+    {
+      "action": "modify",
+      "path": "src/generated/metadata.json",
+      "reason": "Record build metadata and orchestrator handoff details."
+    },
+    {
+      "action": "delete",
+      "path": "src/generated/deprecatedGeneratedPage.jsx",
+      "reason": "Remove obsolete generated page modules if present."
+    }
+  ]
+}

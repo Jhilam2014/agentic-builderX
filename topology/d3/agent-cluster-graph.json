@@ -1,0 +1,144 @@
+{
+  "metadata": {
+    "project_name": "agentic-builderX",
+    "generated_at": "2026-06-25T00:00:00+05:30",
+    "workflow_id": "builderx-large-001",
+    "source": "orchestrator",
+    "graph_version": "1.0.0"
+  },
+  "nodes": [
+    {
+      "id": "agent:builderx-fullstack-agent",
+      "type": "agent",
+      "label": "BuilderX Agent",
+      "group": "agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "",
+      "metadata": {}
+    },
+    {
+      "id": "cluster:frontend_control_surface",
+      "type": "cluster",
+      "label": "Frontend Control",
+      "group": "frontend",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {}
+    },
+    {
+      "id": "cluster:backend_generation_api",
+      "type": "cluster",
+      "label": "Backend API",
+      "group": "backend",
+      "risk_level": "high",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "backend_generation_api",
+      "metadata": {}
+    },
+    {
+      "id": "cluster:mcp_generation_endpoint",
+      "type": "api",
+      "label": "MCP Endpoint",
+      "group": "api",
+      "risk_level": "high",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "mcp_generation_endpoint",
+      "metadata": {
+        "path": "POST /mcp"
+      }
+    },
+    {
+      "id": "cluster:generated_site_runtime",
+      "type": "service",
+      "label": "Generated Runtime",
+      "group": "runtime",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "generated_site_runtime",
+      "metadata": {}
+    },
+    {
+      "id": "cluster:container_orchestration",
+      "type": "service",
+      "label": "Docker Compose",
+      "group": "infrastructure",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "container_orchestration",
+      "metadata": {}
+    }
+  ],
+  "links": [
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "cluster:frontend_control_surface",
+      "type": "owns",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "cluster:backend_generation_api",
+      "type": "owns",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "cluster:mcp_generation_endpoint",
+      "type": "owns",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "cluster:generated_site_runtime",
+      "type": "owns",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "cluster:container_orchestration",
+      "type": "owns",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "cluster:frontend_control_surface",
+      "target": "cluster:backend_generation_api",
+      "type": "depends_on",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "cluster:frontend_control_surface",
+      "target": "cluster:generated_site_runtime",
+      "type": "depends_on",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "cluster:mcp_generation_endpoint",
+      "target": "cluster:backend_generation_api",
+      "type": "depends_on",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "cluster:backend_generation_api",
+      "target": "cluster:generated_site_runtime",
+      "type": "writes",
+      "weight": 1,
+      "metadata": {}
+    }
+  ]
+}

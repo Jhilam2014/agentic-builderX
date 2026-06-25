@@ -1,0 +1,9 @@
+{
+  "status": "pending_credentials",
+  "checked_at": "2026-06-25T00:00:00+05:30",
+  "neo4j_uri_configured": false,
+  "neo4j_username_configured": false,
+  "neo4j_password_configured": false,
+  "live_sync_performed": false,
+  "reason": "Local Neo4j artifacts generated; live sync needs credentials and approval."
+}

@@ -1,0 +1,1 @@
+MATCH path=(n)-[:DEPENDS_ON|CALLS|WRITES*1..3]->(m) RETURN path;

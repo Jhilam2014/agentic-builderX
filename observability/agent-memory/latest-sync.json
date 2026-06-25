@@ -1,0 +1,15 @@
+{
+  "workflow_id": "builderx-large-001",
+  "started_at": "2026-06-25T00:00:00+05:30",
+  "completed_at": "2026-06-25T00:00:00+05:30",
+  "vector_store_id": "",
+  "local_files_scanned": 2,
+  "files_uploaded": 0,
+  "files_skipped": 0,
+  "files_failed": 0,
+  "pending_sync_count": 2,
+  "status": "partial",
+  "errors": [
+    "Live vector sync not attempted because no vector database is configured or running for agentic-builderX."
+  ]
+}
