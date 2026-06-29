@@ -1,8 +1,87 @@
 {
-  "workflow_id": "builderx-large-001",
-  "provider": "chroma_local_generated",
-  "status": "pending_install",
-  "records_written_locally": 3,
-  "live_embeddings_written": 0,
-  "created_at": "2026-06-25T00:00:00+05:30"
+  "workflow_id": "builderx-vector-sync-1782762915547",
+  "reason": "periodic",
+  "provider": "openai",
+  "started_at": "2026-06-29T19:55:15.547Z",
+  "completed_at": "2026-06-29T19:55:17.611Z",
+  "vector_store_id": "vs_6a38c…2300",
+  "config_source": ".env.example",
+  "scanned_roots": [
+    "/workspace/project",
+    "/workspace/money/apps/geofinderx",
+    "/workspace/money/orchestrator-agent-001"
+  ],
+  "local_files_scanned": 40,
+  "files_uploaded": 0,
+  "files_skipped": 40,
+  "files_failed": 0,
+  "pending_sync_count": 0,
+  "status": "success",
+  "errors": [],
+  "roots": [
+    {
+      "project": "project",
+      "scanned": 12,
+      "uploaded": [],
+      "skipped": [
+        "memory/agent-knowledge/agents/builderx-fullstack-agent.v1.0.0.md",
+        "memory/agent-knowledge/projects/builderx-container-restart-001.summary.md",
+        "memory/agent-knowledge/projects/builderx-generated-file-ops-001.summary.md",
+        "memory/agent-knowledge/projects/builderx-hot-reload-stability-001.summary.md",
+        "memory/agent-knowledge/projects/builderx-large-001.summary.md",
+        "memory/agent-knowledge/projects/builderx-layout-agentic-d3-001.summary.md",
+        "memory/agent-knowledge/projects/builderx-mcp-chat-001.summary.md",
+        "memory/agent-knowledge/projects/builderx-mcp-console-trace-001.summary.md",
+        "memory/agent-knowledge/projects/builderx-mcp-runtime-log-001.summary.md",
+        "memory/agent-knowledge/projects/builderx-orchestrator-mcp-001.summary.md",
+        "memory/agent-knowledge/projects/builderx-runtime-log-400-001.summary.md",
+        "memory/agent-knowledge/prompts/builderx-large-001.builderx-fullstack-agent.builderx-large-task.prompt.md"
+      ],
+      "failed": []
+    },
+    {
+      "project": "GeoFinderX",
+      "scanned": 21,
+      "uploaded": [],
+      "skipped": [
+        "memory/agent-knowledge/agents/geofinderx-local-execution-agent.v1.0.0.md",
+        "memory/agent-knowledge/agents/project-execution-agent.v1.0.0.md",
+        "memory/agent-knowledge/corrections/wf-geofinderx-business-search-20260628.project-execution-agent.correction.md",
+        "memory/agent-knowledge/projects/wf-geofinderx-bootstrap-20260627.summary.md",
+        "memory/agent-knowledge/projects/wf-geofinderx-business-search-20260628.summary.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-bootstrap-20260627.geofinderx-local-execution-agent.handoff.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-bootstrap-20260627.geofinderx-local-execution-agent.summary.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-bootstrap-20260627.geofinderx-local-execution-agent.system.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-bootstrap-20260627.geofinderx-local-execution-agent.task.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-bootstrap-20260627.geofinderx-local-execution-agent.validation.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-bootstrap-20260627.human-controller.correction.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.actual-backend-correction.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.ai-categorical-search.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.all-results-correction.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.api-routing-correction.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.backend-unavailable-correction.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.correction.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.map-auth-fallback.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.rate-limit-pagination-map.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.scheduling-map-query-log.prompt.md",
+        "memory/agent-knowledge/prompts/wf-geofinderx-business-search-20260628.project-execution-agent.task.prompt.md"
+      ],
+      "failed": []
+    },
+    {
+      "project": "Orchestrator Agent",
+      "scanned": 7,
+      "uploaded": [],
+      "skipped": [
+        "memory/agent-knowledge/agents/project-execution-agent.v1.0.0.md",
+        "memory/agent-knowledge/projects/bootstrap-agent-memory.summary.md",
+        "memory/agent-knowledge/prompts/bootstrap-orchestrator-001.project-execution-agent.correction-bootstrap-placeholder.prompt.md",
+        "memory/agent-knowledge/prompts/bootstrap-orchestrator-001.project-execution-agent.default-agent-instruction.prompt.md",
+        "memory/agent-knowledge/prompts/bootstrap-orchestrator-001.project-execution-agent.handoff-bootstrap.prompt.md",
+        "memory/agent-knowledge/prompts/bootstrap-orchestrator-001.project-execution-agent.orchestrator-bootstrap.prompt.md",
+        "memory/agent-knowledge/prompts/bootstrap-orchestrator-001.project-execution-agent.validation-bootstrap.prompt.md"
+      ],
+      "failed": []
+    }
+  ]
 }

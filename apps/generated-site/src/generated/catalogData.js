@@ -35,9 +35,50 @@ export const contact = {
 
 export const proof = [
   "Curated handbag edit",
-  "Direct WhatsApp ordering",
+  "Cart checkout preview",
   "Kalyan Nagar pickup",
-  "Premium daily styles"
+  "GST invoice breakup"
+];
+
+export const commerceSettings = {
+  gstRate: 0.18,
+  gstLabel: "GST 18%",
+  shippingLabel: "Boutique pickup / local coordination",
+  shippingFee: 0,
+  invoicePrefix: "VE"
+};
+
+export const paymentMethods = [
+  {
+    id: "upi",
+    name: "UPI",
+    detail: "Google Pay, PhonePe, Paytm, BHIM, or any UPI app"
+  },
+  {
+    id: "cards",
+    name: "Credit / Debit Card",
+    detail: "Visa, Mastercard, RuPay, and Amex card payment"
+  },
+  {
+    id: "netbanking",
+    name: "Net Banking",
+    detail: "All major Indian banks"
+  },
+  {
+    id: "wallets",
+    name: "Wallets",
+    detail: "Paytm Wallet, Amazon Pay, and supported wallets"
+  },
+  {
+    id: "emi",
+    name: "EMI",
+    detail: "Card EMI options shown during payment confirmation"
+  },
+  {
+    id: "cod",
+    name: "Cash on Pickup",
+    detail: "Pay at the Kalyan Nagar boutique during pickup"
+  }
 ];
 
 export const heroGallery = [
@@ -180,12 +221,12 @@ export const serviceHighlights = [
   {
     title: "Local boutique assistance",
     body:
-      "Call, message on WhatsApp, or visit the Kalyan Nagar location for current color and stock guidance."
+      "Add items to cart, review GST breakup, then call, message, or visit for final stock guidance."
   },
   {
-    title: "Gift-ready presentation",
+    title: "Invoice-ready checkout",
     body:
-      "Premium-looking product cards, clear prices, and direct contact actions make public browsing simple."
+      "A checkout popup previews payment choices and a clear invoice statement before order confirmation."
   }
 ];
 

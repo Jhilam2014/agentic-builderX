@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   brand,
+  commerceSettings,
   contact,
   heroGallery,
   materials,
   newArrivals,
+  paymentMethods,
   proof,
   regularItems,
   serviceHighlights
 } from "./catalogData.js";
 
 export const generatedMetadata = {
-  instructionHash: "76d271bbb3674083e95217094196ee8273f739d7a895770a93af84050228702a",
-  generatedAt: "2026-06-25T00:00:00.000Z",
+  instructionHash: "e413c726c6b2fdb43422c467a6a678fe19d8eb1026faeea435e2255d7fc0865a",
+  generatedAt: "2026-06-26T00:00:00.000Z",
   title: "Vogue Elegance"
 };
 
@@ -32,7 +34,10 @@ function Icon({ name }) {
       "M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm5 5.2A4.8 4.8 0 1 0 12 16.8 4.8 4.8 0 0 0 12 7.2Zm0 2A2.8 2.8 0 1 1 12 14.8 2.8 2.8 0 0 1 12 9.2Zm5.1-2.75a1.15 1.15 0 1 0 0 2.3 1.15 1.15 0 0 0 0-2.3Z",
     mail: "M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 4 8 5 8-5",
     map: "M12 21s7-5.2 7-12A7 7 0 0 0 5 9c0 6.8 7 12 7 12Zm0-9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5.5Z",
-    bag: "M6 7h12l1 14H5L6 7Zm3 0a3 3 0 0 1 6 0"
+    bag: "M6 7h12l1 14H5L6 7Zm3 0a3 3 0 0 1 6 0",
+    cart: "M6 6h15l-1.5 8.5H8L6 3H3m6 16.5a1.5 1.5 0 1 0 0 .01Zm9 0a1.5 1.5 0 1 0 0 .01Z",
+    card: "M3 6h18v12H3V6Zm0 4h18m-14 4h4",
+    close: "M6 6l12 12M18 6 6 18"
   };
 
   return (
@@ -42,7 +47,22 @@ function Icon({ name }) {
   );
 }
 
-function ProductCard({ product }) {
+const buildInvoice = (cartItems) => {
+  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const gst = Math.round(subtotal * commerceSettings.gstRate);
+  const shipping = commerceSettings.shippingFee;
+  const total = subtotal + gst + shipping;
+
+  return {
+    invoiceNumber: `${commerceSettings.invoicePrefix}-${new Date().toISOString().slice(0, 10).replaceAll("-", "")}-001`,
+    subtotal,
+    gst,
+    shipping,
+    total
+  };
+};
+
+function ProductCard({ product, onAddToCart, cartQuantity }) {
   const soldOut = product.stock === 0;
 
   return (
@@ -70,25 +90,22 @@ function ProductCard({ product }) {
           <a href={product.sourceUrl} target="_blank" rel="noreferrer">
             Item details
           </a>
-          <a
+          <button
+            type="button"
             className={soldOut ? "disabled" : ""}
-            href={
-              soldOut
-                ? "#catalog"
-                : `${contact.whatsappUrl}?text=${encodeURIComponent(
-                    `Hi Vogue Elegance, I want to enquire about ${product.name} (${product.id}).`
-                  )}`
-            }
+            onClick={() => onAddToCart(product)}
+            disabled={soldOut}
           >
-            Enquire
-          </a>
+            <Icon name="cart" />
+            {cartQuantity ? `Added (${cartQuantity})` : "Add+"}
+          </button>
         </div>
       </div>
     </article>
   );
 }
 
-function CatalogSection({ id, eyebrow, title, intro, products }) {
+function CatalogSection({ id, eyebrow, title, intro, products, onAddToCart, cartItems }) {
   return (
     <section className="catalog-section" id={id}>
       <div className="section-heading">
@@ -100,15 +117,195 @@ function CatalogSection({ id, eyebrow, title, intro, products }) {
       </div>
       <div className="product-grid">
         {products.map((product) => (
-          <ProductCard product={product} key={product.id} />
+          <ProductCard
+            product={product}
+            key={product.id}
+            onAddToCart={onAddToCart}
+            cartQuantity={cartItems.find((item) => item.id === product.id)?.quantity || 0}
+          />
         ))}
       </div>
     </section>
   );
 }
 
+function CartPanel({ cartItems, invoice, onChangeQuantity, onRemoveItem, onCheckout, onClearCart }) {
+  const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+  return (
+    <section className="cart-section" id="cart" aria-labelledby="cart-title">
+      <div className="cart-shell">
+        <div className="cart-summary">
+          <p className="eyebrow">Shopping cart</p>
+          <h2 id="cart-title">Review your selected bags before checkout.</h2>
+          <p>
+            Add products from the catalog, confirm quantities, and open the checkout popup to choose a
+            payment method with GST invoice breakup.
+          </p>
+        </div>
+
+        <div className="cart-card" aria-live="polite">
+          {cartItems.length === 0 ? (
+            <div className="empty-cart">
+              <Icon name="cart" />
+              <strong>Your cart is empty</strong>
+              <span>Add an available product to prepare the checkout invoice.</span>
+            </div>
+          ) : (
+            <>
+              <div className="cart-items">
+                {cartItems.map((item) => (
+                  <article className="cart-item" key={item.id}>
+                    <img src={item.image} alt={item.imageAlt} />
+                    <div>
+                      <strong>{item.name}</strong>
+                      <span>{item.id}</span>
+                      <small>{formatInr(item.price)} each</small>
+                    </div>
+                    <div className="quantity-stepper" aria-label={`Quantity for ${item.name}`}>
+                      <button type="button" onClick={() => onChangeQuantity(item.id, -1)} aria-label={`Decrease ${item.name}`}>
+                        -
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button type="button" onClick={() => onChangeQuantity(item.id, 1)} aria-label={`Increase ${item.name}`}>
+                        +
+                      </button>
+                    </div>
+                    <button className="remove-button" type="button" onClick={() => onRemoveItem(item.id)}>
+                      Remove
+                    </button>
+                  </article>
+                ))}
+              </div>
+
+              <div className="cart-totals">
+                <span>{itemCount} item{itemCount === 1 ? "" : "s"}</span>
+                <strong>{formatInr(invoice.total)}</strong>
+              </div>
+              <div className="cart-buttons">
+                <button type="button" onClick={onClearCart}>
+                  Clear cart
+                </button>
+                <button className="checkout-button" type="button" onClick={onCheckout}>
+                  <Icon name="card" />
+                  Checkout & payment
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CheckoutModal({ cartItems, invoice, selectedPayment, setSelectedPayment, onClose, onConfirm }) {
+  return (
+    <div className="checkout-overlay" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+      <div className="checkout-modal">
+        <div className="checkout-header">
+          <div>
+            <p className="eyebrow">Secure checkout preview</p>
+            <h2 id="checkout-title">Payment options and invoice view</h2>
+          </div>
+          <button className="icon-button" type="button" onClick={onClose} aria-label="Close checkout">
+            <Icon name="close" />
+          </button>
+        </div>
+
+        <div className="checkout-grid">
+          <section className="payment-panel" aria-labelledby="payment-title">
+            <h3 id="payment-title">Choose payment method</h3>
+            <div className="payment-options">
+              {paymentMethods.map((method) => (
+                <label className="payment-option" key={method.id}>
+                  <input
+                    type="radio"
+                    name="payment-method"
+                    value={method.id}
+                    checked={selectedPayment === method.id}
+                    onChange={(event) => setSelectedPayment(event.target.value)}
+                  />
+                  <span>
+                    <strong>{method.name}</strong>
+                    <small>{method.detail}</small>
+                  </span>
+                </label>
+              ))}
+            </div>
+            <p className="payment-note">
+              This demo does not collect card, UPI, banking, or wallet credentials. Final payment is
+              confirmed directly with the boutique.
+            </p>
+          </section>
+
+          <section className="invoice-panel" aria-labelledby="invoice-title">
+            <div className="invoice-head">
+              <div>
+                <span>Invoice</span>
+                <strong id="invoice-title">{invoice.invoiceNumber}</strong>
+              </div>
+              <div>
+                <span>Date</span>
+                <strong>{new Date().toLocaleDateString("en-IN")}</strong>
+              </div>
+            </div>
+
+            <div className="invoice-lines">
+              {cartItems.map((item) => (
+                <div className="invoice-line" key={item.id}>
+                  <span>
+                    {item.name}
+                    <small>{item.quantity} x {formatInr(item.price)}</small>
+                  </span>
+                  <strong>{formatInr(item.price * item.quantity)}</strong>
+                </div>
+              ))}
+            </div>
+
+            <div className="invoice-breakup">
+              <div>
+                <span>Subtotal</span>
+                <strong>{formatInr(invoice.subtotal)}</strong>
+              </div>
+              <div>
+                <span>{commerceSettings.gstLabel}</span>
+                <strong>{formatInr(invoice.gst)}</strong>
+              </div>
+              <div>
+                <span>{commerceSettings.shippingLabel}</span>
+                <strong>{invoice.shipping === 0 ? "Free" : formatInr(invoice.shipping)}</strong>
+              </div>
+              <div className="grand-total">
+                <span>Payable total</span>
+                <strong>{formatInr(invoice.total)}</strong>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div className="checkout-footer">
+          <button type="button" onClick={onClose}>
+            Continue shopping
+          </button>
+          <button className="checkout-button" type="button" onClick={onConfirm}>
+            Confirm checkout preview
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AdminTable({ products }) {
   const [rows, setRows] = useState(products);
+  const inventoryGroups = useMemo(
+    () => [
+      { label: "New arrivals", products: rows.filter((product) => product.id.includes("NA")) },
+      { label: "Regular items", products: rows.filter((product) => product.id.includes("RG")) }
+    ],
+    [rows]
+  );
 
   const updateStock = (productId, delta) => {
     setRows((current) =>
@@ -122,13 +319,24 @@ function AdminTable({ products }) {
     <section className="admin-section" id="admin" aria-labelledby="admin-title">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">Admin inventory</p>
-          <h2 id="admin-title">Private product controls for Vogue Elegance.</h2>
+          <p className="eyebrow">Admin inventory lists</p>
+          <h2 id="admin-title">Private inventory view for Vogue Elegance.</h2>
         </div>
         <p>
-          This panel is hidden unless the browser already has an admin session flag. Changes here
-          are local to this generated build.
+          This panel appears only after Google sign-in with the approved Gmail address. Stock
+          adjustments are local to this generated build.
         </p>
+      </div>
+      <div className="inventory-lists" aria-label="Inventory list summaries">
+        {inventoryGroups.map((group) => (
+          <article key={group.label}>
+            <span>{group.label}</span>
+            <strong>{group.products.length} SKUs</strong>
+            <p>
+              {group.products.reduce((total, product) => total + product.stock, 0)} units available
+            </p>
+          </article>
+        ))}
       </div>
       <div className="admin-table-wrap">
         <table className="admin-table">
@@ -169,6 +377,53 @@ function AdminTable({ products }) {
   );
 }
 
+function GoogleLogin({ userEmail, emailInput, setEmailInput, loginOpen, setLoginOpen, onLogin, onLogout, isAdmin, authMessage }) {
+  return (
+    <div className="google-login">
+      {userEmail ? (
+        <div className="signed-in-pill">
+          <span className="google-mark" aria-hidden="true">
+            G
+          </span>
+          <span>
+            <small>{isAdmin ? "Admin signed in" : "Signed in"}</small>
+            <strong>{userEmail}</strong>
+          </span>
+          <button type="button" onClick={onLogout}>
+            Sign out
+          </button>
+        </div>
+      ) : (
+        <>
+          <button className="google-button" type="button" onClick={() => setLoginOpen((open) => !open)}>
+            <span className="google-mark" aria-hidden="true">
+              G
+            </span>
+            Continue with Google
+          </button>
+          {loginOpen && (
+            <form className="login-popover" onSubmit={onLogin}>
+              <label htmlFor="google-email">Gmail address</label>
+              <div>
+                <input
+                  id="google-email"
+                  type="email"
+                  value={emailInput}
+                  onChange={(event) => setEmailInput(event.target.value)}
+                  placeholder="name@gmail.com"
+                  autoComplete="email"
+                />
+                <button type="submit">Sign in</button>
+              </div>
+              {authMessage && <p>{authMessage}</p>}
+            </form>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 function ContactLink({ icon, href, label, value }) {
   return (
     <a className="contact-link" href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>
@@ -181,13 +436,88 @@ function ContactLink({ icon, href, label, value }) {
 
 export default function GeneratedPage() {
   const allProducts = useMemo(() => [...newArrivals, ...regularItems], []);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [authMessage, setAuthMessage] = useState("");
+  const [cartItems, setCartItems] = useState([]);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(paymentMethods[0].id);
+  const isAdmin = userEmail.toLowerCase() === brand.adminEmail.toLowerCase();
+  const invoice = useMemo(() => buildInvoice(cartItems), [cartItems]);
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
-    const adminFlag = window.localStorage.getItem("vogueEleganceAdmin") === "true";
-    const adminEmail = window.localStorage.getItem("vogueEleganceUserEmail") === brand.adminEmail;
-    setIsAdmin(adminFlag || adminEmail);
+    const savedEmail = window.localStorage.getItem("vogueEleganceUserEmail") || "";
+    setUserEmail(savedEmail);
+    setEmailInput(savedEmail);
   }, []);
+
+  const handleGoogleLogin = (event) => {
+    event.preventDefault();
+    const normalizedEmail = emailInput.trim().toLowerCase();
+
+    if (!normalizedEmail.endsWith("@gmail.com")) {
+      setAuthMessage("Use a Gmail address to continue.");
+      return;
+    }
+
+    window.localStorage.setItem("vogueEleganceUserEmail", normalizedEmail);
+    setUserEmail(normalizedEmail);
+    setLoginOpen(false);
+    setAuthMessage(
+      normalizedEmail === brand.adminEmail.toLowerCase()
+        ? "Admin access enabled."
+        : "Signed in as a customer."
+    );
+  };
+
+  const handleLogout = () => {
+    window.localStorage.removeItem("vogueEleganceUserEmail");
+    window.localStorage.removeItem("vogueEleganceAdmin");
+    setUserEmail("");
+    setEmailInput("");
+    setLoginOpen(false);
+    setAuthMessage("");
+  };
+
+  const handleAddToCart = (product) => {
+    setCartItems((current) => {
+      const existingItem = current.find((item) => item.id === product.id);
+
+      if (existingItem) {
+        return current.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: Math.min(product.stock, item.quantity + 1) }
+            : item
+        );
+      }
+
+      return [...current, { ...product, quantity: 1 }];
+    });
+  };
+
+  const handleChangeQuantity = (productId, delta) => {
+    setCartItems((current) =>
+      current
+        .map((item) =>
+          item.id === productId
+            ? { ...item, quantity: Math.min(item.stock, Math.max(0, item.quantity + delta)) }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  };
+
+  const handleRemoveItem = (productId) => {
+    setCartItems((current) => current.filter((item) => item.id !== productId));
+  };
+
+  const handleConfirmCheckout = () => {
+    const method = paymentMethods.find((item) => item.id === selectedPayment)?.name || "UPI";
+    setAuthMessage(`Checkout preview ready with ${method}. Invoice ${invoice.invoiceNumber} total is ${formatInr(invoice.total)}.`);
+    setCheckoutOpen(false);
+  };
 
   return (
     <main className="generated-page">
@@ -203,10 +533,21 @@ export default function GeneratedPage() {
           <div className="nav-links">
             <a href="#new-arrivals">New arrivals</a>
             <a href="#regular-items">Regular items</a>
-            <a href="#location">Location</a>
+            <a href="#cart">Cart ({cartCount})</a>
             <a href="#contact">Contact</a>
             {isAdmin && <a href="#admin">Admin</a>}
           </div>
+          <GoogleLogin
+            userEmail={userEmail}
+            emailInput={emailInput}
+            setEmailInput={setEmailInput}
+            loginOpen={loginOpen}
+            setLoginOpen={setLoginOpen}
+            onLogin={handleGoogleLogin}
+            onLogout={handleLogout}
+            isAdmin={isAdmin}
+            authMessage={authMessage}
+          />
         </nav>
 
         <div className="hero-grid">
@@ -218,9 +559,9 @@ export default function GeneratedPage() {
               <a className="button primary" href="#new-arrivals">
                 Shop new arrivals
               </a>
-              <a className="button secondary" href={contact.whatsappUrl} target="_blank" rel="noreferrer">
-                <Icon name="whatsapp" />
-                WhatsApp boutique
+              <a className="button secondary" href="#cart">
+                <Icon name="cart" />
+                View cart
               </a>
             </div>
           </div>
@@ -272,6 +613,8 @@ export default function GeneratedPage() {
         title="Fresh pieces from the latest arrival edit."
         intro="These cards use current arrival names, prices, sale labels, and locally saved product photos. The item source appears only as a small logo badge on each card."
         products={newArrivals}
+        onAddToCart={handleAddToCart}
+        cartItems={cartItems}
       />
 
       <CatalogSection
@@ -280,6 +623,17 @@ export default function GeneratedPage() {
         title="Everyday bags kept separate for faster browsing."
         intro="A concise regular collection for customers who want classic totes, shoulder bags, and neutral quilted options."
         products={regularItems}
+        onAddToCart={handleAddToCart}
+        cartItems={cartItems}
+      />
+
+      <CartPanel
+        cartItems={cartItems}
+        invoice={invoice}
+        onChangeQuantity={handleChangeQuantity}
+        onRemoveItem={handleRemoveItem}
+        onCheckout={() => setCheckoutOpen(true)}
+        onClearCart={() => setCartItems([])}
       />
 
       <section className="materials-section" id="materials">
@@ -349,6 +703,17 @@ export default function GeneratedPage() {
       </section>
 
       {isAdmin && <AdminTable products={allProducts} />}
+
+      {checkoutOpen && cartItems.length > 0 && (
+        <CheckoutModal
+          cartItems={cartItems}
+          invoice={invoice}
+          selectedPayment={selectedPayment}
+          setSelectedPayment={setSelectedPayment}
+          onClose={() => setCheckoutOpen(false)}
+          onConfirm={handleConfirmCheckout}
+        />
+      )}
     </main>
   );
 }

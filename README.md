@@ -34,6 +34,18 @@ Useful runner commands:
 
 Submit an instruction in the BuilderX chat. The frontend sends it to the backend workflow endpoint, where the BuilderX orchestrator agent first restructures the raw instruction into a safer build request. The backend writes React source into `apps/generated-site/src/generated`, then the generated app refreshes through Vite hot reload by default.
 
+## Projects, Uploads, And Export
+
+New and imported projects are stored as named sibling folders directly under the parent `money` root, assigned an exclusive port from `PROJECT_PORT_START` to `PROJECT_PORT_END`, and shown in the Playground project dropdown. For example, a project named `Travel CRM` is created at `../travel-crm`; another project with the same name becomes `../travel-crm-2`. Agentic BuilderX remains the host/control app; selecting a project inspects its dedicated runtime container, starts or recreates it when necessary, waits for the assigned port to become healthy, and then switches the iframe preview. Set `PROJECT_RUNTIME_MODE=process` only for local development without Docker.
+
+Use the `Media` upload control after selecting a project to attach files under `public/uploads`; those paths are included in the Codex workflow instruction context. Use the `Project` upload control to import an existing `.zip` app into a new managed workspace. BuilderX writes each managed project folder under the parent workspace `apps/` directory and adds that specific folder to `.gitignore` so projects stay detachable and untracked. Use `Export` to download the selected app as a zip containing source, frontend Dockerfile, backend service, PostgreSQL database service, `.env`, and `docker-compose.yml`.
+
+Every created or imported app owns its orchestration policy inside the app folder at `.agentic/orchestrator-agent.md`. Root `AGENTS.md` and `CLAUDE.md` files direct Codex and Claude to that policy. BuilderX remains the launcher and graph registry, while the project-local orchestrator controls task sizing, MCP context, specialist routing, validation, and the accuracy-versus-token budget for work in that app.
+
+For a newly created project, BuilderX safely extracts `orchestrator-temp/orchestrator-agent-001-main.zip` into the new app folder, strips the archive's wrapper directory, ignores `.DS_Store`, and preserves the generated app's runtime `.env`. The archive's canonical `AGENTS.md`, `CLAUDE.md`, `ROOT_WORKSPACE_GENERATION_POLICY.md`, `.codex/prompts`, PDF, docs, and supporting configuration are installed, and the ZIP SHA-256 is recorded in `.agentic/orchestrator-source.json`. BuilderX then runs a separate ephemeral Codex command with `Use .codex/prompts/bootstrap-orchestrator.md and execute the bootstrap.`, verifies the required agent, registry, graph, D3, and observability artifacts, and only then reads and executes the UI application instruction. A failed extraction, bootstrap, verification, or first generation rolls the incomplete project back.
+
+Use `Delete` on a non-default selected project to permanently remove its workspace, managed runtime containers, project/Compose database containers, volumes and networks, dependency volume, exports, registry record, generated agent records, and D3/Neo4j topology artifacts. The shared default generated site cannot be deleted.
+
 ## Codex MCP
 
 BuilderX no longer exposes a local `/mcp` server. Use the real Codex MCP integration from Codex itself, for example:

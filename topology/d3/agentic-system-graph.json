@@ -1,11 +1,13 @@
 {
   "metadata": {
     "project_name": "agentic-builderX",
-    "generated_at": "2026-06-25T16:00:00+05:30",
+    "generated_at": "2026-06-27T22:34:01.210Z",
     "workflow_id": "builderx-layout-agentic-d3-001",
     "source": "orchestrator",
-    "graph_version": "1.1.0",
-    "time_zone": "Asia/Kolkata"
+    "graph_version": "1.2.0",
+    "time_zone": "Asia/Kolkata",
+    "managed_project_count": 2,
+    "project_agent_source": "runtime/agents/projects"
   },
   "nodes": [
     {
@@ -227,6 +229,170 @@
           "public deploy"
         ]
       }
+    },
+    {
+      "id": "project:geofinderx-2yFsDY",
+      "type": "project",
+      "label": "GeoFinderX",
+      "group": "project",
+      "risk_level": "medium",
+      "status": "managed",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "folderName": "geofinderx",
+        "workspaceDir": "/workspace/money/apps/geofinderx",
+        "port": 5300,
+        "previewUrl": "http://localhost:5300"
+      }
+    },
+    {
+      "id": "agent:geofinderx-orchestrator-agent",
+      "type": "agent",
+      "label": "Geofinderx Orchestrator Agent",
+      "group": "project-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "geofinderx-orchestrator-agent",
+      "cluster_id": "project-orchestrator",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "projectName": "GeoFinderX",
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
+      }
+    },
+    {
+      "id": "agent:geofinderx-ui-composition-agent",
+      "type": "agent",
+      "label": "Geofinderx UI Composition Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "geofinderx-ui-composition-agent",
+      "cluster_id": "ui-composition",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "projectName": "GeoFinderX",
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states."
+      }
+    },
+    {
+      "id": "agent:geofinderx-content-data-agent",
+      "type": "agent",
+      "label": "Geofinderx Content Data Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "geofinderx-content-data-agent",
+      "cluster_id": "content-data",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "projectName": "GeoFinderX",
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+      }
+    },
+    {
+      "id": "agent:geofinderx-runtime-packaging-agent",
+      "type": "agent",
+      "label": "Geofinderx Runtime Packaging Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "geofinderx-runtime-packaging-agent",
+      "cluster_id": "runtime-packaging",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "projectName": "GeoFinderX",
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+      }
+    },
+    {
+      "id": "project:mapex-M6rGkR",
+      "type": "project",
+      "label": "mapEx",
+      "group": "project",
+      "risk_level": "medium",
+      "status": "managed",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "folderName": "mapex",
+        "workspaceDir": "/workspace/money/mapex",
+        "port": 5301,
+        "previewUrl": "http://localhost:5301"
+      }
+    },
+    {
+      "id": "agent:mapex-orchestrator-agent",
+      "type": "agent",
+      "label": "Mapex Orchestrator Agent",
+      "group": "project-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "mapex-orchestrator-agent",
+      "cluster_id": "project-orchestrator",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "projectName": "mapEx",
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
+      }
+    },
+    {
+      "id": "agent:mapex-ui-composition-agent",
+      "type": "agent",
+      "label": "Mapex UI Composition Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mapex-ui-composition-agent",
+      "cluster_id": "ui-composition",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "projectName": "mapEx",
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states."
+      }
+    },
+    {
+      "id": "agent:mapex-content-data-agent",
+      "type": "agent",
+      "label": "Mapex Content Data Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mapex-content-data-agent",
+      "cluster_id": "content-data",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "projectName": "mapEx",
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+      }
+    },
+    {
+      "id": "agent:mapex-runtime-packaging-agent",
+      "type": "agent",
+      "label": "Mapex Runtime Packaging Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mapex-runtime-packaging-agent",
+      "cluster_id": "runtime-packaging",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "projectName": "mapEx",
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+      }
     }
   ],
   "links": [
@@ -355,6 +521,106 @@
       "type": "reviews",
       "weight": 1,
       "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "project:geofinderx-2yFsDY",
+      "type": "creates_project",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "project:geofinderx-2yFsDY",
+      "target": "agent:geofinderx-orchestrator-agent",
+      "type": "has_orchestrator",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "agent:geofinderx-orchestrator-agent",
+      "target": "agent:geofinderx-ui-composition-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "agent:geofinderx-orchestrator-agent",
+      "target": "agent:geofinderx-content-data-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "agent:geofinderx-orchestrator-agent",
+      "target": "agent:geofinderx-runtime-packaging-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "project:mapex-M6rGkR",
+      "type": "creates_project",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "project:mapex-M6rGkR",
+      "target": "agent:mapex-orchestrator-agent",
+      "type": "has_orchestrator",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:mapex-orchestrator-agent",
+      "target": "agent:mapex-ui-composition-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:mapex-orchestrator-agent",
+      "target": "agent:mapex-content-data-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:mapex-orchestrator-agent",
+      "target": "agent:mapex-runtime-packaging-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
     }
   ]
 }

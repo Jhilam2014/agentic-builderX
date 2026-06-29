@@ -1,48 +1,626 @@
 {
   "metadata": {
     "project_name": "agentic-builderX",
-    "generated_at": "2026-06-25T16:00:00+05:30",
+    "generated_at": "2026-06-27T22:34:01.210Z",
     "workflow_id": "builderx-layout-agentic-d3-001",
     "source": "orchestrator",
-    "graph_version": "1.1.0",
-    "time_zone": "Asia/Kolkata"
+    "graph_version": "1.2.0",
+    "time_zone": "Asia/Kolkata",
+    "managed_project_count": 2,
+    "project_agent_source": "runtime/agents/projects"
   },
   "nodes": [
-    { "id": "agent:builderx-fullstack-agent", "type": "agent", "label": "BuilderX Fullstack Agent", "group": "agent", "risk_level": "medium", "status": "active", "agent_id": "builderx-fullstack-agent", "cluster_id": "", "metadata": { "level": 1, "domain": "fullstack", "capabilityScore": 60 } },
-    { "id": "functionality:frontend-control-surface", "type": "cluster", "label": "Frontend Control Surface", "group": "functionality", "risk_level": "medium", "status": "implemented", "agent_id": "builderx-fullstack-agent", "cluster_id": "frontend_control_surface", "metadata": { "description": "Codex workflow chat, playground preview, right-side Agentic BuilderX panel, activity logs, and status controls." } },
-    { "id": "functionality:codex-chat", "type": "feature", "label": "Codex Builder Chat", "group": "frontend", "risk_level": "low", "status": "implemented", "agent_id": "builderx-fullstack-agent", "cluster_id": "frontend_control_surface", "metadata": { "file": "apps/frontend/src/App.jsx" } },
-    { "id": "functionality:playground-preview", "type": "feature", "label": "Playground Preview", "group": "frontend", "risk_level": "low", "status": "implemented", "agent_id": "builderx-fullstack-agent", "cluster_id": "frontend_control_surface", "metadata": { "aspectRatio": "16:9", "fitMode": "toggle" } },
-    { "id": "functionality:runtime-observability", "type": "feature", "label": "Runtime Observability", "group": "observability", "risk_level": "medium", "status": "implemented", "agent_id": "builderx-fullstack-agent", "cluster_id": "frontend_control_surface", "metadata": { "timeZone": "Asia/Kolkata", "currentSessionHighlight": "light_green" } },
-    { "id": "functionality:backend-generation-api", "type": "cluster", "label": "Backend Generation API", "group": "functionality", "risk_level": "high", "status": "implemented", "agent_id": "builderx-fullstack-agent", "cluster_id": "backend_generation_api", "metadata": { "description": "Express server, runtime log endpoint, SSE stream, Codex CLI runner, and generated app refresh." } },
-    { "id": "api:generate", "type": "api", "label": "Codex /api/generate", "group": "api", "risk_level": "high", "status": "implemented", "agent_id": "builderx-fullstack-agent", "cluster_id": "codex_generation_endpoint", "metadata": { "runner": "codex exec", "writesOnly": "apps/generated-site/src/generated" } },
-    { "id": "functionality:orchestrator-restructure", "type": "feature", "label": "Instruction Restructure", "group": "backend", "risk_level": "medium", "status": "implemented", "agent_id": "builderx-fullstack-agent", "cluster_id": "codex_generation_endpoint", "metadata": { "file": "apps/backend/src/orchestratorAgent.js" } },
-    { "id": "functionality:codex-file-runtime", "type": "feature", "label": "Codex File Runtime", "group": "backend", "risk_level": "high", "status": "implemented", "agent_id": "builderx-fullstack-agent", "cluster_id": "backend_generation_api", "metadata": { "writesOnly": "apps/generated-site/src/generated" } },
-    { "id": "functionality:generated-site-runtime", "type": "cluster", "label": "Generated Site Runtime", "group": "functionality", "risk_level": "medium", "status": "implemented", "agent_id": "builderx-fullstack-agent", "cluster_id": "generated_site_runtime", "metadata": { "runtime": "Vite", "refresh": "hot_reload" } },
-    { "id": "service:frontend", "type": "service", "label": "Frontend Container", "group": "runtime", "risk_level": "medium", "status": "running", "agent_id": "builderx-fullstack-agent", "cluster_id": "frontend_control_surface", "metadata": { "port": 5173 } },
-    { "id": "service:backend", "type": "service", "label": "Backend Container", "group": "runtime", "risk_level": "high", "status": "running", "agent_id": "builderx-fullstack-agent", "cluster_id": "backend_generation_api", "metadata": { "port": 8080 } },
-    { "id": "service:generated-site", "type": "service", "label": "Generated Site Container", "group": "runtime", "risk_level": "medium", "status": "running", "agent_id": "builderx-fullstack-agent", "cluster_id": "generated_site_runtime", "metadata": { "port": 5174 } },
-    { "id": "vector:chroma-fallback", "type": "vector_store", "label": "ChromaDB Fallback", "group": "memory", "risk_level": "medium", "status": "pending_install", "agent_id": "", "cluster_id": "", "metadata": { "provider": "chroma_local_generated" } },
-    { "id": "graph:neo4j-artifacts", "type": "graph_store", "label": "Neo4j Artifacts", "group": "memory", "risk_level": "medium", "status": "pending_credentials", "agent_id": "", "cluster_id": "", "metadata": { "sync": "local_artifacts" } },
-    { "id": "human:operator", "type": "human_review", "label": "Human Operator", "group": "governance", "risk_level": "medium", "status": "available", "agent_id": "", "cluster_id": "", "metadata": { "approvalRequiredFor": ["external LLM APIs", "arbitrary code execution", "public deploy"] } }
+    {
+      "id": "agent:builderx-fullstack-agent",
+      "type": "agent",
+      "label": "BuilderX Fullstack Agent",
+      "group": "agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "",
+      "metadata": {
+        "level": 1,
+        "domain": "fullstack",
+        "capabilityScore": 60
+      }
+    },
+    {
+      "id": "functionality:frontend-control-surface",
+      "type": "cluster",
+      "label": "Frontend Control Surface",
+      "group": "functionality",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "description": "MCP chat, playground preview, right-side Agentic BuilderX panel, activity logs, and status controls."
+      }
+    },
+    {
+      "id": "functionality:mcp-chat",
+      "type": "feature",
+      "label": "MCP Builder Chat",
+      "group": "frontend",
+      "risk_level": "low",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "file": "apps/frontend/src/App.jsx"
+      }
+    },
+    {
+      "id": "functionality:playground-preview",
+      "type": "feature",
+      "label": "Playground Preview",
+      "group": "frontend",
+      "risk_level": "low",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "aspectRatio": "16:9",
+        "fitMode": "toggle"
+      }
+    },
+    {
+      "id": "functionality:runtime-observability",
+      "type": "feature",
+      "label": "Runtime Observability",
+      "group": "observability",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "timeZone": "Asia/Kolkata",
+        "currentSessionHighlight": "light_green"
+      }
+    },
+    {
+      "id": "functionality:backend-generation-api",
+      "type": "cluster",
+      "label": "Backend Generation API",
+      "group": "functionality",
+      "risk_level": "high",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "backend_generation_api",
+      "metadata": {
+        "description": "Express server, runtime log endpoint, SSE stream, and deterministic generation runtime."
+      }
+    },
+    {
+      "id": "api:mcp",
+      "type": "api",
+      "label": "MCP /mcp",
+      "group": "api",
+      "risk_level": "high",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "mcp_generation_endpoint",
+      "metadata": {
+        "tools": [
+          "tools/list",
+          "tools/call generate_webpage"
+        ]
+      }
+    },
+    {
+      "id": "functionality:orchestrator-restructure",
+      "type": "feature",
+      "label": "Instruction Restructure",
+      "group": "backend",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "mcp_generation_endpoint",
+      "metadata": {
+        "file": "apps/backend/src/orchestratorAgent.js"
+      }
+    },
+    {
+      "id": "functionality:file-operation-runtime",
+      "type": "feature",
+      "label": "File Operation Runtime",
+      "group": "backend",
+      "risk_level": "high",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "backend_generation_api",
+      "metadata": {
+        "writesOnly": "apps/generated-site/src/generated"
+      }
+    },
+    {
+      "id": "functionality:generated-site-runtime",
+      "type": "cluster",
+      "label": "Generated Site Runtime",
+      "group": "functionality",
+      "risk_level": "medium",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "generated_site_runtime",
+      "metadata": {
+        "runtime": "Vite",
+        "refresh": "hot_reload"
+      }
+    },
+    {
+      "id": "service:frontend",
+      "type": "service",
+      "label": "Frontend Container",
+      "group": "runtime",
+      "risk_level": "medium",
+      "status": "running",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "frontend_control_surface",
+      "metadata": {
+        "port": 5173
+      }
+    },
+    {
+      "id": "service:backend",
+      "type": "service",
+      "label": "Backend Container",
+      "group": "runtime",
+      "risk_level": "high",
+      "status": "running",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "backend_generation_api",
+      "metadata": {
+        "port": 8080
+      }
+    },
+    {
+      "id": "service:generated-site",
+      "type": "service",
+      "label": "Generated Site Container",
+      "group": "runtime",
+      "risk_level": "medium",
+      "status": "running",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "generated_site_runtime",
+      "metadata": {
+        "port": 5174
+      }
+    },
+    {
+      "id": "vector:chroma-fallback",
+      "type": "vector_store",
+      "label": "ChromaDB Fallback",
+      "group": "memory",
+      "risk_level": "medium",
+      "status": "pending_install",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "provider": "chroma_local_generated"
+      }
+    },
+    {
+      "id": "graph:neo4j-artifacts",
+      "type": "graph_store",
+      "label": "Neo4j Artifacts",
+      "group": "memory",
+      "risk_level": "medium",
+      "status": "pending_credentials",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "sync": "local_artifacts"
+      }
+    },
+    {
+      "id": "human:operator",
+      "type": "human_review",
+      "label": "Human Operator",
+      "group": "governance",
+      "risk_level": "medium",
+      "status": "available",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "approvalRequiredFor": [
+          "external LLM APIs",
+          "arbitrary code execution",
+          "public deploy"
+        ]
+      }
+    },
+    {
+      "id": "project:geofinderx-2yFsDY",
+      "type": "project",
+      "label": "GeoFinderX",
+      "group": "project",
+      "risk_level": "medium",
+      "status": "managed",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "folderName": "geofinderx",
+        "workspaceDir": "/workspace/money/apps/geofinderx",
+        "port": 5300,
+        "previewUrl": "http://localhost:5300"
+      }
+    },
+    {
+      "id": "agent:geofinderx-orchestrator-agent",
+      "type": "agent",
+      "label": "Geofinderx Orchestrator Agent",
+      "group": "project-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "geofinderx-orchestrator-agent",
+      "cluster_id": "project-orchestrator",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "projectName": "GeoFinderX",
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
+      }
+    },
+    {
+      "id": "agent:geofinderx-ui-composition-agent",
+      "type": "agent",
+      "label": "Geofinderx UI Composition Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "geofinderx-ui-composition-agent",
+      "cluster_id": "ui-composition",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "projectName": "GeoFinderX",
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states."
+      }
+    },
+    {
+      "id": "agent:geofinderx-content-data-agent",
+      "type": "agent",
+      "label": "Geofinderx Content Data Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "geofinderx-content-data-agent",
+      "cluster_id": "content-data",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "projectName": "GeoFinderX",
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+      }
+    },
+    {
+      "id": "agent:geofinderx-runtime-packaging-agent",
+      "type": "agent",
+      "label": "Geofinderx Runtime Packaging Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "geofinderx-runtime-packaging-agent",
+      "cluster_id": "runtime-packaging",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY",
+        "projectName": "GeoFinderX",
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+      }
+    },
+    {
+      "id": "project:mapex-M6rGkR",
+      "type": "project",
+      "label": "mapEx",
+      "group": "project",
+      "risk_level": "medium",
+      "status": "managed",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "folderName": "mapex",
+        "workspaceDir": "/workspace/money/mapex",
+        "port": 5301,
+        "previewUrl": "http://localhost:5301"
+      }
+    },
+    {
+      "id": "agent:mapex-orchestrator-agent",
+      "type": "agent",
+      "label": "Mapex Orchestrator Agent",
+      "group": "project-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "mapex-orchestrator-agent",
+      "cluster_id": "project-orchestrator",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "projectName": "mapEx",
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
+      }
+    },
+    {
+      "id": "agent:mapex-ui-composition-agent",
+      "type": "agent",
+      "label": "Mapex UI Composition Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mapex-ui-composition-agent",
+      "cluster_id": "ui-composition",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "projectName": "mapEx",
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states."
+      }
+    },
+    {
+      "id": "agent:mapex-content-data-agent",
+      "type": "agent",
+      "label": "Mapex Content Data Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mapex-content-data-agent",
+      "cluster_id": "content-data",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "projectName": "mapEx",
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+      }
+    },
+    {
+      "id": "agent:mapex-runtime-packaging-agent",
+      "type": "agent",
+      "label": "Mapex Runtime Packaging Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mapex-runtime-packaging-agent",
+      "cluster_id": "runtime-packaging",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR",
+        "projectName": "mapEx",
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+      }
+    }
   ],
   "links": [
-    { "source": "agent:builderx-fullstack-agent", "target": "functionality:frontend-control-surface", "type": "owns", "weight": 2, "metadata": {} },
-    { "source": "functionality:frontend-control-surface", "target": "functionality:codex-chat", "type": "contains", "weight": 1, "metadata": {} },
-    { "source": "functionality:frontend-control-surface", "target": "functionality:playground-preview", "type": "contains", "weight": 1, "metadata": {} },
-    { "source": "functionality:frontend-control-surface", "target": "functionality:runtime-observability", "type": "contains", "weight": 1, "metadata": {} },
-    { "source": "agent:builderx-fullstack-agent", "target": "functionality:backend-generation-api", "type": "owns", "weight": 2, "metadata": {} },
-    { "source": "functionality:backend-generation-api", "target": "api:generate", "type": "exposes", "weight": 1, "metadata": {} },
-    { "source": "api:generate", "target": "functionality:orchestrator-restructure", "type": "calls", "weight": 1, "metadata": {} },
-    { "source": "api:generate", "target": "functionality:codex-file-runtime", "type": "calls", "weight": 1, "metadata": {} },
-    { "source": "agent:builderx-fullstack-agent", "target": "functionality:generated-site-runtime", "type": "owns", "weight": 2, "metadata": {} },
-    { "source": "functionality:codex-chat", "target": "api:generate", "type": "consumes", "weight": 1, "metadata": {} },
-    { "source": "functionality:playground-preview", "target": "functionality:generated-site-runtime", "type": "visualizes", "weight": 1, "metadata": {} },
-    { "source": "functionality:codex-file-runtime", "target": "functionality:generated-site-runtime", "type": "writes", "weight": 1, "metadata": {} },
-    { "source": "service:frontend", "target": "functionality:frontend-control-surface", "type": "implements", "weight": 1, "metadata": {} },
-    { "source": "service:backend", "target": "functionality:backend-generation-api", "type": "implements", "weight": 1, "metadata": {} },
-    { "source": "service:generated-site", "target": "functionality:generated-site-runtime", "type": "implements", "weight": 1, "metadata": {} },
-    { "source": "functionality:runtime-observability", "target": "vector:chroma-fallback", "type": "syncs_to", "weight": 1, "metadata": {} },
-    { "source": "agent:builderx-fullstack-agent", "target": "graph:neo4j-artifacts", "type": "visualized_by", "weight": 1, "metadata": {} },
-    { "source": "human:operator", "target": "agent:builderx-fullstack-agent", "type": "reviews", "weight": 1, "metadata": {} }
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "functionality:frontend-control-surface",
+      "type": "owns",
+      "weight": 2,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:frontend-control-surface",
+      "target": "functionality:mcp-chat",
+      "type": "contains",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:frontend-control-surface",
+      "target": "functionality:playground-preview",
+      "type": "contains",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:frontend-control-surface",
+      "target": "functionality:runtime-observability",
+      "type": "contains",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "functionality:backend-generation-api",
+      "type": "owns",
+      "weight": 2,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:backend-generation-api",
+      "target": "api:mcp",
+      "type": "exposes",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "api:mcp",
+      "target": "functionality:orchestrator-restructure",
+      "type": "calls",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "api:mcp",
+      "target": "functionality:file-operation-runtime",
+      "type": "calls",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "functionality:generated-site-runtime",
+      "type": "owns",
+      "weight": 2,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:mcp-chat",
+      "target": "api:mcp",
+      "type": "consumes",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:playground-preview",
+      "target": "functionality:generated-site-runtime",
+      "type": "visualizes",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:file-operation-runtime",
+      "target": "functionality:generated-site-runtime",
+      "type": "writes",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:frontend",
+      "target": "functionality:frontend-control-surface",
+      "type": "implements",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:backend",
+      "target": "functionality:backend-generation-api",
+      "type": "implements",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "service:generated-site",
+      "target": "functionality:generated-site-runtime",
+      "type": "implements",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "functionality:runtime-observability",
+      "target": "vector:chroma-fallback",
+      "type": "syncs_to",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "graph:neo4j-artifacts",
+      "type": "visualized_by",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "human:operator",
+      "target": "agent:builderx-fullstack-agent",
+      "type": "reviews",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "project:geofinderx-2yFsDY",
+      "type": "creates_project",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "project:geofinderx-2yFsDY",
+      "target": "agent:geofinderx-orchestrator-agent",
+      "type": "has_orchestrator",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "agent:geofinderx-orchestrator-agent",
+      "target": "agent:geofinderx-ui-composition-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "agent:geofinderx-orchestrator-agent",
+      "target": "agent:geofinderx-content-data-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "agent:geofinderx-orchestrator-agent",
+      "target": "agent:geofinderx-runtime-packaging-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "project:mapex-M6rGkR",
+      "type": "creates_project",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "project:mapex-M6rGkR",
+      "target": "agent:mapex-orchestrator-agent",
+      "type": "has_orchestrator",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:mapex-orchestrator-agent",
+      "target": "agent:mapex-ui-composition-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:mapex-orchestrator-agent",
+      "target": "agent:mapex-content-data-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:mapex-orchestrator-agent",
+      "target": "agent:mapex-runtime-packaging-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mapex-M6rGkR"
+      }
+    }
   ]
 }

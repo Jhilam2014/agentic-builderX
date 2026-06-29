@@ -1,0 +1,91 @@
+{
+  "provider": "openai",
+  "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+  "files": {
+    "memory/agent-knowledge/agents/builderx-fullstack-agent.v1.0.0.md": {
+      "content_sha256": "5ad2a156b2434d3bd7ea1cf60eb78cffb709c848603b5e9a4f2bab47b8ba429d",
+      "file_id": "file-GayCioZou1enJRcRxoSfVS",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:13:44.985Z"
+    },
+    "memory/agent-knowledge/projects/builderx-container-restart-001.summary.md": {
+      "content_sha256": "e9a1eeddf2559f14c9f5fcab208ec1afebaa2e4338d6ce0c098b5abaec264c4c",
+      "file_id": "file-3kUJ5YYdawMYfVqKxMwFWf",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:13:47.858Z"
+    },
+    "memory/agent-knowledge/projects/builderx-generated-file-ops-001.summary.md": {
+      "content_sha256": "991883edd9e3a36c54848e6d2f1668fae733fb19b75971020e8599bd520cb7dc",
+      "file_id": "file-TBV6vaksqt39ZqFaSJ2uzN",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:13:50.122Z"
+    },
+    "memory/agent-knowledge/projects/builderx-hot-reload-stability-001.summary.md": {
+      "content_sha256": "7f4ea1fee6a11920d65a7ebb42947559bcd548a4934c1283bbce4ad10de22524",
+      "file_id": "file-VZ5T1mEWEBJZiUAXqhkegc",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:13:53.866Z"
+    },
+    "memory/agent-knowledge/projects/builderx-large-001.summary.md": {
+      "content_sha256": "7eaa709f495314dabe8390291a74f2fa6d000952ec8cf0b037a17ce21a1457be",
+      "file_id": "file-2cDmkXmzx7dJycCkpr52ud",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:14:00.430Z"
+    },
+    "memory/agent-knowledge/projects/builderx-layout-agentic-d3-001.summary.md": {
+      "content_sha256": "ceea1ba97362701dc7657ffb9a861e59d548663a1f4cc069935c115bbd789200",
+      "file_id": "file-LSVSdaspktdSTJ8Xr4jiUB",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:14:02.755Z"
+    },
+    "memory/agent-knowledge/projects/builderx-mcp-chat-001.summary.md": {
+      "content_sha256": "d890fb56c289b78522a21e5b2cd4502a8466a7a6b7faaddcabf0609c678458c7",
+      "file_id": "file-VCixrZe3RgU23UKQS2CvTN",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:14:04.942Z"
+    },
+    "memory/agent-knowledge/projects/builderx-mcp-console-trace-001.summary.md": {
+      "content_sha256": "1f04c37fec1e3dbdcbc1970d35fecd728049ad8c8af3f5538f5222c9580c3fe8",
+      "file_id": "file-VbXWvndEB23jNvZ53Anbth",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:14:06.369Z"
+    },
+    "memory/agent-knowledge/projects/builderx-mcp-runtime-log-001.summary.md": {
+      "content_sha256": "d0f78351780dc5a219fb5d9b94f7b45622bfdd158bd72f19f7535b03c18ac5cc",
+      "file_id": "file-GYzKZvNHyC4AJUvBMsNJ2X",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:14:09.198Z"
+    },
+    "memory/agent-knowledge/projects/builderx-orchestrator-mcp-001.summary.md": {
+      "content_sha256": "d2f230fbdb2971c64412c9739beb120a4b64cdc45352076be0df27070fdd043c",
+      "file_id": "file-2aqvQeNnVYWmyu6m7KBCen",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:14:15.659Z"
+    },
+    "memory/agent-knowledge/projects/builderx-runtime-log-400-001.summary.md": {
+      "content_sha256": "642cf4f181b9cf6fe6d9c60d0121555027dd5256a62a3d94a91d94995eb82cee",
+      "file_id": "file-YXXtCdeSH7YC9zRD6FM9zm",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:14:17.320Z"
+    },
+    "memory/agent-knowledge/prompts/builderx-large-001.builderx-fullstack-agent.builderx-large-task.prompt.md": {
+      "content_sha256": "c29ef0976fad72f3bb2b0ac50ffc6d6db25b0e589d82eb12372b89b73e996b8b",
+      "file_id": "file-TqfTGojmqJnGZvmXGxqSbv",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-06-29T02:14:18.796Z"
+    }
+  },
+  "last_sync_at": "2026-06-29T19:55:17.543Z"
+}

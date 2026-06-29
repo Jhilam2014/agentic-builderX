@@ -65,6 +65,18 @@ function inferSections(text) {
   return Array.from(sections);
 }
 
+function normalizeTaskType(taskType) {
+  const normalized = String(taskType || "Medium").trim().toLowerCase();
+  if (normalized === "simple" || normalized === "small") return "Simple";
+  if (normalized === "hard" || normalized === "large" || normalized === "complex") return "Large";
+  return "Medium";
+}
+
+export function formatProjectOrchestratorInstruction(instruction, taskType = "Medium") {
+  const sourceInstruction = compactText(instruction);
+  return [`Task Type: ${normalizeTaskType(taskType)}`, `Task: ${sourceInstruction}`].join("\n");
+}
+
 function buildFileOperationPlan(structuredRequest) {
   return [
     {

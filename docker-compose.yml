@@ -28,16 +28,37 @@ services:
       - PORT=8080
       - GENERATED_SITE_DIR=/workspace/generated-site
       - GENERATED_SITE_URL=${VITE_GENERATED_SITE_URL:-http://localhost:5174}
+      - GENERATED_SITE_INTERNAL_URL=http://generated-site:5174
       - GENERATED_SITE_CONTAINER=agentic-builderx-generated-site
       - RESTART_GENERATED_CONTAINER=${RESTART_GENERATED_CONTAINER:-false}
       - DOCKER_SOCKET_PATH=/var/run/docker.sock
       - WORKFLOW_RUNTIME_LOG_PATH=/workspace/runtime/workflow-runtime-log.jsonl
+      - PROJECTS_ROOT=/workspace/money/apps
+      - PROJECTS_REGISTRY_PATH=/workspace/project/runtime/projects.json
+      - PROJECT_EXPORTS_ROOT=/workspace/project/runtime/exports
+      - PROJECTS_GITIGNORE_PATH=/workspace/money/.gitignore
+      - PROJECT_PORT_START=${PROJECT_PORT_START:-5300}
+      - PROJECT_PORT_END=${PROJECT_PORT_END:-5399}
+      - PROJECT_PREVIEW_PORT_RETRY_TIMEOUT_MS=${PROJECT_PREVIEW_PORT_RETRY_TIMEOUT_MS:-120000}
+      - PROJECT_SELECT_PREVIEW_TIMEOUT_MS=${PROJECT_SELECT_PREVIEW_TIMEOUT_MS:-15000}
+      - PROJECT_HOST_URL=${PROJECT_HOST_URL:-http://localhost}
+      - PROJECT_RUNTIME_MODE=${PROJECT_RUNTIME_MODE:-docker}
+      - PROJECT_RUNTIME_IMAGE=${PROJECT_RUNTIME_IMAGE:-}
+      - PROJECT_RUNTIME_NETWORK=${PROJECT_RUNTIME_NETWORK:-}
+      - BUILDERX_PROJECT_ROOT=/workspace/project
+      - BUILDERX_WORKSPACE_ROOT=/workspace/money
+      - BUILDERX_BACKEND_CONTAINER=agentic-builderx-backend
       - CODEX_HOME=/workspace/codex-home
       - CODEX_BIN=codex
       - CODEX_WORKFLOW_TIMEOUT_MS=${CODEX_WORKFLOW_TIMEOUT_MS:-600000}
+      - ORCHESTRATOR_ARCHIVE_PATH=${ORCHESTRATOR_ARCHIVE_PATH:-/workspace/project/orchestrator-temp/orchestrator-agent-001-main.zip}
+      - ORCHESTRATOR_INSTALL_ENABLED=${ORCHESTRATOR_INSTALL_ENABLED:-true}
+      - ORCHESTRATOR_BOOTSTRAP_ENABLED=${ORCHESTRATOR_BOOTSTRAP_ENABLED:-true}
+      - ORCHESTRATOR_BOOTSTRAP_TIMEOUT_MS=${ORCHESTRATOR_BOOTSTRAP_TIMEOUT_MS:-900000}
       - NODE_ENV=${NODE_ENV:-development}
     volumes:
       - .:/workspace/project
+      - ..:/workspace/money
       - ./apps/generated-site:/workspace/generated-site
       - ./runtime:/workspace/runtime
       - ${HOME}/.codex:/workspace/codex-home
