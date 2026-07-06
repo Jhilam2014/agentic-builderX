@@ -3,10 +3,19 @@ import { spawn } from "node:child_process";
 import AdmZip from "adm-zip";
 import fs from "fs-extra";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { agentCliInvocation } from "./agentCli.js";
 
-const bootstrapCommand =
+const builderxSourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+
+const codexBootstrapCommand =
   "Use .codex/prompts/bootstrap-orchestrator.md and execute the bootstrap. Use only the local orchestrator files already unzipped in this project. Do not clone, download, or fetch an orchestrator-agent from git.";
+const claudeBootstrapCommands = {
+  new: "Execute the /setup-new-project command from .claude/commands/setup-new-project.md. Use only the local orchestrator files already installed in this project. Do not clone, download, or fetch an orchestrator-agent from git.",
+  existing: "Execute the /setup-existing-project command from .claude/commands/setup-existing-project.md. Use only the local orchestrator files already installed in this project. Do not clone, download, or fetch an orchestrator-agent from git."
+};
 const seedPaths = [
+  ".claude/commands",
   ".claude/settings.example.json",
   ".codex/prompts",
   ".env.example",
@@ -299,6 +308,29 @@ export async function installProjectOrchestratorSeed(workspaceDir, options = {})
     await fs.writeFile(targetPath, entry.getData());
     extractedFiles.push(relativePath);
   }
+  // Older orchestrator archives may predate native Claude commands. Install the
+  // current command adapters from BuilderX so imported/existing projects get the
+  // same setup and task entrypoints without requiring an archive refresh.
+  const commandSourceCandidates = [
+    process.env.BUILDERX_PROJECT_ROOT && path.join(process.env.BUILDERX_PROJECT_ROOT, ".claude", "commands"),
+    path.join(builderxSourceRoot, ".claude", "commands")
+  ].filter(Boolean);
+  let claudeCommandsSource = null;
+  for (const candidate of commandSourceCandidates) {
+    if (await fs.pathExists(candidate)) {
+      claudeCommandsSource = candidate;
+      break;
+    }
+  }
+  const claudeCommandsTarget = path.join(workspaceDir, ".claude", "commands");
+  if (claudeCommandsSource) {
+    await fs.copy(claudeCommandsSource, claudeCommandsTarget, { overwrite: true });
+    const commandNames = await fs.readdir(claudeCommandsSource);
+    for (const commandName of commandNames) {
+      const relativePath = `.claude/commands/${commandName}`;
+      if (!extractedFiles.includes(relativePath)) extractedFiles.push(relativePath);
+    }
+  }
   for (const relativePath of seedPaths) {
     if (!(await fs.pathExists(path.join(workspaceDir, relativePath)))) {
       throw new Error(`Orchestrator archive is missing ${relativePath}.`);
@@ -340,32 +372,30 @@ export async function runProjectOrchestratorBootstrap(project, options = {}) {
   }
   const emit = typeof options.emit === "function" ? options.emit : () => {};
   const workspaceDir = project.workspaceDir;
-  const promptPath = path.join(workspaceDir, ".codex", "prompts", "bootstrap-orchestrator.md");
+  const invocationProvider = agentCliInvocation({ prompt: "provider-check", cwd: workspaceDir }).provider;
+  const setupMode = options.setupMode === "existing" ? "existing" : "new";
+  const bootstrapCommand = invocationProvider === "claude" ? claudeBootstrapCommands[setupMode] : codexBootstrapCommand;
+  const promptRelativePath = invocationProvider === "claude"
+    ? `.claude/commands/setup-${setupMode}-project.md`
+    : ".codex/prompts/bootstrap-orchestrator.md";
+  const promptPath = path.join(workspaceDir, ...promptRelativePath.split("/"));
   if (!(await fs.pathExists(promptPath))) throw new Error("Project bootstrap prompt is not installed.");
-  const codexBin = process.env.CODEX_BIN || "codex";
   const timeoutMs = Number(process.env.ORCHESTRATOR_BOOTSTRAP_TIMEOUT_MS || 15 * 60 * 1000);
   const buildId = `bootstrap_${project.id}`;
   emit("orchestrator-bootstrap-start", bootstrapCommand, {
     buildId,
     projectId: project.id,
     workspaceDir,
-    promptPath: ".codex/prompts/bootstrap-orchestrator.md"
+    promptPath: promptRelativePath,
+    cliProvider: invocationProvider,
+    setupMode
   });
 
-  const args = [
-    "exec",
-    "--json",
-    "--cd",
-    workspaceDir,
-    "--skip-git-repo-check",
-    "--ephemeral",
-    "--dangerously-bypass-approvals-and-sandbox",
-    bootstrapCommand
-  ];
+  const invocation = agentCliInvocation({ prompt: bootstrapCommand, cwd: workspaceDir });
   const stderr = [];
   let bootstrapError = null;
   await new Promise((resolve, reject) => {
-    const child = spawn(codexBin, args, {
+    const child = spawn(invocation.command, invocation.args, {
       cwd: workspaceDir,
       env: { ...process.env, CI: "1", NO_COLOR: "1" },
       stdio: ["ignore", "pipe", "pipe"]
@@ -406,12 +436,15 @@ export async function runProjectOrchestratorBootstrap(project, options = {}) {
     status: bootstrapError ? "bootstrap-failed-continuing" : missing.length ? "bootstrapped-with-warnings" : "bootstrapped",
     buildId,
     projectId: project.id,
-    promptPath: ".codex/prompts/bootstrap-orchestrator.md",
+    promptPath: promptRelativePath,
+    cliProvider: invocation.provider,
+    setupMode,
     verifiedArtifacts,
     missingArtifacts: missing,
     fallbackArtifacts,
     bootstrapError: bootstrapError?.message || null
   };
+  await fs.ensureDir(path.join(workspaceDir, ".agentic"));
   await fs.writeJson(path.join(workspaceDir, ".agentic", "bootstrap-status.json"), {
     ...result,
     completedAt: new Date().toISOString()

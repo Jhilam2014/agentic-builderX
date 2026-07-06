@@ -2,8 +2,11 @@
   "name": "agentic-builderx",
   "version": "1.0.0",
   "private": true,
-  "description": "Containerized agentic webpage builder with React frontend, Node backend, Codex workflow API, and isolated generated-site runtime.",
+  "description": "Portable agentic application builder with React, Node, Codex or Claude Code execution, and Docker or process-mode runtimes.",
   "scripts": {
+    "start": "node run-node.mjs",
+    "start:node": "node run-node.mjs",
+    "status:node": "node run-node.mjs --status",
     "dev:frontend": "npm --prefix apps/frontend run dev",
     "dev:backend": "npm --prefix apps/backend run dev",
     "dev:generated": "npm --prefix apps/generated-site run dev",

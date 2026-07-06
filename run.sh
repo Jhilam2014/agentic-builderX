@@ -54,7 +54,9 @@ wait_for_url() {
 }
 
 if ! command -v docker >/dev/null 2>&1; then
-  echo "Docker is required but was not found." >&2
+  echo "Docker was not found." >&2
+  echo "Run without Docker using: npm start" >&2
+  echo "Or directly: node run-node.mjs" >&2
   exit 1
 fi
 

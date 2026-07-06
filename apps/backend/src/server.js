@@ -1339,7 +1339,7 @@ app.post("/api/projects/new", async (req, res) => {
   try {
     project = await createProject(parsed.data.name, null, { emit: event, user });
     const projectDocuments = await attachStagedDocumentsToProject(user, project, parsed.data.stagedDocumentIds || []);
-    const bootstrap = await runProjectOrchestratorBootstrap(project, { emit: event });
+    const bootstrap = await runProjectOrchestratorBootstrap(project, { emit: event, setupMode: "new" });
     event("project-instruction-start", `Reading the UI instruction through ${project.name}'s bootstrapped orchestrator`, {
       projectId: project.id,
       promptPath: bootstrap.promptPath,

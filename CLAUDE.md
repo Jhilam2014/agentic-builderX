@@ -17,7 +17,7 @@ Claude Code must read these files before executing a task:
 1. `CLAUDE.md`
 2. `AGENTS.md`
 3. `ROOT_WORKSPACE_GENERATION_POLICY.md`
-4. selected task template from `.codex/prompts/`
+4. selected command from `.claude/commands/`
 5. user task
 
 ## Task routing
@@ -31,10 +31,13 @@ Task: <task description>
 
 Claude must load the matching template:
 
-- tiny -> `.codex/prompts/task-small.md`
-- small -> `.codex/prompts/task-small.md`
-- medium -> `.codex/prompts/task-medium.md`
-- large -> `.codex/prompts/task-large.md`
+- new-project setup -> `/setup-new-project`
+- existing-project setup -> `/setup-existing-project`
+- tiny or small -> `/task-small`
+- medium -> `/task-medium`
+- large -> `/task-large`
+
+The Claude commands delegate to the canonical templates in `.codex/prompts/` so both CLIs execute the same orchestration contract without maintaining two divergent policies.
 
 ## Claude rules
 
@@ -46,3 +49,12 @@ Claude must load the matching template:
 6. Follow `ROOT_WORKSPACE_GENERATION_POLICY.md` for generated artifacts.
 7. Use concise reports for tiny/small tasks.
 8. Use structured plans for medium/large tasks.
+
+## Claude Code runtime compatibility
+
+- Agentic BuilderX supports Claude Code as its execution CLI, not only as an instruction adapter.
+- For a Docker-free local run, use `npm start` or `node run-node.mjs` from the repository root.
+- The Node runner automatically selects Claude Code when `codex` is unavailable and `claude` is authenticated on `PATH`.
+- To force Claude Code, set `AI_CLI_PROVIDER=claude`; optionally set `AI_CLI_BIN` or `CLAUDE_BIN` to an absolute executable path.
+- Docker-free mode always uses `PROJECT_RUNTIME_MODE=process` and stores managed projects and runtime state beneath the repository's ignored `runtime/` directory.
+- Claude must preserve BuilderX parent authority and project-local policy precedence exactly as defined above.

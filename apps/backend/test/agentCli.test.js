@@ -1,0 +1,47 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { agentCliInvocation, resolveAgentCli } from "../src/agentCli.js";
+
+function withEnv(values, callback) {
+  const previous = Object.fromEntries(Object.keys(values).map((key) => [key, process.env[key]]));
+  for (const [key, value] of Object.entries(values)) {
+    if (value === undefined) delete process.env[key];
+    else process.env[key] = value;
+  }
+  try {
+    callback();
+  } finally {
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
+}
+
+test("builds a Claude Code non-interactive streaming invocation", () => {
+  withEnv({ AI_CLI_PROVIDER: "claude", AI_CLI_BIN: "/tools/claude", CODEX_BIN: undefined, CLAUDE_BIN: undefined }, () => {
+    const invocation = agentCliInvocation({ prompt: "Build the app", cwd: "/workspace/app" });
+    assert.equal(invocation.provider, "claude");
+    assert.equal(invocation.command, "/tools/claude");
+    assert.equal(invocation.cwd, "/workspace/app");
+    assert.deepEqual(invocation.args.slice(0, 2), ["-p", "Build the app"]);
+    assert.ok(invocation.args.includes("stream-json"));
+    assert.ok(invocation.args.includes("--dangerously-skip-permissions"));
+  });
+});
+
+test("preserves Codex CLI argument compatibility", () => {
+  withEnv({ AI_CLI_PROVIDER: "codex", AI_CLI_BIN: "/tools/codex", CODEX_BIN: undefined, CLAUDE_BIN: undefined }, () => {
+    const invocation = agentCliInvocation({ prompt: "Build the app", cwd: "/workspace/app" });
+    assert.equal(invocation.provider, "codex");
+    assert.equal(invocation.command, "/tools/codex");
+    assert.deepEqual(invocation.args.slice(0, 4), ["exec", "--json", "--cd", "/workspace/app"]);
+    assert.equal(invocation.args.at(-1), "Build the app");
+  });
+});
+
+test("rejects unknown providers", () => {
+  withEnv({ AI_CLI_PROVIDER: "unknown", AI_CLI_BIN: "", CODEX_BIN: undefined, CLAUDE_BIN: undefined }, () => {
+    assert.throws(() => resolveAgentCli(), /Unsupported AI_CLI_PROVIDER/);
+  });
+});

@@ -4,6 +4,7 @@ import path from "node:path";
 import fs from "fs-extra";
 import { nanoid } from "nanoid";
 import { estimateTokens, recordAgentTokenUsage } from "./tokenEconomy.js";
+import { agentCliInvocation } from "./agentCli.js";
 
 const ignoredDirs = new Set(["node_modules", "dist", ".git"]);
 
@@ -134,7 +135,6 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
   const emit = typeof options.emit === "function" ? options.emit : () => {};
   const generatedSiteDir =
     options.generatedSiteDir || process.env.GENERATED_SITE_DIR || path.resolve(process.cwd(), "../generated-site");
-  const codexBin = process.env.CODEX_BIN || "codex";
   const timeoutMs = Number(options.timeoutMs ?? process.env.CODEX_WORKFLOW_TIMEOUT_MS ?? 10 * 60 * 1000);
   const sourceInstruction = orchestratedRequest.sourceInstruction || orchestratedRequest.objective || "";
   const executionAgentId = options.executionAgentId || orchestratedRequest.orchestrationEnvelope?.authority?.agentId || options.agentId || orchestratedRequest.orchestrator || "project-execution-agent";
@@ -143,6 +143,7 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
   const projectOrchestratorPath = path.join(generatedSiteDir, ".agentic", "orchestrator-agent.md");
   const hasProjectOrchestrator = await fs.pathExists(projectOrchestratorPath);
   const promptText = codexPrompt(sourceInstruction, orchestratedRequest, hasProjectOrchestrator);
+  const invocation = agentCliInvocation({ prompt: promptText, cwd: generatedSiteDir });
 
   await fs.ensureDir(generatedSourceDir);
   const before = await collectFileHashes(generatedSourceDir);
@@ -153,7 +154,8 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
     buildId,
     generatedSiteDir,
     generatedSourceDir,
-    codexBin,
+    codexBin: invocation.command,
+    cliProvider: invocation.provider,
     agentId: executionAgentId,
     orchestrationAuthority: orchestratedRequest.orchestrationEnvelope ? "builderx-global" : hasProjectOrchestrator ? "project-local-legacy" : "builderx-default",
     parentWorkflowId: orchestratedRequest.orchestrationEnvelope?.parentWorkflowId || buildId,
@@ -161,21 +163,10 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
     orchestratorPolicyPath: hasProjectOrchestrator ? projectOrchestratorPath : null
   });
 
-  const args = [
-    "exec",
-    "--json",
-    "--cd",
-    generatedSiteDir,
-    "--skip-git-repo-check",
-    "--ephemeral",
-    "--dangerously-bypass-approvals-and-sandbox",
-    promptText
-  ];
-
   const output = [];
   const errors = [];
   await new Promise((resolve, reject) => {
-    const child = spawn(codexBin, args, {
+    const child = spawn(invocation.command, invocation.args, {
       cwd: generatedSiteDir,
       env: {
         ...process.env,
@@ -271,7 +262,8 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
       reason: "Changed by current Gotham CLI workflow."
     })),
     codex: {
-      command: codexBin,
+      command: invocation.command,
+      provider: invocation.provider,
       durationMs,
       outputTail: outputText.slice(-4000)
     },
@@ -282,7 +274,6 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
 export async function runCodexReviewWorkflow(orchestratedRequest, executionResult, options = {}) {
   const emit = typeof options.emit === "function" ? options.emit : () => {};
   const generatedSiteDir = options.generatedSiteDir || process.env.GENERATED_SITE_DIR || path.resolve(process.cwd(), "../generated-site");
-  const codexBin = process.env.CODEX_BIN || "codex";
   const timeoutMs = Number(options.timeoutMs ?? process.env.CODEX_REVIEW_TIMEOUT_MS ?? 5 * 60 * 1000);
   const reviewId = `review_${nanoid(10)}`;
   const envelope = orchestratedRequest.orchestrationEnvelope || {};
@@ -305,6 +296,7 @@ Rules:
 - Reject missing requested behavior, unrelated destructive changes, unsafe credential handling, or clearly invalid code.
 - Do not reject merely for optional polish.
 - End with exactly one marker on its own line: BUILDERX_REVIEW: PASS or BUILDERX_REVIEW: FAIL: <concise reason>`;
+  const invocation = agentCliInvocation({ prompt: promptText, cwd: generatedSiteDir });
 
   const before = await collectFileHashes(generatedSiteDir);
   const output = [];
@@ -317,10 +309,7 @@ Rules:
   });
 
   await new Promise((resolve, reject) => {
-    const child = spawn(codexBin, [
-      "exec", "--json", "--cd", generatedSiteDir, "--skip-git-repo-check", "--ephemeral",
-      "--dangerously-bypass-approvals-and-sandbox", promptText
-    ], {
+    const child = spawn(invocation.command, invocation.args, {
       cwd: generatedSiteDir,
       env: { ...process.env, CI: "1", NO_COLOR: "1" },
       stdio: ["ignore", "pipe", "pipe"]

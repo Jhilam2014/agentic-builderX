@@ -30,6 +30,77 @@ Useful runner commands:
 ./run.sh --stop
 ```
 
+## Run Without Docker (Node And npm Only)
+
+Requirements:
+
+- Node.js 20 or newer
+- npm
+- An authenticated Codex CLI or Claude Code CLI for generation tasks
+
+Start all three services without Docker:
+
+```bash
+npm start
+```
+
+Equivalent direct command:
+
+```bash
+node run-node.mjs
+```
+
+The Node runner installs workspace dependencies when needed, starts the frontend, backend, and generated-site Vite server, and runs managed project previews as local child processes. Its project workspaces, registries, exports, and logs stay under the ignored `runtime/node/` directory, isolated from Docker-only paths.
+
+Useful commands:
+
+```bash
+node run-node.mjs --install
+node run-node.mjs --no-install
+node run-node.mjs --status
+node run-node.mjs --help
+```
+
+Press `Ctrl+C` in the runner terminal to stop every service it started.
+
+### Codex And Claude Code
+
+BuilderX chooses an available agent CLI in this order: an explicitly configured binary, Codex, then Claude Code. To force a provider:
+
+```bash
+AI_CLI_PROVIDER=claude npm start
+AI_CLI_PROVIDER=codex npm start
+```
+
+Supported configuration:
+
+```dotenv
+AI_CLI_PROVIDER=auto  # auto | codex | claude
+AI_CLI_BIN=           # optional executable override
+CODEX_BIN=codex
+CLAUDE_BIN=claude
+```
+
+Claude Code reads `CLAUDE.md`, which preserves `AGENTS.md` as the canonical BuilderX orchestration policy. The execution adapter uses Claude Code's non-interactive streaming JSON mode while keeping the same BuilderX workflow, agent attribution, validation, and snapshot behavior.
+
+For an existing project, open Claude Code in the project root and run:
+
+```text
+/setup-existing-project
+```
+
+For a new project scaffold, run:
+
+```text
+/setup-new-project
+```
+
+BuilderX automatically selects `/setup-new-project` when its backend creates a project through the New Project flow.
+
+Then use `/task-small`, `/task-medium`, or `/task-large` followed by the task. The equivalent Codex prompts remain under `.codex/prompts/`; both command families resolve to the same canonical `AGENTS.md` policy.
+
+BuilderX automatically installs both setup commands into every newly created or imported existing project, including when the bundled orchestrator archive was created before Claude command support was added.
+
 ## Generate
 
 Submit an instruction in the BuilderX chat. The frontend sends it to the backend workflow endpoint, where the BuilderX orchestrator agent first restructures the raw instruction into a safer build request. The backend writes React source into `apps/generated-site/src/generated`, then the generated app refreshes through Vite hot reload by default.
