@@ -20,9 +20,174 @@ const requiredBootstrapArtifacts = [
   "registry/agents/project-execution-agent.registry.json",
   "graph/neo4j",
   "topology/d3/agentic-system-graph.json",
+  "qagentic-support/README.md",
+  "qagentic-support/qagent-framework.md",
+  "qagentic-support/qagent-controller.md",
+  "qagentic-support/qagent-stop-rules.md",
+  "qagentic-support/runtime-qagent-template.md",
+  "qagentic-support/qagent-memory-policy.md",
+  "schemas/qagent-next-instruction.schema.json",
+  ".codex/prompts/task-qagentic.md",
+  ".codex/prompts/bootstrap-orchestrator-qagentic.md",
+  "observability/qagentic/latest-qagentic-bootstrap.json",
   "observability/bootstrap-orchestrator-001/bootstrap-verification.json"
 ];
 const bootstrapVerificationPath = "observability/bootstrap-orchestrator-001/bootstrap-verification.json";
+
+const qagentNextInstructionSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  title: "QAgent Next Instruction Packet",
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "continue",
+    "completion_score",
+    "stop_reason",
+    "gap_summary",
+    "missing_items",
+    "next_agent_type",
+    "next_instruction",
+    "validation_required",
+    "memory_update",
+    "iteration_control"
+  ],
+  properties: {
+    continue: { type: "boolean" },
+    completion_score: { type: "integer", minimum: 0, maximum: 100 },
+    stop_reason: { type: "string" },
+    gap_summary: { type: "string" },
+    missing_items: { type: "array", items: { type: "string" } },
+    next_agent_type: { type: "string" },
+    next_instruction: { type: "string" },
+    validation_required: { type: "array", items: { type: "string" } },
+    memory_update: {
+      type: "object",
+      additionalProperties: false,
+      required: ["store", "summary", "tags"],
+      properties: {
+        store: { type: "boolean" },
+        summary: { type: "string" },
+        tags: { type: "array", items: { type: "string" } }
+      }
+    },
+    iteration_control: {
+      type: "object",
+      additionalProperties: false,
+      required: ["current_iteration", "max_iterations", "stop_if_next_validation_passes"],
+      properties: {
+        current_iteration: { type: "integer", minimum: 0 },
+        max_iterations: { type: "integer", minimum: 1, maximum: 8 },
+        stop_if_next_validation_passes: { type: "boolean" }
+      }
+    }
+  }
+};
+
+async function appendQAgenticAgentsSection(workspaceDir) {
+  const agentsPath = path.join(workspaceDir, "AGENTS.md");
+  const existing = (await fs.pathExists(agentsPath)) ? await fs.readFile(agentsPath, "utf8") : "";
+  if (existing.includes("<!-- qagentic-support:start -->")) return;
+  const block = [
+    "",
+    "<!-- qagentic-support:start -->",
+    "# QAgentic Support",
+    "",
+    "QAgentic support is additive. It must not replace or weaken existing project orchestrator instructions.",
+    "",
+    "- QAgent Controller reviews the previous agent response against the original objective.",
+    "- It detects missing work, weak validation, incomplete implementation, and unclear next steps.",
+    "- It outputs only a stop decision or a Next Instruction Packet.",
+    "- Runtime QAgents are generated only for blocking or important objective gaps.",
+    "- Stop when the objective is complete, validation passes, only polish remains, required user information is missing, or the iteration cap is reached.",
+    "<!-- qagentic-support:end -->",
+    ""
+  ].join("\n");
+  await fs.ensureDir(path.dirname(agentsPath));
+  await fs.writeFile(agentsPath, `${existing.replace(/\s*$/, "")}${existing.trim() ? "\n" : ""}${block}`);
+}
+
+export async function ensureProjectQAgenticFramework(workspaceDir, project = {}, options = {}) {
+  const created = [];
+  const source = options.source || "builderx-qagentic-framework";
+  const ensureText = async (relativePath, content) => {
+    const targetPath = path.join(workspaceDir, relativePath);
+    if (await fs.pathExists(targetPath)) return;
+    await fs.ensureDir(path.dirname(targetPath));
+    await fs.writeFile(targetPath, content);
+    created.push(relativePath);
+  };
+  const ensureJson = async (relativePath, payload) => {
+    const targetPath = path.join(workspaceDir, relativePath);
+    if (await fs.pathExists(targetPath)) return;
+    await fs.ensureDir(path.dirname(targetPath));
+    await fs.writeJson(targetPath, payload, { spaces: 2 });
+    created.push(relativePath);
+  };
+
+  await ensureText("qagentic-support/README.md", `# QAgentic Support
+
+Base QAgentic support is generated at project onset. Runtime QAgents are generated only when objective gaps are detected.
+
+QAgents produce strict Next Instruction Packets and do not directly implement code.
+`);
+  await ensureText("qagentic-support/qagent-framework.md", `# QAgent Framework
+
+The QAgent framework turns the end of an agent response into a precise continuation decision.
+
+It compares the original objective, previous response, changed files, validation evidence, and known constraints. It continues only for blocking or important gaps.
+
+Do not pre-generate unlimited specialized QAgents. Runtime QAgents are temporary by default and may be persisted only when a repeated reusable gap pattern is proven.
+`);
+  await ensureText("qagentic-support/qagent-controller.md", `# QAgent Controller
+
+Compare the previous response with the original objective. Continue only for blocking or important gaps. Prefer existing agents. Emit a Next Instruction Packet matching \`schemas/qagent-next-instruction.schema.json\`.
+
+The controller must not execute code directly.
+`);
+  await ensureText("qagentic-support/qagent-stop-rules.md", `# QAgent Stop Rules
+
+Stop when the objective is complete, validation passes, only polish remains, human approval is required, required user information is missing, or the iteration cap is reached.
+
+Iteration caps: tiny=1, small=3, medium=5, large=8.
+`);
+  await ensureText("qagentic-support/runtime-qagent-template.md", `# Runtime QAgent Template
+
+Runtime QAgents are temporary by default. They output only Next Instruction Packets and must not implement code directly.
+
+Required output schema: \`schemas/qagent-next-instruction.schema.json\`.
+`);
+  await ensureText("qagentic-support/qagent-memory-policy.md", `# QAgent Memory Policy
+
+Store objective gaps, successful next instruction summaries, stop reasons, validation failures, and reusable patterns. Do not store secrets, credentials, raw private data, or speculative gap guesses.
+`);
+  await ensureJson("schemas/qagent-next-instruction.schema.json", qagentNextInstructionSchema);
+  await ensureText(".codex/prompts/task-qagentic.md", `Read AGENTS.md, qagentic-support/README.md, qagentic-support/qagent-controller.md, and qagentic-support/qagent-stop-rules.md before acting.
+
+Enable QAgentic continuation review for this task.
+
+Task type: tiny | small | medium | large
+Task: <write the user objective here>
+
+Preserve existing features. Reuse existing agents. Runtime QAgents may be generated only for blocking or important objective gaps. QAgents must not execute code directly. Stop when the objective is complete, validation passes, only polish remains, required user information is missing, or the task iteration cap is reached.
+`);
+  await ensureText(".codex/prompts/bootstrap-orchestrator-qagentic.md", `Optional new-project bootstrap prompt for QAgentic support.
+
+Use this only when creating or bootstrapping a new project, or when the user explicitly requests QAgentic support for an existing project.
+
+Create missing qagentic-support framework files, schema, task prompt, observability output, and QAgent Controller topology relations without replacing existing project instructions.
+`);
+  await ensureJson("observability/qagentic/latest-qagentic-bootstrap.json", {
+    status: "generated",
+    source,
+    project_id: project.id || "",
+    project_name: project.name || "",
+    base_framework: true,
+    runtime_qagents: "generate_only_when_objective_gap_detected",
+    generated_at: new Date().toISOString()
+  });
+  await appendQAgenticAgentsSection(workspaceDir);
+  return { status: created.length ? "created" : "already-present", created };
+}
 
 async function ensureFallbackBootstrapArtifacts(project, missingArtifacts, bootstrapError) {
   const workspaceDir = project.workspaceDir;
@@ -71,6 +236,9 @@ async function ensureFallbackBootstrapArtifacts(project, missingArtifacts, boots
     nodes: [{ id: `project:${project.id}`, label: project.name, type: "project" }],
     links: []
   });
+  const qagentic = await ensureProjectQAgenticFramework(workspaceDir, project, { source: "builderx-fallback-qagentic-bootstrap" });
+  fallbackArtifacts.push(...qagentic.created);
+
   await ensureJson(bootstrapVerificationPath, {
     status: bootstrapError ? "bootstrap-command-failed-continuing" : "incomplete",
     workflow_id: "bootstrap-orchestrator-001",

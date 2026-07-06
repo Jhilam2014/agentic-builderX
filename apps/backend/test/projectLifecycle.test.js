@@ -5,7 +5,8 @@ import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { runCodexWorkflow } from "../src/codexWorkflow.js";
+import { runCodexReviewWorkflow, runCodexWorkflow } from "../src/codexWorkflow.js";
+import { createBuilderXOrchestrationEnvelope } from "../src/builderXAuthority.js";
 import { formatProjectOrchestratorInstruction } from "../src/orchestratorAgent.js";
 import { runProjectOrchestratorBootstrap } from "../src/projectBootstrap.js";
 import { createProject, deleteProject } from "../src/projectManager.js";
@@ -343,9 +344,13 @@ test("codex workflow receives the project orchestrator task envelope", async (co
   assert.match(args, /"rawTextBoxInstruction": "Add business search filters and a results map\."/);
 });
 
-test("direct child project tasks do not receive BuilderX page regeneration instructions", async (context) => {
+test("BuilderX retains authority while a child project receives bounded execution context", async (context) => {
   const temporaryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "builderx-child-direct-task-"));
+  const previousBuilderRoot = process.env.BUILDERX_PROJECT_ROOT;
+  process.env.BUILDERX_PROJECT_ROOT = temporaryRoot;
   context.after(async () => {
+    if (previousBuilderRoot === undefined) delete process.env.BUILDERX_PROJECT_ROOT;
+    else process.env.BUILDERX_PROJECT_ROOT = previousBuilderRoot;
     await fs.rm(temporaryRoot, { recursive: true, force: true });
   });
 
@@ -371,28 +376,108 @@ test("direct child project tasks do not receive BuilderX page regeneration instr
   await fs.chmod(fakeCodex, 0o755);
 
   process.env.CODEX_BIN = fakeCodex;
-  await runCodexWorkflow(
-    {
-      orchestrator: "child-project-orchestrator-agent",
+  const structuredRequest = {
+      orchestrator: "builderx-fullstack-agent",
       sourceInstruction: "Task type: Simple\ntask : Add one category filter without changing existing search.",
       rawTextBoxInstruction: "Add one category filter without changing existing search.",
-      executionInstructionFormat: "child-project-direct-task",
+      executionInstructionFormat: "builderx-delegated-project-task",
       objective: "Execute the selected project task directly inside GeoFinderX.",
       pageType: "child_project_direct_task",
       topic: "GeoFinderX",
       sections: ["direct-task"],
       constraints: ["Apply the narrowest complete change requested by the task."],
       fileOperations: []
-    },
+    };
+  structuredRequest.orchestrationEnvelope = await createBuilderXOrchestrationEnvelope({
+    instruction: structuredRequest.sourceInstruction,
+    taskType: "Simple",
+    project: { id: "geo-1", name: "GeoFinderX", workspaceDir: projectRoot, isDefault: false },
+    structuredRequest
+  });
+  const result = await runCodexWorkflow(
+    structuredRequest,
     { generatedSiteDir: projectRoot }
   );
 
   const args = await fs.readFile(path.join(projectRoot, "codex-args.txt"), "utf8");
-  assert.match(args, /selected child app's project-local orchestrator is the only task-planning authority/i);
-  assert.match(args, /Do not reinterpret it through BuilderX page generation/i);
+  assert.match(args, /BuilderX Fullstack Agent is the global planning and completion authority/i);
+  assert.match(args, /mayRedefineParentTask.*false/i);
   assert.match(args, /Preserve every unrelated existing feature/i);
+  assert.equal(result.parentWorkflowId, structuredRequest.orchestrationEnvelope.parentWorkflowId);
+  assert.deepEqual(result.childExecutionIds, structuredRequest.orchestrationEnvelope.childExecutionIds);
+  assert.equal(result.tokenUsage.agentId, "builderx-fullstack-agent");
   assert.doesNotMatch(args, /Modify files under src\/generated\/ to implement the requested page/);
   assert.doesNotMatch(args, /Make the output visibly different when the instruction changes/);
+});
+
+test("BuilderX envelope loads global policy and treats project policy as delegated context", async (context) => {
+  const temporaryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "builderx-authority-envelope-"));
+  context.after(async () => fs.rm(temporaryRoot, { recursive: true, force: true }));
+  await fs.mkdir(path.join(temporaryRoot, ".agentic"), { recursive: true });
+  await fs.writeFile(path.join(temporaryRoot, ".agentic", "orchestrator-agent.md"), "local project guidance\n");
+
+  const envelope = await createBuilderXOrchestrationEnvelope({
+    instruction: "Add a project report without changing existing routes.",
+    taskType: "Medium",
+    project: { id: "project-1", name: "MediaAnalyser", workspaceDir: temporaryRoot, isDefault: false },
+    structuredRequest: {
+      objective: "Add a project report.",
+      pageType: "child_project_direct_task",
+      sections: ["report"],
+      constraints: ["Preserve routes."],
+      fileOperations: []
+    }
+  });
+
+  assert.equal(envelope.authority.agentId, "builderx-fullstack-agent");
+  assert.match(envelope.authority.canonicalPolicy.runtimeContract, /Compact Backend Runtime Authority Contract/);
+  assert.match(envelope.authority.canonicalPolicy.path, /AGENTS\.md$/);
+  assert.equal(envelope.authority.canonicalPolicy.sha256.length, 64);
+  assert.match(envelope.authority.agentProfile.path, /builderx-fullstack-agent\.agent\.md$/);
+  assert.equal(envelope.authority.agentProfile.loadMode, "reference");
+  assert.equal(envelope.delegations[0].agentId, "mediaanalyser-orchestrator-agent");
+  assert.equal(envelope.delegations[0].projectPolicy.loadMode, "workspace-file");
+  assert.equal(envelope.delegations[0].projectPolicy.sha256.length, 64);
+  assert.equal("policy" in envelope.delegations[0], false);
+  assert.equal(envelope.delegations[0].mayRedefineParentTask, false);
+  assert.equal(envelope.delegations[0].mayApproveCompletion, false);
+});
+
+test("independent adaptive review is read-only and records a linked verdict", async (context) => {
+  const temporaryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "builderx-independent-review-"));
+  const previousBuilderRoot = process.env.BUILDERX_PROJECT_ROOT;
+  const previousCodexBin = process.env.CODEX_BIN;
+  process.env.BUILDERX_PROJECT_ROOT = temporaryRoot;
+  context.after(async () => {
+    if (previousBuilderRoot === undefined) delete process.env.BUILDERX_PROJECT_ROOT;
+    else process.env.BUILDERX_PROJECT_ROOT = previousBuilderRoot;
+    if (previousCodexBin === undefined) delete process.env.CODEX_BIN;
+    else process.env.CODEX_BIN = previousCodexBin;
+    await fs.rm(temporaryRoot, { recursive: true, force: true });
+  });
+  const projectRoot = path.join(temporaryRoot, "project");
+  await fs.mkdir(path.join(projectRoot, "src", "generated"), { recursive: true });
+  await fs.writeFile(path.join(projectRoot, "src", "generated", "generatedPage.jsx"), "export default function Page() { return <main>Reviewed</main>; }\n");
+  const fakeCodex = path.join(temporaryRoot, "fake-review-codex");
+  await fs.writeFile(fakeCodex, "#!/bin/sh\nprintf '{\"type\":\"item.completed\",\"message\":\"BUILDERX_REVIEW: PASS\"}\\n'\n");
+  await fs.chmod(fakeCodex, 0o755);
+  process.env.CODEX_BIN = fakeCodex;
+
+  const result = await runCodexReviewWorkflow({
+    sourceInstruction: "Review the generated page.",
+    project: { id: "project-1", name: "Review Project" },
+    orchestrationEnvelope: {
+      parentWorkflowId: "builderx_parent_1",
+      validationCriteria: ["The page remains valid." ]
+    }
+  }, { files: ["src/generated/generatedPage.jsx"] }, {
+    generatedSiteDir: projectRoot,
+    reviewerAgentId: "builderx-independent-reviewer"
+  });
+
+  assert.equal(result.status, "passed");
+  assert.equal(result.tokenUsage.agentId, "builderx-independent-reviewer");
+  assert.equal(result.tokenUsage.workflowId, "builderx_parent_1");
 });
 
 test("bootstrap warning is non-fatal when verification artifact is missing", async (context) => {

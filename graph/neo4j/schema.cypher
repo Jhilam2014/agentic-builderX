@@ -1,4 +1,3 @@
-// Agentic BuilderX graph labels:
-// Project, Workspace, Cluster, Agent, Skill, File, Directory, Service, Component, Page, API, Endpoint, Workflow, Task, Risk, CostEvaluation, HumanReview, KnowledgeSource.
-// Relationship types:
-// CONTAINS, OWNS, READS, WRITES, DEPENDS_ON, CALLS, IMPLEMENTS, EXPOSES, CONSUMES, PRODUCES, VALIDATES, TESTS, USES_ENV, STORES_IN, SYNCED_TO, ASSIGNED_TO, REVIEWED_BY, GENERATED_BY, REUSES, HAS_SKILL, HAS_COST_EVALUATION, HAS_RISK, HAS_KNOWLEDGE, HAS_ORCHESTRATOR, DELEGATES_TO.
+// Agentic orchestration graph labels and relationship vocabulary.
+// Labels: Project, Workflow, Task, Agent, Subagent, Skill, ApplicationFunctionality, Feature, Module, File, Service, API, Endpoint, Database, Table, VectorMemoryProvider, VectorCollection, PromptRecord, KnowledgeEntry, D3Page, Validation, Risk, CostEvaluation, HumanReview, Execution.
+// Relationships: OWNS, IMPLEMENTS, DEPENDS_ON, CALLS, EXPOSES, CONSUMES, PRODUCES, VALIDATES, REVIEWS, USES_SKILL, USES_TOOL, ASSIGNED_TO, HAS_SUBAGENT, GENERATED_PROMPT, PROMPT_STORED_IN, KNOWLEDGE_STORED_IN, SYNCED_TO, VISUALIZED_BY, CONNECTED_TO_FUNCTIONALITY, MODIFIED_BY, REUSES, UPGRADES, FAILS_VALIDATION, PASSES_VALIDATION, REQUIRES_HUMAN_APPROVAL.

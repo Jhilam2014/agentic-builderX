@@ -93,7 +93,7 @@ h1 {
   gap: 6px;
 }
 
-#legend span {
+#legend button {
   min-height: 25px;
   padding: 0 9px;
   border: 1px solid rgba(148, 163, 184, 0.16);
@@ -103,8 +103,15 @@ h1 {
   align-items: center;
   color: #aab5c7;
   background: rgba(30, 41, 59, 0.5);
+  cursor: pointer;
   font-size: 10px;
   text-transform: capitalize;
+}
+
+#legend button.active {
+  color: #f8fafc;
+  border-color: #7dd3fc;
+  background: rgba(37, 99, 235, 0.36);
 }
 
 #legend i {
@@ -112,6 +119,12 @@ h1 {
   height: 7px;
   border-radius: 50%;
   box-shadow: 0 0 12px currentColor;
+}
+
+.node.type-hidden,
+.link-group.type-hidden {
+  display: none;
+  pointer-events: none;
 }
 
 .graph-workspace {
@@ -192,6 +205,111 @@ h1 {
   border-color: rgba(45, 212, 191, 0.42);
   color: #99f6e4;
   background: rgba(15, 118, 110, 0.25);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  background: #f5f7fb;
+}
+
+:root[data-theme="light"] body,
+:root[data-theme="light"] .graph-workspace {
+  color: #172033;
+  background: #f5f7fb;
+}
+
+:root[data-theme="light"] .graph-header {
+  border-bottom-color: rgba(148, 163, 184, 0.28);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="light"] h1,
+:root[data-theme="light"] .insight-empty h2,
+:root[data-theme="light"] .insight-heading h2,
+:root[data-theme="light"] .insight-section h3,
+:root[data-theme="light"] .connections button strong {
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .back-link,
+:root[data-theme="light"] .insight-empty span,
+:root[data-theme="light"] .insight-heading > span {
+  color: #2563eb;
+}
+
+:root[data-theme="light"] #status,
+:root[data-theme="light"] .insight-empty p,
+:root[data-theme="light"] .insight-section p,
+:root[data-theme="light"] .insight-section dt,
+:root[data-theme="light"] .connections button span {
+  color: #64748b;
+}
+
+:root[data-theme="light"] #status.error {
+  color: #be123c;
+}
+
+:root[data-theme="light"] #legend button,
+:root[data-theme="light"] .graph-controls button,
+:root[data-theme="light"] .connections button,
+:root[data-theme="light"] .insight-badges b {
+  color: #334155;
+  border-color: rgba(148, 163, 184, 0.34);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="light"] #legend button.active {
+  color: #1d4ed8;
+  border-color: rgba(37, 99, 235, 0.46);
+  background: rgba(219, 234, 254, 0.95);
+}
+
+:root[data-theme="light"] #graph {
+  background-color: #eef3fb;
+  background-image: radial-gradient(circle at 50% 45%, rgba(37, 99, 235, 0.11), transparent 40%), radial-gradient(rgba(71, 85, 105, 0.16) 0.7px, transparent 0.7px);
+}
+
+:root[data-theme="light"] #graph::after,
+:root[data-theme="light"] .link-label {
+  color: #64748b;
+  fill: #64748b;
+  stroke: #eef3fb;
+}
+
+:root[data-theme="light"] .link {
+  stroke: #94a3b8;
+  stroke-opacity: 0.72;
+}
+
+:root[data-theme="light"] .node-label {
+  fill: #0f172a;
+  stroke: #eef3fb;
+}
+
+:root[data-theme="light"] .node-subtitle {
+  fill: #475569;
+  stroke: #eef3fb;
+}
+
+:root[data-theme="light"] .insight-panel {
+  color: #334155;
+  border-left-color: rgba(148, 163, 184, 0.28);
+  background: #ffffff;
+}
+
+:root[data-theme="light"] .insight-section {
+  border-top-color: rgba(148, 163, 184, 0.22);
+}
+
+:root[data-theme="light"] .insight-section dd {
+  color: #334155;
+}
+
+:root[data-theme="light"] .connections button:hover {
+  border-color: rgba(37, 99, 235, 0.44);
+  background: #eff6ff;
 }
 
 .link {

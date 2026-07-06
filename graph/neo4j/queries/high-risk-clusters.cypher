@@ -1,1 +1,1 @@
-MATCH (c:Cluster) WHERE c.risk_level IN ['high', 'critical'] RETURN c;
+MATCH (r:Risk) WHERE r.level IN ['high','critical'] RETURN r;

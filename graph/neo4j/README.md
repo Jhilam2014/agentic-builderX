@@ -1,3 +1,3 @@
-# Agentic BuilderX Neo4j Graph
+# Neo4j Agentic Graph
 
-These local Cypher artifacts model the initial BuilderX service and cluster topology. Live Neo4j sync requires credentials and human approval.
+Local Cypher artifacts are generated for the orchestrator bootstrap. Live sync remains pending until Neo4j credentials or a verified local Neo4j container are available.

@@ -18,7 +18,7 @@ import {
   startContainer
 } from "./dockerClient.js";
 import { ensureProjectAgentTopologies, removeProjectAgentTopology, syncProjectAgentTopology } from "./projectAgents.js";
-import { installProjectOrchestratorSeed } from "./projectBootstrap.js";
+import { ensureProjectQAgenticFramework, installProjectOrchestratorSeed } from "./projectBootstrap.js";
 
 const runningProjects = new Map();
 const ignoredWorkspaceEntries = new Set(["node_modules", "dist", ".git", ".vite"]);
@@ -129,6 +129,11 @@ function publicProject(project) {
   };
 }
 
+function canAccessProject(project, user = {}) {
+  const ownerUserId = project?.ownerUserId || "anonymous";
+  return ownerUserId === (user.id || "anonymous");
+}
+
 async function copyWorkspace(sourceDir, targetDir) {
   await fs.ensureDir(targetDir);
   const entries = await fs.readdir(sourceDir);
@@ -138,6 +143,46 @@ async function copyWorkspace(sourceDir, targetDir) {
       filter: (source) => !source.split(path.sep).some((part) => ignoredWorkspaceEntries.has(part))
     });
   }
+}
+
+async function ensureFileLines(filePath, requiredLines) {
+  const existing = (await fs.pathExists(filePath)) ? await fs.readFile(filePath, "utf8") : "";
+  const currentLines = existing.split(/\r?\n/);
+  const missingLines = requiredLines.filter((line) => !currentLines.includes(line));
+  if (!missingLines.length) return;
+  const prefix = existing && !existing.endsWith("\n") ? "\n" : "";
+  await fs.writeFile(filePath, `${existing}${prefix}${missingLines.join("\n")}\n`);
+}
+
+async function writeStandaloneDockerReadme(workspaceDir, port) {
+  const readmePath = path.join(workspaceDir, "README.md");
+  const blockStart = "<!-- agentic-builderx-standalone-docker:start -->";
+  const blockEnd = "<!-- agentic-builderx-standalone-docker:end -->";
+  const block = [
+    blockStart,
+    "## Standalone Docker",
+    "",
+    "This project is packaged to run outside Agentic BuilderX with its own Docker Compose stack.",
+    "",
+    "1. Copy `.env.example` to `.env` and adjust values if needed.",
+    "2. Start the app:",
+    "",
+    "```bash",
+    "docker compose up --build",
+    "```",
+    "",
+    `3. Open the frontend at http://localhost:${port}.`,
+    "4. The backend health endpoint is available at http://localhost:8080/api/health.",
+    "",
+    "The Docker files are project-local and do not require the BuilderX backend, BuilderX frontend, MCP service, or shared preview volume.",
+    blockEnd
+  ].join("\n");
+  const existing = (await fs.pathExists(readmePath)) ? await fs.readFile(readmePath, "utf8") : "";
+  const pattern = new RegExp(`${blockStart}[\\s\\S]*?${blockEnd}`, "m");
+  const next = pattern.test(existing)
+    ? existing.replace(pattern, block)
+    : `${existing.trim()}${existing.trim() ? "\n\n" : ""}${block}\n`;
+  await fs.writeFile(readmePath, next);
 }
 
 async function ensureProjectFiles(workspaceDir, port) {
@@ -191,6 +236,31 @@ async function ensureProjectFiles(workspaceDir, port) {
       ""
     ].join("\n")
   );
+  await fs.writeFile(
+    path.join(workspaceDir, ".env.example"),
+    [
+      `FRONTEND_PORT=${port}`,
+      "BACKEND_PORT=8080",
+      "DATABASE_PORT=5432",
+      "POSTGRES_DB=appdb",
+      "POSTGRES_USER=appuser",
+      "POSTGRES_PASSWORD=change-me",
+      "DATABASE_URL=postgres://appuser:change-me@database:5432/appdb",
+      "VITE_PUBLIC_BASE=/",
+      "VITE_API_BASE=http://localhost:8080",
+      ""
+    ].join("\n")
+  );
+  await ensureFileLines(path.join(workspaceDir, ".dockerignore"), [
+    "node_modules",
+    "dist",
+    ".git",
+    ".vite",
+    ".env",
+    "*.log",
+    "runtime",
+    "exports"
+  ]);
   await fs.writeFile(
     path.join(workspaceDir, "Dockerfile"),
     [
@@ -302,6 +372,7 @@ async function ensureProjectFiles(workspaceDir, port) {
       ""
     ].join("\n")
   );
+  await writeStandaloneDockerReadme(workspaceDir, port);
 }
 
 async function linkTemplateNodeModules(workspaceDir) {
@@ -333,8 +404,9 @@ async function extractZipSafely(archivePath, targetDir) {
   }
 }
 
-export async function listProjects() {
+export async function listProjects(options = {}) {
   const projects = await readRegistry();
+  const user = options.user || { id: "anonymous" };
   return [
     publicProject({
       id: "default",
@@ -345,16 +417,16 @@ export async function listProjects() {
       isDefault: true,
       status: "running"
     }),
-    ...projects.map(publicProject)
+    ...projects.filter((project) => canAccessProject(project, user)).map(publicProject)
   ];
 }
 
-export async function getProject(projectId) {
+export async function getProject(projectId, options = {}) {
   if (!projectId || projectId === "default") {
-    return (await listProjects())[0];
+    return (await listProjects(options))[0];
   }
   const project = (await readRegistry()).find((row) => row.id === projectId);
-  return project ? publicProject(project) : null;
+  return project && canAccessProject(project, options.user || { id: "anonymous" }) ? publicProject(project) : null;
 }
 
 async function isLocalPortAvailable(port) {
@@ -452,12 +524,15 @@ export async function createProject(name, structuredRequest = null, options = {}
     port,
     workspaceDir,
     status: "created",
+    ownerUserId: options.user?.id || "anonymous",
+    ownerName: options.user?.name || "Local user",
     media: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
   projects.push(project);
   await writeRegistry(projects);
+  await ensureProjectQAgenticFramework(workspaceDir, project, { source: "builderx-new-project-generation" });
   await syncProjectAgentTopology(
     publicProject(project),
     structuredRequest || {
@@ -471,7 +546,7 @@ export async function createProject(name, structuredRequest = null, options = {}
   return publicProject(project);
 }
 
-export async function importProject(name, archivePath) {
+export async function importProject(name, archivePath, options = {}) {
   const projects = await readRegistry();
   const { folderName, workspaceDir } = await reserveProjectFolder(name);
   const id = `${folderName}-${nanoid(6)}`;
@@ -502,6 +577,8 @@ export async function importProject(name, archivePath) {
     port,
     workspaceDir,
     status: "imported",
+    ownerUserId: options.user?.id || "anonymous",
+    ownerName: options.user?.name || "Local user",
     media: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -818,7 +895,7 @@ export async function startRegisteredProjects() {
   return readyProjects;
 }
 
-export async function saveProjectMedia(project, files) {
+export async function saveProjectMedia(project, files, options = {}) {
   if (!project || project.isDefault) throw new Error("Select a created or imported project before uploading media.");
   const projects = await readRegistry();
   const index = projects.findIndex((row) => row.id === project.id);
@@ -837,10 +914,14 @@ export async function saveProjectMedia(project, files) {
       path: `public/uploads/${safeName}`,
       urlPath: `/uploads/${safeName}`,
       mimeType: file.mimetype,
-      size: file.size
+      size: file.size,
+      purpose: options.purpose || "media"
     });
   }
   projects[index].media = [...(projects[index].media || []), ...media];
+  if (options.purpose === "app-icon" && media[0]) {
+    projects[index].appIcon = media[0];
+  }
   projects[index].updatedAt = new Date().toISOString();
   await writeRegistry(projects);
   return media;
@@ -909,11 +990,12 @@ async function deleteDockerProjectResources(project) {
   };
 }
 
-export async function deleteProject(projectId) {
+export async function deleteProject(projectId, options = {}) {
   if (!projectId || projectId === "default") throw new Error("The shared generated-site project cannot be deleted.");
   const projects = await readRegistry();
   const project = projects.find((row) => row.id === projectId);
   if (!project) throw new Error("Project not found.");
+  if (!canAccessProject(project, options.user || { id: "anonymous" })) throw new Error("Project not found.");
 
   const workspaceRoot = path.resolve(projectsRoot());
   const workspaceDir = path.resolve(project.workspaceDir);

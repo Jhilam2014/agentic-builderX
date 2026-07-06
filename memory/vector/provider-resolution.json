@@ -1,8 +1,8 @@
 {
   "provider": "chroma_local_generated",
-  "reason": "No app-level OpenAI Vector Store or external vector database configuration is present.",
+  "reason": "No usable OpenAI Vector Store or external vector database configuration was present in .env.",
   "configured_from_env": false,
   "fallback_generated": true,
-  "resolved_at": "2026-06-25T00:00:00+05:30",
+  "resolved_at": "2026-06-29T22:53:21+00:00",
   "status": "pending_install"
 }

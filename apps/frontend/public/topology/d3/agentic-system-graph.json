@@ -1,233 +1,233 @@
 {
   "metadata": {
     "project_name": "agentic-builderX",
-    "generated_at": "2026-06-27T22:34:01.210Z",
-    "workflow_id": "builderx-layout-agentic-d3-001",
+    "generated_at": "2026-07-04T19:17:45.616Z",
+    "workflow_id": "bootstrap-orchestrator-001",
     "source": "orchestrator",
     "graph_version": "1.2.0",
-    "time_zone": "Asia/Kolkata",
-    "managed_project_count": 2,
+    "neo4j_status": "ready",
+    "vector_provider": "chroma_local_generated",
+    "vector_status": "pending_install",
+    "managed_project_count": 5,
     "project_agent_source": "runtime/agents/projects"
   },
   "nodes": [
     {
-      "id": "agent:builderx-fullstack-agent",
+      "id": "project:orchestrator-agent-001",
+      "type": "project",
+      "label": "agentic-builderX",
+      "group": "project",
+      "risk_level": "low",
+      "status": "active",
+      "metadata": {}
+    },
+    {
+      "id": "workflow:bootstrap-orchestrator-001",
+      "type": "workflow",
+      "label": "Bootstrap Orchestrator",
+      "group": "workflow",
+      "risk_level": "low",
+      "status": "complete",
+      "metadata": {}
+    },
+    {
+      "id": "agent:project-execution-agent",
       "type": "agent",
-      "label": "BuilderX Fullstack Agent",
+      "label": "Project Execution Agent",
       "group": "agent",
       "risk_level": "medium",
       "status": "active",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "",
+      "agent_id": "project-execution-agent",
       "metadata": {
-        "level": 1,
-        "domain": "fullstack",
         "capabilityScore": 60
       }
     },
     {
-      "id": "functionality:frontend-control-surface",
+      "id": "functionality:agent-memory",
       "type": "cluster",
-      "label": "Frontend Control Surface",
-      "group": "functionality",
-      "risk_level": "medium",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "frontend_control_surface",
-      "metadata": {
-        "description": "MCP chat, playground preview, right-side Agentic BuilderX panel, activity logs, and status controls."
-      }
-    },
-    {
-      "id": "functionality:mcp-chat",
-      "type": "feature",
-      "label": "MCP Builder Chat",
-      "group": "frontend",
-      "risk_level": "low",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "frontend_control_surface",
-      "metadata": {
-        "file": "apps/frontend/src/App.jsx"
-      }
-    },
-    {
-      "id": "functionality:playground-preview",
-      "type": "feature",
-      "label": "Playground Preview",
-      "group": "frontend",
-      "risk_level": "low",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "frontend_control_surface",
-      "metadata": {
-        "aspectRatio": "16:9",
-        "fitMode": "toggle"
-      }
-    },
-    {
-      "id": "functionality:runtime-observability",
-      "type": "feature",
-      "label": "Runtime Observability",
-      "group": "observability",
-      "risk_level": "medium",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "frontend_control_surface",
-      "metadata": {
-        "timeZone": "Asia/Kolkata",
-        "currentSessionHighlight": "light_green"
-      }
-    },
-    {
-      "id": "functionality:backend-generation-api",
-      "type": "cluster",
-      "label": "Backend Generation API",
-      "group": "functionality",
-      "risk_level": "high",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "backend_generation_api",
-      "metadata": {
-        "description": "Express server, runtime log endpoint, SSE stream, and deterministic generation runtime."
-      }
-    },
-    {
-      "id": "api:mcp",
-      "type": "api",
-      "label": "MCP /mcp",
-      "group": "api",
-      "risk_level": "high",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "mcp_generation_endpoint",
-      "metadata": {
-        "tools": [
-          "tools/list",
-          "tools/call generate_webpage"
-        ]
-      }
-    },
-    {
-      "id": "functionality:orchestrator-restructure",
-      "type": "feature",
-      "label": "Instruction Restructure",
-      "group": "backend",
-      "risk_level": "medium",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "mcp_generation_endpoint",
-      "metadata": {
-        "file": "apps/backend/src/orchestratorAgent.js"
-      }
-    },
-    {
-      "id": "functionality:file-operation-runtime",
-      "type": "feature",
-      "label": "File Operation Runtime",
-      "group": "backend",
-      "risk_level": "high",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "backend_generation_api",
-      "metadata": {
-        "writesOnly": "apps/generated-site/src/generated"
-      }
-    },
-    {
-      "id": "functionality:generated-site-runtime",
-      "type": "cluster",
-      "label": "Generated Site Runtime",
-      "group": "functionality",
-      "risk_level": "medium",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "generated_site_runtime",
-      "metadata": {
-        "runtime": "Vite",
-        "refresh": "hot_reload"
-      }
-    },
-    {
-      "id": "service:frontend",
-      "type": "service",
-      "label": "Frontend Container",
-      "group": "runtime",
-      "risk_level": "medium",
-      "status": "running",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "frontend_control_surface",
-      "metadata": {
-        "port": 5173
-      }
-    },
-    {
-      "id": "service:backend",
-      "type": "service",
-      "label": "Backend Container",
-      "group": "runtime",
-      "risk_level": "high",
-      "status": "running",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "backend_generation_api",
-      "metadata": {
-        "port": 8080
-      }
-    },
-    {
-      "id": "service:generated-site",
-      "type": "service",
-      "label": "Generated Site Container",
-      "group": "runtime",
-      "risk_level": "medium",
-      "status": "running",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "generated_site_runtime",
-      "metadata": {
-        "port": 5174
-      }
-    },
-    {
-      "id": "vector:chroma-fallback",
-      "type": "vector_store",
-      "label": "ChromaDB Fallback",
+      "label": "Agent Memory",
       "group": "memory",
       "risk_level": "medium",
+      "status": "bootstrapped",
+      "cluster_id": "agent-memory",
+      "metadata": {}
+    },
+    {
+      "id": "functionality:neo4j-graph",
+      "type": "graph_store",
+      "label": "Neo4j Graph Artifacts",
+      "group": "graph",
+      "risk_level": "medium",
+      "status": "ready",
+      "metadata": {}
+    },
+    {
+      "id": "functionality:vector-memory",
+      "type": "vector_store",
+      "label": "Vector Memory",
+      "group": "vector",
+      "risk_level": "medium",
       "status": "pending_install",
-      "agent_id": "",
-      "cluster_id": "",
       "metadata": {
         "provider": "chroma_local_generated"
       }
     },
     {
-      "id": "graph:neo4j-artifacts",
-      "type": "graph_store",
-      "label": "Neo4j Artifacts",
-      "group": "memory",
-      "risk_level": "medium",
-      "status": "pending_credentials",
-      "agent_id": "",
-      "cluster_id": "",
+      "id": "page:agentic-system-d3",
+      "type": "page",
+      "label": "Agentic System D3 Page",
+      "group": "d3",
+      "risk_level": "low",
+      "status": "ready",
       "metadata": {
-        "sync": "local_artifacts"
+        "path": "agentic-system/d3/index.html"
       }
     },
     {
-      "id": "human:operator",
-      "type": "human_review",
-      "label": "Human Operator",
-      "group": "governance",
+      "id": "functionality:interactive-cloud-hosting",
+      "type": "feature",
+      "label": "Interactive Cloud Hosting",
+      "group": "deployment",
       "risk_level": "medium",
-      "status": "available",
+      "status": "implemented",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "deployment",
+      "metadata": {
+        "page": "Cloud Hosting",
+        "credentialStorage": "sanitized_metadata_only",
+        "deploymentMode": "mock_safe"
+      }
+    },
+    {
+      "id": "validation:bootstrap-artifacts",
+      "type": "validation",
+      "label": "Bootstrap Artifact Validation",
+      "group": "validation",
+      "risk_level": "low",
+      "status": "pending",
+      "metadata": {}
+    },
+    {
+      "id": "agent:builderx-fullstack-agent",
+      "type": "agent",
+      "label": "BuilderX Fullstack Agent",
+      "group": "global-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "builderx-fullstack-agent",
+      "cluster_id": "builderx-fullstack",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "role": "global-builderx-orchestrator",
+        "domain": "fullstack",
+        "responsibility": "Owns the BuilderX control surface, backend generation API, and project creation handoff.",
+        "description": "Global BuilderX agent that creates and delegates to project-local orchestrators."
+      }
+    },
+    {
+      "id": "project:agenticongen-9TUSjQ",
+      "type": "project",
+      "label": "AgentIconGen",
+      "group": "project",
+      "risk_level": "medium",
+      "status": "managed",
       "agent_id": "",
       "cluster_id": "",
       "metadata": {
-        "approvalRequiredFor": [
-          "external LLM APIs",
-          "arbitrary code execution",
-          "public deploy"
-        ]
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ",
+        "folderName": "agenticongen",
+        "workspaceDir": "/workspace/money/apps/agenticongen",
+        "port": 5302,
+        "previewUrl": "http://localhost:5302",
+        "description": "Generate a professional landing page for digital product."
+      }
+    },
+    {
+      "id": "agent:builderx-independent-reviewer",
+      "type": "agent",
+      "label": "BuilderX Independent Reviewer",
+      "group": "review-agent",
+      "risk_level": "low",
+      "status": "available",
+      "agent_id": "builderx-independent-reviewer",
+      "cluster_id": "adaptive-review",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "readOnly": true,
+        "adaptive": true
+      }
+    },
+    {
+      "id": "agent:agenticongen-orchestrator-agent",
+      "type": "agent",
+      "label": "Agenticongen Orchestrator Agent",
+      "group": "project-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "agenticongen-orchestrator-agent",
+      "cluster_id": "project-orchestrator",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ",
+        "projectName": "AgentIconGen",
+        "supportAgent": false,
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
+        "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
+      }
+    },
+    {
+      "id": "agent:agenticongen-ui-composition-agent",
+      "type": "agent",
+      "label": "Agenticongen UI Composition Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "agenticongen-ui-composition-agent",
+      "cluster_id": "ui-composition",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ",
+        "projectName": "AgentIconGen",
+        "supportAgent": false,
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
+        "description": "Translate the project brief into responsive React views, layout, and interaction states."
+      }
+    },
+    {
+      "id": "agent:agenticongen-content-data-agent",
+      "type": "agent",
+      "label": "Agenticongen Content Data Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "agenticongen-content-data-agent",
+      "cluster_id": "content-data",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ",
+        "projectName": "AgentIconGen",
+        "supportAgent": false,
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
+        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+      }
+    },
+    {
+      "id": "agent:agenticongen-runtime-packaging-agent",
+      "type": "agent",
+      "label": "Agenticongen Runtime Packaging Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "agenticongen-runtime-packaging-agent",
+      "cluster_id": "runtime-packaging",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ",
+        "projectName": "AgentIconGen",
+        "supportAgent": false,
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
+        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
       }
     },
     {
@@ -245,7 +245,8 @@
         "folderName": "geofinderx",
         "workspaceDir": "/workspace/money/apps/geofinderx",
         "port": 5300,
-        "previewUrl": "http://localhost:5300"
+        "previewUrl": "http://localhost:5300",
+        "description": "Generate a professional landing page for digital product."
       }
     },
     {
@@ -261,7 +262,9 @@
         "dynamicProjectGraph": true,
         "projectId": "geofinderx-2yFsDY",
         "projectName": "GeoFinderX",
-        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
+        "supportAgent": false,
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff.",
+        "description": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
       }
     },
     {
@@ -277,7 +280,9 @@
         "dynamicProjectGraph": true,
         "projectId": "geofinderx-2yFsDY",
         "projectName": "GeoFinderX",
-        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states."
+        "supportAgent": false,
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
+        "description": "Translate the project brief into responsive React views, layout, and interaction states."
       }
     },
     {
@@ -293,7 +298,9 @@
         "dynamicProjectGraph": true,
         "projectId": "geofinderx-2yFsDY",
         "projectName": "GeoFinderX",
-        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+        "supportAgent": false,
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
+        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
       }
     },
     {
@@ -309,7 +316,118 @@
         "dynamicProjectGraph": true,
         "projectId": "geofinderx-2yFsDY",
         "projectName": "GeoFinderX",
-        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+        "supportAgent": false,
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
+        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+      }
+    },
+    {
+      "id": "project:investmentfinderx-z8rTq_",
+      "type": "project",
+      "label": "InvestmentFinderX",
+      "group": "project",
+      "risk_level": "medium",
+      "status": "managed",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_",
+        "folderName": "investmentfinderx",
+        "workspaceDir": "/workspace/money/apps/investmentfinderx",
+        "port": 5303,
+        "previewUrl": "http://localhost:5303",
+        "description": "Generate a portfolio page for digital product."
+      }
+    },
+    {
+      "id": "agent:investmentfinderx-orchestrator-agent",
+      "type": "agent",
+      "label": "Investmentfinderx Orchestrator Agent",
+      "group": "project-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "investmentfinderx-orchestrator-agent",
+      "cluster_id": "project-orchestrator",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_",
+        "projectName": "InvestmentFinderX",
+        "supportAgent": false,
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
+        "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
+      }
+    },
+    {
+      "id": "agent:investmentfinderx-qagent-controller",
+      "type": "agent",
+      "label": "Investmentfinderx QAgent Controller",
+      "group": "system-support-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "investmentfinderx-qagent-controller",
+      "cluster_id": "qagent-controller",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_",
+        "projectName": "InvestmentFinderX",
+        "supportAgent": true,
+        "responsibility": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code.",
+        "description": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code."
+      }
+    },
+    {
+      "id": "agent:investmentfinderx-ui-composition-agent",
+      "type": "agent",
+      "label": "Investmentfinderx UI Composition Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "investmentfinderx-ui-composition-agent",
+      "cluster_id": "ui-composition",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_",
+        "projectName": "InvestmentFinderX",
+        "supportAgent": false,
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
+        "description": "Translate the project brief into responsive React views, layout, and interaction states."
+      }
+    },
+    {
+      "id": "agent:investmentfinderx-content-data-agent",
+      "type": "agent",
+      "label": "Investmentfinderx Content Data Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "investmentfinderx-content-data-agent",
+      "cluster_id": "content-data",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_",
+        "projectName": "InvestmentFinderX",
+        "supportAgent": false,
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
+        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+      }
+    },
+    {
+      "id": "agent:investmentfinderx-runtime-packaging-agent",
+      "type": "agent",
+      "label": "Investmentfinderx Runtime Packaging Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "investmentfinderx-runtime-packaging-agent",
+      "cluster_id": "runtime-packaging",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_",
+        "projectName": "InvestmentFinderX",
+        "supportAgent": false,
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
+        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
       }
     },
     {
@@ -327,7 +445,8 @@
         "folderName": "mapex",
         "workspaceDir": "/workspace/money/mapex",
         "port": 5301,
-        "previewUrl": "http://localhost:5301"
+        "previewUrl": "http://localhost:5301",
+        "description": "Generate a professional landing page for digital product."
       }
     },
     {
@@ -343,7 +462,9 @@
         "dynamicProjectGraph": true,
         "projectId": "mapex-M6rGkR",
         "projectName": "mapEx",
-        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
+        "supportAgent": false,
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff.",
+        "description": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
       }
     },
     {
@@ -359,7 +480,9 @@
         "dynamicProjectGraph": true,
         "projectId": "mapex-M6rGkR",
         "projectName": "mapEx",
-        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states."
+        "supportAgent": false,
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
+        "description": "Translate the project brief into responsive React views, layout, and interaction states."
       }
     },
     {
@@ -375,7 +498,9 @@
         "dynamicProjectGraph": true,
         "projectId": "mapex-M6rGkR",
         "projectName": "mapEx",
-        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+        "supportAgent": false,
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
+        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
       }
     },
     {
@@ -391,136 +516,262 @@
         "dynamicProjectGraph": true,
         "projectId": "mapex-M6rGkR",
         "projectName": "mapEx",
-        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+        "supportAgent": false,
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
+        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+      }
+    },
+    {
+      "id": "project:whatsappmediaanalyser-oAeSvn",
+      "type": "project",
+      "label": "WhatsappMediaAnalyser",
+      "group": "project",
+      "risk_level": "medium",
+      "status": "managed",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn",
+        "folderName": "whatsappmediaanalyser",
+        "workspaceDir": "/workspace/money/apps/whatsappmediaanalyser",
+        "port": 5304,
+        "previewUrl": "http://localhost:5304",
+        "description": "Generate a professional landing page for digital product."
+      }
+    },
+    {
+      "id": "agent:whatsappmediaanalyser-orchestrator-agent",
+      "type": "agent",
+      "label": "Whatsappmediaanalyser Orchestrator Agent",
+      "group": "project-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "whatsappmediaanalyser-orchestrator-agent",
+      "cluster_id": "project-orchestrator",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn",
+        "projectName": "WhatsappMediaAnalyser",
+        "supportAgent": false,
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
+        "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
+      }
+    },
+    {
+      "id": "agent:whatsappmediaanalyser-qagent-controller",
+      "type": "agent",
+      "label": "Whatsappmediaanalyser QAgent Controller",
+      "group": "system-support-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "whatsappmediaanalyser-qagent-controller",
+      "cluster_id": "qagent-controller",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn",
+        "projectName": "WhatsappMediaAnalyser",
+        "supportAgent": true,
+        "responsibility": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code.",
+        "description": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code."
+      }
+    },
+    {
+      "id": "agent:whatsappmediaanalyser-ui-composition-agent",
+      "type": "agent",
+      "label": "Whatsappmediaanalyser UI Composition Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "whatsappmediaanalyser-ui-composition-agent",
+      "cluster_id": "ui-composition",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn",
+        "projectName": "WhatsappMediaAnalyser",
+        "supportAgent": false,
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
+        "description": "Translate the project brief into responsive React views, layout, and interaction states."
+      }
+    },
+    {
+      "id": "agent:whatsappmediaanalyser-content-data-agent",
+      "type": "agent",
+      "label": "Whatsappmediaanalyser Content Data Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "whatsappmediaanalyser-content-data-agent",
+      "cluster_id": "content-data",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn",
+        "projectName": "WhatsappMediaAnalyser",
+        "supportAgent": false,
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
+        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+      }
+    },
+    {
+      "id": "agent:whatsappmediaanalyser-runtime-packaging-agent",
+      "type": "agent",
+      "label": "Whatsappmediaanalyser Runtime Packaging Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "whatsappmediaanalyser-runtime-packaging-agent",
+      "cluster_id": "runtime-packaging",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn",
+        "projectName": "WhatsappMediaAnalyser",
+        "supportAgent": false,
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
+        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
       }
     }
   ],
   "links": [
     {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "functionality:frontend-control-surface",
-      "type": "owns",
-      "weight": 2,
-      "metadata": {}
-    },
-    {
-      "source": "functionality:frontend-control-surface",
-      "target": "functionality:mcp-chat",
+      "source": "project:orchestrator-agent-001",
+      "target": "workflow:bootstrap-orchestrator-001",
       "type": "contains",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "functionality:frontend-control-surface",
-      "target": "functionality:playground-preview",
-      "type": "contains",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "functionality:frontend-control-surface",
-      "target": "functionality:runtime-observability",
-      "type": "contains",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "functionality:backend-generation-api",
-      "type": "owns",
+      "source": "project:orchestrator-agent-001",
+      "target": "agent:builderx-fullstack-agent",
+      "type": "has_agent",
       "weight": 2,
       "metadata": {}
     },
     {
-      "source": "functionality:backend-generation-api",
-      "target": "api:mcp",
-      "type": "exposes",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "api:mcp",
-      "target": "functionality:orchestrator-restructure",
-      "type": "calls",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "api:mcp",
-      "target": "functionality:file-operation-runtime",
-      "type": "calls",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
       "source": "agent:builderx-fullstack-agent",
-      "target": "functionality:generated-site-runtime",
+      "target": "agent:project-execution-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "workflow:bootstrap-orchestrator-001",
+      "target": "agent:project-execution-agent",
+      "type": "assigned_to",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:project-execution-agent",
+      "target": "functionality:agent-memory",
       "type": "owns",
-      "weight": 2,
-      "metadata": {}
-    },
-    {
-      "source": "functionality:mcp-chat",
-      "target": "api:mcp",
-      "type": "consumes",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "functionality:playground-preview",
-      "target": "functionality:generated-site-runtime",
-      "type": "visualizes",
+      "source": "agent:project-execution-agent",
+      "target": "functionality:neo4j-graph",
+      "type": "owns",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "functionality:file-operation-runtime",
-      "target": "functionality:generated-site-runtime",
-      "type": "writes",
+      "source": "agent:project-execution-agent",
+      "target": "functionality:vector-memory",
+      "type": "owns",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "service:frontend",
-      "target": "functionality:frontend-control-surface",
-      "type": "implements",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "service:backend",
-      "target": "functionality:backend-generation-api",
-      "type": "implements",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "service:generated-site",
-      "target": "functionality:generated-site-runtime",
-      "type": "implements",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "functionality:runtime-observability",
-      "target": "vector:chroma-fallback",
-      "type": "syncs_to",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "graph:neo4j-artifacts",
+      "source": "functionality:neo4j-graph",
+      "target": "page:agentic-system-d3",
       "type": "visualized_by",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "human:operator",
-      "target": "agent:builderx-fullstack-agent",
-      "type": "reviews",
+      "source": "functionality:vector-memory",
+      "target": "page:agentic-system-d3",
+      "type": "visualized_by",
       "weight": 1,
       "metadata": {}
+    },
+    {
+      "source": "workflow:bootstrap-orchestrator-001",
+      "target": "validation:bootstrap-artifacts",
+      "type": "validates",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "functionality:interactive-cloud-hosting",
+      "type": "owns",
+      "weight": 2,
+      "metadata": {
+        "sanitized": true,
+        "noCredentialData": true
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "project:agenticongen-9TUSjQ",
+      "type": "creates_project",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:builderx-independent-reviewer",
+      "type": "may_request_review_from",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "adaptive": true,
+        "readOnly": true
+      }
+    },
+    {
+      "source": "project:agenticongen-9TUSjQ",
+      "target": "agent:agenticongen-orchestrator-agent",
+      "type": "has_orchestrator",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ"
+      }
+    },
+    {
+      "source": "agent:agenticongen-orchestrator-agent",
+      "target": "agent:agenticongen-ui-composition-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ"
+      }
+    },
+    {
+      "source": "agent:agenticongen-orchestrator-agent",
+      "target": "agent:agenticongen-content-data-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ"
+      }
+    },
+    {
+      "source": "agent:agenticongen-orchestrator-agent",
+      "target": "agent:agenticongen-runtime-packaging-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "agenticongen-9TUSjQ"
+      }
     },
     {
       "source": "agent:builderx-fullstack-agent",
@@ -530,6 +781,17 @@
       "metadata": {
         "dynamicProjectGraph": true,
         "projectId": "geofinderx-2yFsDY"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:builderx-independent-reviewer",
+      "type": "may_request_review_from",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "adaptive": true,
+        "readOnly": true
       }
     },
     {
@@ -574,12 +836,94 @@
     },
     {
       "source": "agent:builderx-fullstack-agent",
+      "target": "project:investmentfinderx-z8rTq_",
+      "type": "creates_project",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:builderx-independent-reviewer",
+      "type": "may_request_review_from",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "adaptive": true,
+        "readOnly": true
+      }
+    },
+    {
+      "source": "project:investmentfinderx-z8rTq_",
+      "target": "agent:investmentfinderx-orchestrator-agent",
+      "type": "has_orchestrator",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_"
+      }
+    },
+    {
+      "source": "agent:investmentfinderx-orchestrator-agent",
+      "target": "agent:investmentfinderx-qagent-controller",
+      "type": "uses_qagent_controller",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_"
+      }
+    },
+    {
+      "source": "agent:investmentfinderx-orchestrator-agent",
+      "target": "agent:investmentfinderx-ui-composition-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_"
+      }
+    },
+    {
+      "source": "agent:investmentfinderx-orchestrator-agent",
+      "target": "agent:investmentfinderx-content-data-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_"
+      }
+    },
+    {
+      "source": "agent:investmentfinderx-orchestrator-agent",
+      "target": "agent:investmentfinderx-runtime-packaging-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "investmentfinderx-z8rTq_"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
       "target": "project:mapex-M6rGkR",
       "type": "creates_project",
       "weight": 2,
       "metadata": {
         "dynamicProjectGraph": true,
         "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:builderx-independent-reviewer",
+      "type": "may_request_review_from",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "adaptive": true,
+        "readOnly": true
       }
     },
     {
@@ -620,6 +964,87 @@
       "metadata": {
         "dynamicProjectGraph": true,
         "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "project:whatsappmediaanalyser-oAeSvn",
+      "type": "creates_project",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:builderx-independent-reviewer",
+      "type": "may_request_review_from",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "adaptive": true,
+        "readOnly": true
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:whatsappmediaanalyser-orchestrator-agent",
+      "type": "runtime_delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn"
+      }
+    },
+    {
+      "source": "project:whatsappmediaanalyser-oAeSvn",
+      "target": "agent:whatsappmediaanalyser-orchestrator-agent",
+      "type": "has_orchestrator",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn"
+      }
+    },
+    {
+      "source": "agent:whatsappmediaanalyser-orchestrator-agent",
+      "target": "agent:whatsappmediaanalyser-qagent-controller",
+      "type": "uses_qagent_controller",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn"
+      }
+    },
+    {
+      "source": "agent:whatsappmediaanalyser-orchestrator-agent",
+      "target": "agent:whatsappmediaanalyser-ui-composition-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn"
+      }
+    },
+    {
+      "source": "agent:whatsappmediaanalyser-orchestrator-agent",
+      "target": "agent:whatsappmediaanalyser-content-data-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn"
+      }
+    },
+    {
+      "source": "agent:whatsappmediaanalyser-orchestrator-agent",
+      "target": "agent:whatsappmediaanalyser-runtime-packaging-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "whatsappmediaanalyser-oAeSvn"
       }
     }
   ]

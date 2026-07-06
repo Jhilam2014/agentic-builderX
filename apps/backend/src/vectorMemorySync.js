@@ -56,8 +56,9 @@ function categoryFor(relativePath) {
 
 function frontMatter(markdown = "") {
   const yaml = String(markdown).match(/^---\n([\s\S]*?)\n---/);
+  const source = yaml?.[1] || String(markdown).split(/\n##\s+|\n#\s+/)[0] || "";
   const values = {};
-  for (const line of (yaml?.[1] || "").split(/\r?\n/)) {
+  for (const line of source.split(/\r?\n/)) {
     const match = line.match(/^\s*([A-Za-z0-9_-]+)\s*:\s*(.*?)\s*$/);
     if (match) values[match[1]] = match[2].replace(/^['"]|['"]$/g, "");
   }
@@ -155,8 +156,18 @@ async function attachKnowledgeFile({ config, filePath, relativePath, projectRoot
 }
 
 async function syncRoot({ config, projectRoot, remoteByHash }) {
-  const knowledgeRoot = path.join(projectRoot, "memory", "agent-knowledge");
-  const files = await collectKnowledgeFiles(knowledgeRoot);
+  const files = (
+    await Promise.all(
+      [
+        path.join(projectRoot, "memory", "agent-knowledge"),
+        path.join(projectRoot, "agents", "generated"),
+        path.join(projectRoot, "agents", "custom"),
+        path.join(projectRoot, "agents", "human")
+      ].map((directory) => collectKnowledgeFiles(directory))
+    )
+  )
+    .flat()
+    .sort();
   const syncIndexPath = path.join(projectRoot, "registry", "agents", "vector-sync-index.json");
   const index = await readJson(syncIndexPath, { provider: "openai", vector_store_id: config.vectorStoreId, files: {} });
   index.provider = "openai";

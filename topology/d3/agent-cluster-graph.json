@@ -1,142 +1,179 @@
 {
   "metadata": {
     "project_name": "agentic-builderX",
-    "generated_at": "2026-06-25T00:00:00+05:30",
-    "workflow_id": "builderx-large-001",
+    "generated_at": "2026-06-29T22:53:21+00:00",
+    "workflow_id": "bootstrap-orchestrator-001",
     "source": "orchestrator",
-    "graph_version": "1.0.0"
+    "graph_version": "1.0.0",
+    "neo4j_status": "ready",
+    "vector_provider": "chroma_local_generated",
+    "vector_status": "pending_install"
   },
   "nodes": [
     {
+      "id": "project:orchestrator-agent-001",
+      "type": "project",
+      "label": "agentic-builderX",
+      "group": "project",
+      "risk_level": "low",
+      "status": "active",
+      "metadata": {}
+    },
+    {
+      "id": "workflow:bootstrap-orchestrator-001",
+      "type": "workflow",
+      "label": "Bootstrap Orchestrator",
+      "group": "workflow",
+      "risk_level": "low",
+      "status": "complete",
+      "metadata": {}
+    },
+    {
       "id": "agent:builderx-fullstack-agent",
       "type": "agent",
-      "label": "BuilderX Agent",
-      "group": "agent",
+      "label": "BuilderX Fullstack Agent",
+      "group": "global-agent",
       "risk_level": "medium",
       "status": "active",
       "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "",
-      "metadata": {}
-    },
-    {
-      "id": "cluster:frontend_control_surface",
-      "type": "cluster",
-      "label": "Frontend Control",
-      "group": "frontend",
-      "risk_level": "medium",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "frontend_control_surface",
-      "metadata": {}
-    },
-    {
-      "id": "cluster:backend_generation_api",
-      "type": "cluster",
-      "label": "Backend API",
-      "group": "backend",
-      "risk_level": "high",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "backend_generation_api",
-      "metadata": {}
-    },
-    {
-      "id": "cluster:mcp_generation_endpoint",
-      "type": "api",
-      "label": "MCP Endpoint",
-      "group": "api",
-      "risk_level": "high",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "mcp_generation_endpoint",
+      "cluster_id": "builderx-fullstack",
       "metadata": {
-        "path": "POST /mcp"
+        "capabilityScore": 60,
+        "role": "global-builderx-orchestrator",
+        "domain": "fullstack"
       }
     },
     {
-      "id": "cluster:generated_site_runtime",
-      "type": "service",
-      "label": "Generated Runtime",
-      "group": "runtime",
+      "id": "agent:project-execution-agent",
+      "type": "agent",
+      "label": "Project Execution Agent",
+      "group": "agent",
       "risk_level": "medium",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "generated_site_runtime",
+      "status": "active",
+      "agent_id": "project-execution-agent",
+      "metadata": {
+        "capabilityScore": 60
+      }
+    },
+    {
+      "id": "functionality:agent-memory",
+      "type": "cluster",
+      "label": "Agent Memory",
+      "group": "memory",
+      "risk_level": "medium",
+      "status": "bootstrapped",
+      "cluster_id": "agent-memory",
       "metadata": {}
     },
     {
-      "id": "cluster:container_orchestration",
-      "type": "service",
-      "label": "Docker Compose",
-      "group": "infrastructure",
+      "id": "functionality:neo4j-graph",
+      "type": "graph_store",
+      "label": "Neo4j Graph Artifacts",
+      "group": "graph",
       "risk_level": "medium",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "container_orchestration",
+      "status": "ready",
+      "metadata": {}
+    },
+    {
+      "id": "functionality:vector-memory",
+      "type": "vector_store",
+      "label": "Vector Memory",
+      "group": "vector",
+      "risk_level": "medium",
+      "status": "pending_install",
+      "metadata": {
+        "provider": "chroma_local_generated"
+      }
+    },
+    {
+      "id": "page:agentic-system-d3",
+      "type": "page",
+      "label": "Agentic System D3 Page",
+      "group": "d3",
+      "risk_level": "low",
+      "status": "ready",
+      "metadata": {
+        "path": "agentic-system/d3/index.html"
+      }
+    },
+    {
+      "id": "validation:bootstrap-artifacts",
+      "type": "validation",
+      "label": "Bootstrap Artifact Validation",
+      "group": "validation",
+      "risk_level": "low",
+      "status": "pending",
       "metadata": {}
     }
   ],
   "links": [
     {
+      "source": "project:orchestrator-agent-001",
+      "target": "workflow:bootstrap-orchestrator-001",
+      "type": "contains",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "project:orchestrator-agent-001",
+      "target": "agent:builderx-fullstack-agent",
+      "type": "has_agent",
+      "weight": 2,
+      "metadata": {}
+    },
+    {
       "source": "agent:builderx-fullstack-agent",
-      "target": "cluster:frontend_control_surface",
+      "target": "agent:project-execution-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "workflow:bootstrap-orchestrator-001",
+      "target": "agent:project-execution-agent",
+      "type": "assigned_to",
+      "weight": 1,
+      "metadata": {}
+    },
+    {
+      "source": "agent:project-execution-agent",
+      "target": "functionality:agent-memory",
       "type": "owns",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "cluster:backend_generation_api",
+      "source": "agent:project-execution-agent",
+      "target": "functionality:neo4j-graph",
       "type": "owns",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "cluster:mcp_generation_endpoint",
+      "source": "agent:project-execution-agent",
+      "target": "functionality:vector-memory",
       "type": "owns",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "cluster:generated_site_runtime",
-      "type": "owns",
+      "source": "functionality:neo4j-graph",
+      "target": "page:agentic-system-d3",
+      "type": "visualized_by",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "cluster:container_orchestration",
-      "type": "owns",
+      "source": "functionality:vector-memory",
+      "target": "page:agentic-system-d3",
+      "type": "visualized_by",
       "weight": 1,
       "metadata": {}
     },
     {
-      "source": "cluster:frontend_control_surface",
-      "target": "cluster:backend_generation_api",
-      "type": "depends_on",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "cluster:frontend_control_surface",
-      "target": "cluster:generated_site_runtime",
-      "type": "depends_on",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "cluster:mcp_generation_endpoint",
-      "target": "cluster:backend_generation_api",
-      "type": "depends_on",
-      "weight": 1,
-      "metadata": {}
-    },
-    {
-      "source": "cluster:backend_generation_api",
-      "target": "cluster:generated_site_runtime",
-      "type": "writes",
+      "source": "workflow:bootstrap-orchestrator-001",
+      "target": "validation:bootstrap-artifacts",
+      "type": "validates",
       "weight": 1,
       "metadata": {}
     }

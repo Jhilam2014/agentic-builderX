@@ -1,24 +1,28 @@
 {
-  "workflow_id": "builderx-layout-agentic-d3-001",
-  "generated_at": "2026-06-25T16:00:00+05:30",
+  "workflow_id": "bootstrap-orchestrator-001",
+  "generated_at": "2026-06-29T22:53:21+00:00",
   "agents": [
     {
       "agent_id": "builderx-fullstack-agent",
       "owns": [
-        "frontend_control_surface",
-        "mcp_builder_chat",
-        "playground_preview",
-        "runtime_observability",
-        "backend_generation_api",
-        "mcp_generation_endpoint",
-        "orchestrator_instruction_restructure",
-        "file_operation_runtime",
-        "generated_site_runtime",
-        "container_orchestration"
+        "builderx-control-surface",
+        "backend-generation-api",
+        "project-creation-handoff"
       ],
       "validates": [
-        "project_validation",
-        "docker_compose_config"
+        "project-local-agent-routing"
+      ]
+    },
+    {
+      "agent_id": "project-execution-agent",
+      "owns": [
+        "agent-memory",
+        "neo4j-graph",
+        "vector-memory",
+        "agentic-system-d3"
+      ],
+      "validates": [
+        "bootstrap-artifacts"
       ]
     }
   ]

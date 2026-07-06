@@ -22,6 +22,101 @@ function titleCase(value) {
     .join(" ");
 }
 
+function routeKey(value) {
+  return String(value || "page")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "page";
+}
+
+function componentNameForRoute(key) {
+  return `${String(key || "page")
+    .split(/[^a-z0-9]+/i)
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join("")}Page`;
+}
+
+function textHasSignal(text, signal) {
+  if (signal.includes(" ")) return text.includes(signal);
+  return new RegExp(`\b${signal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\b`).test(text);
+}
+
+function textHasAnySignal(text, signals) {
+  return signals.some((signal) => textHasSignal(text, signal));
+}
+
+function normalizeRoute(route, fallbackIndex) {
+  const key = routeKey(route?.key || route?.title || `page-${fallbackIndex + 1}`);
+  const pathName = String(route?.path || `/${key}`).trim();
+  const cleanPath = key === "home" || pathName === "/" ? "/" : `/${pathName.replace(/^#+/, "").replace(/^\/+/, "")}`;
+  return {
+    key,
+    path: cleanPath,
+    title: route?.title || titleCase(key),
+    description: route?.description || `${titleCase(key)} page generated for the requested website scope.`,
+    sections: Array.isArray(route?.sections) ? route.sections : []
+  };
+}
+
+function defaultRoutesForRequest(request) {
+  const text = `${request?.pageType || ""} ${request?.sourceInstruction || ""} ${request?.objective || ""}`.toLowerCase();
+  const routes = [
+    { key: "home", path: "/", title: "Home", description: "Primary positioning and conversion entry point." }
+  ];
+  if (text.includes("platform") || text.includes("saas") || text.includes("product")) {
+    routes.push({ key: "features", path: "/features", title: "Features", description: "Capability modules, workflows, and product outcomes." });
+  }
+  if (text.includes("services") || text.includes("agency") || text.includes("business")) {
+    routes.push({ key: "services", path: "/services", title: "Services", description: "Service packages, delivery model, and engagement options." });
+  }
+  if (text.includes("projects") || text.includes("case stud")) {
+    routes.push({ key: "projects", path: "/projects", title: "Projects", description: "Project examples, case studies, and proof." });
+  }
+  if (textHasAnySignal(text, ["shop", "store", "catalog", "commerce", "ecommerce", "bag", "bags", "handbag", "luggage"])) {
+    routes.push({ key: "catalog", path: "/catalog", title: "Catalog", description: "Products, merchandising, materials, and buying path." });
+  }
+  if (text.includes("dashboard") || text.includes("admin") || text.includes("portal")) {
+    routes.push({ key: "dashboard", path: "/dashboard", title: "Dashboard", description: "Operational metrics, panels, states, and workflows." });
+  }
+  if (text.includes("pricing")) {
+    routes.push({ key: "pricing", path: "/pricing", title: "Pricing", description: "Plans, comparison, and conversion options." });
+  }
+  routes.push(
+    { key: "about", path: "/about", title: "About", description: "Story, credibility, trust, and operating principles." },
+    { key: "contact", path: "/contact", title: "Contact", description: "Lead capture and next-step CTA." }
+  );
+  if (routes.length < 5) {
+    routes.splice(1, 0, { key: "services", path: "/services", title: "Services", description: "Services and capabilities." });
+    routes.splice(2, 0, { key: "projects", path: "/projects", title: "Projects", description: "Work examples and outcomes." });
+  }
+  const seen = new Set();
+  return routes.filter((route) => {
+    const key = routeKey(route.key);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function resolveRoutes(request) {
+  if (request?.siteStructure !== "multi_page") return [];
+  const rawRoutes = Array.isArray(request?.routePlan) && request.routePlan.length ? request.routePlan : defaultRoutesForRequest(request);
+  const seen = new Set();
+  return rawRoutes
+    .map((route, index) => normalizeRoute(route, index))
+    .filter((route) => {
+      if (seen.has(route.key)) return false;
+      seen.add(route.key);
+      return true;
+    });
+}
+
+function isMultiPageRequest(request, routes) {
+  return request?.siteStructure === "multi_page" && routes.length > 1;
+}
+
 function isBagBusiness(request) {
   const text = `${request?.topic || ""} ${request?.sourceInstruction || ""}`.toLowerCase();
   return text.includes("bag") || text.includes("handbag") || text.includes("luggage") || text.includes("backpack");
@@ -208,6 +303,252 @@ export default function GeneratedPage() {
         <h2>{catalog.cta}</h2>
         <p>Regenerate from Agentic BuilderX to add, modify, or delete files in this generated app.</p>
       </section>
+    </main>
+  );
+}
+`;
+}
+
+function siteStructureSource(request, routes) {
+  return `export const siteStructure = ${JSON.stringify(
+    {
+      siteStructure: request.siteStructure || "single_page",
+      complexityScaling: request.complexityScaling || null,
+      routes
+    },
+    null,
+    2
+  )};
+`;
+}
+
+function pageModuleSource(route) {
+  const componentName = componentNameForRoute(route.key);
+  const title = route.title || titleCase(route.key);
+  const description = route.description || `${title} page generated for the requested site.`;
+  const key = route.key;
+
+  if (key === "home") {
+    return `import { catalog } from "../catalogData.js";
+
+export default function ${componentName}() {
+  return (
+    <section className="site-page route-home">
+      <div className="route-hero-copy">
+        <span>{catalog.eyebrow}</span>
+        <h1>{catalog.headline}</h1>
+        <p>{catalog.subhead}</p>
+        <div className="hero-actions">
+          <a className="primary" href="#/contact">{catalog.cta}</a>
+          <a className="secondary" href="#/services">Explore the site</a>
+        </div>
+      </div>
+      <div className="route-panel-grid">
+        {catalog.stats.map((stat) => (
+          <article key={stat.label} className="metric-card">
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+`;
+  }
+
+  if (key === "services" || key === "features") {
+    return `import { catalog } from "../catalogData.js";
+
+export default function ${componentName}() {
+  return (
+    <section className="site-page">
+      <div className="section-intro">
+        <span>${title}</span>
+        <h1>${description}</h1>
+        <p>Structured into route-level content so users can browse capabilities without a long flattened landing page.</p>
+      </div>
+      <div className="route-grid">
+        {catalog.workflow.map((step, index) => (
+          <article key={step} className="route-card">
+            <strong>{String(index + 1).padStart(2, "0")}</strong>
+            <h3>{step}</h3>
+            <p>Clear delivery step with supporting copy, proof, and follow-through.</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+`;
+  }
+
+  if (key === "projects" || key === "catalog") {
+    return `import { catalog } from "../catalogData.js";
+
+export default function ${componentName}() {
+  return (
+    <section className="site-page">
+      <div className="section-intro">
+        <span>${title}</span>
+        <h1>${description}</h1>
+        <p>Each item is separated into a dedicated browsing route to support scalable navigation and future detail pages.</p>
+      </div>
+      <div className="product-grid route-product-grid">
+        {catalog.products.map((product) => (
+          <article key={product.name} className="product-card">
+            <div className="product-visual"><span>{product.tag}</span></div>
+            <div>
+              <h3>{product.name}</h3>
+              <strong>{product.price}</strong>
+              <p>{product.description}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+`;
+  }
+
+  if (key === "pricing") {
+    return `import { catalog } from "../catalogData.js";
+
+export default function ${componentName}() {
+  return (
+    <section className="site-page">
+      <div className="section-intro">
+        <span>${title}</span>
+        <h1>${description}</h1>
+        <p>Pricing is isolated as its own route so offer framing, comparison, FAQs, and CTA logic can evolve independently.</p>
+      </div>
+      <div className="route-grid">
+        {catalog.products.map((product) => (
+          <article key={product.name} className="route-card">
+            <span>{product.tag}</span>
+            <h3>{product.name}</h3>
+            <strong>{product.price}</strong>
+            <p>{product.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+`;
+  }
+
+  if (key === "dashboard") {
+    return `import { catalog } from "../catalogData.js";
+
+export default function ${componentName}() {
+  return (
+    <section className="site-page">
+      <div className="section-intro">
+        <span>${title}</span>
+        <h1>${description}</h1>
+        <p>Operational pages stay route-level so metrics, filters, states, and workflows can expand without cluttering Home.</p>
+      </div>
+      <div className="route-panel-grid">
+        {catalog.stats.map((stat) => (
+          <article key={stat.label} className="metric-card">
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+`;
+  }
+
+  return `import { catalog } from "../catalogData.js";
+
+export default function ${componentName}() {
+  return (
+    <section className="site-page">
+      <div className="section-intro">
+        <span>${title}</span>
+        <h1>${description}</h1>
+        <p>This route gives the site a scalable page boundary instead of forcing every concern into a single landing page.</p>
+      </div>
+      <div className="materials route-materials">
+        <div>
+          <span>Trust signals</span>
+          <h2>Built for credibility, clarity, and future expansion.</h2>
+        </div>
+        <ul>
+          {catalog.materials.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      </div>
+      <div className="launch route-launch">
+        <h2>{catalog.cta}</h2>
+        <p>Use the Contact route or regenerate this project to expand the website further.</p>
+      </div>
+    </section>
+  );
+}
+`;
+}
+
+function multiPageSource(instructionHash, routes) {
+  const imports = routes
+    .map((route) => `import ${componentNameForRoute(route.key)} from "./pages/${componentNameForRoute(route.key)}.jsx";`)
+    .join("\n");
+  const registry = routes
+    .map((route) => `  ${JSON.stringify(route.key)}: ${componentNameForRoute(route.key)}`)
+    .join(",\n");
+
+  return `import { useEffect, useState } from "react";
+import { catalog } from "./catalogData.js";
+import { siteStructure } from "./siteStructure.js";
+${imports}
+
+export const generatedMetadata = {
+  instructionHash: ${JSON.stringify(instructionHash)},
+  generatedAt: ${JSON.stringify(new Date().toISOString())},
+  siteStructure: "multi_page"
+};
+
+const pageComponents = {
+${registry}
+};
+
+function normalizeHashRoute() {
+  const raw = window.location.hash.replace(/^#/, "") || "/";
+  return raw.startsWith("/") ? raw : "/" + raw;
+}
+
+function findRouteByPath(pathname) {
+  return siteStructure.routes.find((route) => route.path === pathname) || siteStructure.routes[0];
+}
+
+export default function GeneratedPage() {
+  const [activePath, setActivePath] = useState(() => normalizeHashRoute());
+  useEffect(() => {
+    const onHashChange = () => setActivePath(normalizeHashRoute());
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  const activeRoute = findRouteByPath(activePath);
+  const ActivePage = pageComponents[activeRoute.key] || ${componentNameForRoute(routes[0]?.key || "home")};
+
+  return (
+    <main className="generated-page multi-page-site">
+      <nav className="nav site-nav">
+        <strong>{catalog.brand}</strong>
+        <div className="site-nav-links">
+          {siteStructure.routes.map((route) => (
+            <a key={route.key} className={route.path === activeRoute.path ? "active" : ""} href={"#" + route.path}>
+              {route.title}
+            </a>
+          ))}
+        </div>
+      </nav>
+      <ActivePage />
     </main>
   );
 }
@@ -414,11 +755,122 @@ a { color: inherit; text-decoration: none; }
 .launch h2 { margin: 0 0 10px; font-size: 42px; }
 .launch p { margin: 0 auto; max-width: 620px; color: #64748b; line-height: 1.6; }
 
+.multi-page-site {
+  min-height: 100vh;
+  padding: 28px;
+}
+
+.site-nav {
+  position: sticky;
+  top: 18px;
+  z-index: 10;
+}
+
+.site-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.site-nav-links a {
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #526174;
+}
+
+.site-nav-links a.active {
+  color: #0f766e;
+  background: #ecfdf5;
+}
+
+.site-page {
+  max-width: 1180px;
+  min-height: calc(100vh - 120px);
+  margin: 28px auto 0;
+  padding: 56px 0 72px;
+}
+
+.route-home {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  align-items: center;
+  gap: 32px;
+}
+
+.route-hero-copy span,
+.route-card span {
+  color: #0f766e;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.route-hero-copy h1,
+.site-page .section-intro h1 {
+  margin: 14px 0 18px;
+  font-size: clamp(38px, 6vw, 72px);
+  line-height: 0.98;
+}
+
+.route-hero-copy p,
+.site-page .section-intro p {
+  max-width: 760px;
+  color: #536174;
+  font-size: 19px;
+  line-height: 1.55;
+}
+
+.route-grid,
+.route-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.route-card,
+.metric-card {
+  border: 1px solid #d8e1ee;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+  padding: 22px;
+}
+
+.route-card strong,
+.metric-card strong {
+  display: block;
+  color: #0f766e;
+  font-size: 30px;
+}
+
+.route-card h3 {
+  margin: 12px 0 10px;
+  font-size: 23px;
+}
+
+.route-card p,
+.metric-card span {
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.route-product-grid,
+.route-materials,
+.route-launch {
+  margin-top: 24px;
+}
+
 @media (max-width: 900px) {
   .hero-grid,
   .materials,
   .workflow,
-  .product-grid {
+  .product-grid,
+  .route-home,
+  .route-grid,
+  .route-panel-grid {
     grid-template-columns: 1fr;
   }
 
@@ -437,6 +889,11 @@ This app was generated by Agentic BuilderX through the Codex workflow file-opera
 
 ${request.objective}
 
+## Site Structure
+
+- Structure: ${request.siteStructure || "single_page"}
+- Route plan: ${(request.routePlan || []).length ? (request.routePlan || []).map((route) => `${route.title} (${route.path})`).join(", ") : "single-page surface"}
+
 ## File Operations
 
 ${operations.map((operation) => `- ${operation.action}: \`${operation.path}\` - ${operation.reason}`).join("\n")}
@@ -446,8 +903,10 @@ ${operations.map((operation) => `- ${operation.action}: \`${operation.path}\` - 
 function buildOperations(request, buildId, instructionHash) {
   const model = buildCommerceModel(request);
   const operations = request.fileOperations || [];
+  const routes = resolveRoutes(request);
+  const multiPage = isMultiPageRequest(request, routes);
   const contentByPath = new Map([
-    ["src/generated/generatedPage.jsx", pageSource(instructionHash)],
+    ["src/generated/generatedPage.jsx", multiPage ? multiPageSource(instructionHash, routes) : pageSource(instructionHash)],
     ["src/generated/generatedPage.css", cssSource()],
     ["src/generated/catalogData.js", catalogDataSource(model)],
     [
@@ -461,7 +920,10 @@ function buildOperations(request, buildId, instructionHash) {
           orchestrated: {
             pageType: request.pageType,
             topic: request.topic,
-            sections: request.sections
+            sections: request.sections,
+            siteStructure: request.siteStructure || "single_page",
+            routePlan: routes,
+            complexityScaling: request.complexityScaling || null
           },
           fileOperations: operations
         },
@@ -469,16 +931,24 @@ function buildOperations(request, buildId, instructionHash) {
         2
       )
     ],
-    ["src/generated/README.generated.md", readmeSource(request, operations)]
+    ["src/generated/README.generated.md", readmeSource({ ...request, routePlan: routes }, operations)]
   ]);
+
+  if (multiPage) {
+    contentByPath.set("src/generated/siteStructure.js", siteStructureSource(request, routes));
+    for (const route of routes) {
+      contentByPath.set(`src/generated/pages/${componentNameForRoute(route.key)}.jsx`, pageModuleSource(route));
+    }
+  }
 
   const priorityByPath = new Map([
     ["src/generated/catalogData.js", 1],
-    ["src/generated/metadata.json", 2],
-    ["src/generated/README.generated.md", 3],
-    ["src/generated/generatedPage.jsx", 4],
-    ["src/generated/generatedPage.css", 5],
-    ["src/generated/deprecatedGeneratedPage.jsx", 6]
+    ["src/generated/siteStructure.js", 2],
+    ["src/generated/metadata.json", 3],
+    ["src/generated/README.generated.md", 4],
+    ["src/generated/generatedPage.jsx", 20],
+    ["src/generated/generatedPage.css", 30],
+    ["src/generated/deprecatedGeneratedPage.jsx", 90]
   ]);
 
   return operations
@@ -488,7 +958,11 @@ function buildOperations(request, buildId, instructionHash) {
       absolutePath: path.join(generatedDir, operation.path),
       content: contentByPath.get(operation.path) || ""
     }))
-    .sort((a, b) => (priorityByPath.get(a.path) || 50) - (priorityByPath.get(b.path) || 50) || a.index - b.index);
+    .sort((a, b) => {
+      const aPriority = priorityByPath.get(a.path) || (a.path.startsWith("src/generated/pages/") ? 10 : 50);
+      const bPriority = priorityByPath.get(b.path) || (b.path.startsWith("src/generated/pages/") ? 10 : 50);
+      return aPriority - bPriority || a.index - b.index;
+    });
 }
 
 async function applyOperation(operation) {

@@ -2,10 +2,12 @@ const graphEl = document.getElementById("graph");
 const statusEl = document.getElementById("status");
 const legendEl = document.getElementById("legend");
 const insightEl = document.getElementById("insight");
+const params = new URLSearchParams(window.location.search);
 
-if (new URLSearchParams(window.location.search).has("embedded")) {
+if (params.has("embedded")) {
   document.documentElement.classList.add("embedded");
 }
+document.documentElement.dataset.theme = params.get("theme") === "light" ? "light" : "dark";
 
 const colors = {
   project: "#a855f7",
@@ -91,11 +93,22 @@ function agentProfile(node) {
   return { icon: "🤖", label: "Agent" };
 }
 
+function emptyInsightHtml() {
+  return `
+    <div class="insight-empty">
+      <span>NODE INSIGHT</span>
+      <h2>Explore the system</h2>
+      <p>Select any node to inspect its purpose, status, metadata, and connections.</p>
+    </div>`;
+}
+
 async function loadGraph() {
+  const graphUrl = params.get("graphUrl");
   const sources = [
+    graphUrl,
     "http://localhost:8080/api/agentic-system/graph",
     "/topology/d3/agentic-system-graph.json"
-  ];
+  ].filter(Boolean);
   let lastError;
   for (const source of sources) {
     try {
@@ -131,13 +144,20 @@ function drag(simulation) {
 loadGraph()
   .then((data) => {
     const nodes = data.nodes.map((node) => ({ ...node, metadata: { ...(node.metadata || {}) } }));
-    const links = data.links.map((link) => ({ ...link, metadata: { ...(link.metadata || {}) } }));
     const nodeById = new Map(nodes.map((node) => [node.id, node]));
+    const links = data.links
+      .map((link) => ({ ...link, metadata: { ...(link.metadata || {}) } }))
+      .filter((link) => {
+        const source = typeof link.source === "object" ? link.source.id : link.source;
+        const target = typeof link.target === "object" ? link.target.id : link.target;
+        return nodeById.has(source) && nodeById.has(target);
+      });
     const groups = Array.from(new Set(nodes.map((node) => node.type)));
 
     statusEl.textContent = `${nodes.length} nodes · ${links.length} relationships · Click a node for insight`;
+    let activeType = "";
     legendEl.innerHTML = groups
-      .map((group) => `<span><i style="background:${colors[group] || "#64748b"}"></i>${humanize(group)}</span>`)
+      .map((group) => `<button type="button" data-node-type="${escapeHtml(group)}"><i style="background:${colors[group] || "#64748b"}"></i>${humanize(group)}</button>`)
       .join("");
 
     const width = Math.max(graphEl.clientWidth, 640);
@@ -229,6 +249,35 @@ loadGraph()
     function nodeId(value) {
       return typeof value === "object" ? value.id : value;
     }
+
+    function applyTypeFilter(type) {
+      activeType = !type || activeType === type ? "" : type;
+      legendEl.querySelectorAll("[data-node-type]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.nodeType === activeType);
+      });
+      node.classed("type-hidden", (row) => Boolean(activeType) && row.type !== activeType);
+      link.classed("type-hidden", (row) => {
+        if (!activeType) return false;
+        const source = nodeById.get(nodeId(row.source));
+        const target = nodeById.get(nodeId(row.target));
+        return source?.type !== activeType || target?.type !== activeType;
+      });
+      statusEl.textContent = activeType
+        ? `${nodes.filter((row) => row.type === activeType).length} ${humanize(activeType)} nodes visible · Use Show network to reset`
+        : `${nodes.length} nodes · ${links.length} relationships · Click a node for insight`;
+    }
+
+    function resetNetworkView() {
+      applyTypeFilter("");
+      node.classed("selected", false).classed("muted", false);
+      link.classed("muted", false);
+      insightEl.innerHTML = emptyInsightHtml();
+      fitGraph();
+    }
+
+    legendEl.querySelectorAll("[data-node-type]").forEach((button) => {
+      button.addEventListener("click", () => applyTypeFilter(button.dataset.nodeType));
+    });
 
     function connectionsFor(selected) {
       return links
@@ -333,6 +382,7 @@ loadGraph()
     document.getElementById("zoom-in").addEventListener("click", () => svg.transition().call(zoom.scaleBy, 1.3));
     document.getElementById("zoom-out").addEventListener("click", () => svg.transition().call(zoom.scaleBy, 0.77));
     document.getElementById("fit-graph").addEventListener("click", () => fitGraph());
+    document.getElementById("show-all-network").addEventListener("click", resetNetworkView);
     document.getElementById("restart-force").addEventListener("click", () => simulation.alpha(0.95).restart());
 
     const forceButton = document.getElementById("toggle-force");

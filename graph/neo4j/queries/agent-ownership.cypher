@@ -1,1 +1,1 @@
-MATCH (a:Agent)-[:OWNS]->(n) RETURN a, n;
+MATCH (a:Agent)-[:OWNS|VALIDATES|REVIEWS]->(n) RETURN a,n;

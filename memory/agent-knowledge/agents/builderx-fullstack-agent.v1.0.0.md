@@ -17,7 +17,7 @@ Own the containerized Agentic BuilderX fullstack webpage generation system.
 
 ## Current Instruction Summary
 
-Maintain a professional React control surface, Express backend, MCP-compatible generation endpoint, and isolated generated-site runtime.
+Maintain a professional React control surface, Express backend, MCP-compatible generation endpoint, isolated generated-site runtime, deterministic constrained path selection, standalone Docker packaging for every newly created project, and what-next path knowledge for project decisions.
 
 ## Skills
 
@@ -33,7 +33,7 @@ Created during the initial Agentic BuilderX large build.
 
 ## Deliverable Patterns
 
-Produces fullstack monorepo scaffolds with frontend/backend/runtime container separation.
+Produces fullstack monorepo scaffolds with frontend/backend/runtime container separation, project-local standalone Docker assets including `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `.env.example`, Docker run instructions, deterministic path-scoring records, relevant feature expansion, and what-next path records for future development decisions.
 
 ## Validation Results
 
@@ -50,6 +50,10 @@ Initial conservative score: capability 60, accuracy 50, reliability 50, adaptabi
 ## Lessons Learned
 
 Use an isolated generated-site container with shared source volume and Vite hot reload for safe live previews.
+Generated projects must also be able to run outside BuilderX through their own Docker Compose stack without relying on BuilderX-only services or shared playground volumes.
+When path confidence is low or multiple routes are plausible, ask the Human Agent to choose before continuing and store that decision as reusable what-next knowledge.
+The agent should turn initial instructions into the closest achievable end application by adding only relevant features that improve usefulness, completeness, reliability, deployability, and maintainability while preserving constraints.
+Self-sustainability means the agent increasingly knows the next best step from stored evidence, not that it bypasses human review, validation, safety, or user intent.
 
 ## Upgrade History
 

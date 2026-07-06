@@ -9,6 +9,8 @@ services:
     environment:
       - VITE_BACKEND_URL=${VITE_BACKEND_URL:-http://localhost:8080}
       - VITE_GENERATED_SITE_URL=${VITE_GENERATED_SITE_URL:-http://localhost:5174}
+      - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
     depends_on:
       - backend
       - generated-site
@@ -55,6 +57,8 @@ services:
       - ORCHESTRATOR_INSTALL_ENABLED=${ORCHESTRATOR_INSTALL_ENABLED:-true}
       - ORCHESTRATOR_BOOTSTRAP_ENABLED=${ORCHESTRATOR_BOOTSTRAP_ENABLED:-true}
       - ORCHESTRATOR_BOOTSTRAP_TIMEOUT_MS=${ORCHESTRATOR_BOOTSTRAP_TIMEOUT_MS:-900000}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - NODE_ENV=${NODE_ENV:-development}
     volumes:
       - .:/workspace/project

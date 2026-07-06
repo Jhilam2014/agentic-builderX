@@ -12,10 +12,32 @@
       "type": "object"
     },
     "nodes": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "label",
+          "group",
+          "risk_level",
+          "status"
+        ],
+        "additionalProperties": true
+      }
     },
     "links": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "target",
+          "type",
+          "weight"
+        ],
+        "additionalProperties": true
+      }
     }
   }
 }

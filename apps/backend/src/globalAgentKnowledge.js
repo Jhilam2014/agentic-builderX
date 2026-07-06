@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import fs from "fs-extra";
 import path from "node:path";
+import { summarizeAgentTokenEconomy } from "./tokenEconomy.js";
 
 export function builderxRoot() {
   if (process.env.BUILDERX_PROJECT_ROOT) return process.env.BUILDERX_PROJECT_ROOT;
@@ -145,9 +146,9 @@ function candidateProjectRoots() {
     .split(path.delimiter)
     .map((entry) => entry.trim())
     .filter(Boolean);
-  return [...explicit, builder, path.join(root, "apps", "geofinderx"), path.join(root, "orchestrator-agent-001")]
+  return uniquePaths([...explicit, builder, path.join(root, "apps", "geofinderx"), path.join(root, "orchestrator-agent-001")]
     .concat(["/workspace/project", "/workspace/money/apps/geofinderx", "/workspace/money/orchestrator-agent-001"])
-    .map((entry) => path.resolve(entry));
+    .map((entry) => path.resolve(entry)));
 }
 
 function displayProjectName(projectRoot) {
@@ -160,6 +161,7 @@ function displayProjectName(projectRoot) {
 }
 
 function prettyProjectName(value) {
+  if (String(value).toLowerCase() === "project" || String(value).toLowerCase() === "agentic-builderx") return "Agentic BuilderX";
   if (String(value).toLowerCase() === "mapex") return "MapEx";
   if (String(value).toLowerCase() === "geofinderx") return "GeoFinderX";
   return value;
@@ -385,6 +387,35 @@ function mergeRemoteVectorStatus(agent, remoteByHash, remoteBySourcePath) {
   };
 }
 
+function mergeVectorFileIntoAgent(agent, file, vectorStoreId) {
+  return {
+    ...agent,
+    vector: {
+      ...agent.vector,
+      status: file.status === "completed" ? "completed" : file.status || agent.vector?.status || "unknown",
+      file_id: file.id || agent.vector?.file_id,
+      vector_store_id: vectorStoreId || agent.vector?.vector_store_id,
+      source: "openai_vector_store",
+      attributes: file.attributes || agent.vector?.attributes || null
+    }
+  };
+}
+
+const singletonAgentIds = new Set(["project-execution-agent", "human-controller"]);
+
+function collapseDisplayDuplicates(agents) {
+  const byKey = new Map();
+  for (const agent of agents) {
+    const key = singletonAgentIds.has(agent.id) ? `singleton:${agent.id}` : `${agent.project}:${agent.id}`;
+    const candidate = singletonAgentIds.has(agent.id)
+      ? { ...agent, project: "Shared Orchestrator Runtime" }
+      : agent;
+    const existing = byKey.get(key);
+    if (!existing || agentRichness(candidate) > agentRichness(existing)) byKey.set(key, candidate);
+  }
+  return [...byKey.values()];
+}
+
 function isAgentMemoryVectorFile(file) {
   const attrs = file.attributes || {};
   return Boolean(
@@ -480,6 +511,7 @@ export async function listGlobalAgents() {
   const agentsByKey = new Map();
   const roots = [];
   const builderRoot = builderxRoot();
+  const tokenEconomyByAgent = await summarizeAgentTokenEconomy();
   const openAiConfig = await openAiConfigFor(path.join(workspaceRoot(), "apps", "geofinderx"));
   const remote = await listOpenAiVectorFiles(openAiConfig);
   const remoteByHash = new Map(remote.files.filter((file) => file.attributes?.content_sha256).map((file) => [file.attributes.content_sha256, file]));
@@ -492,7 +524,9 @@ export async function listGlobalAgents() {
     const registryScores = await readRegistryScores(projectRoot);
     const markdownFiles = [
       ...(await collectFiles(path.join(projectRoot, "memory", "agent-knowledge", "agents"), (file) => file.endsWith(".md"))),
-      ...(await collectFiles(path.join(projectRoot, "agents", "generated"), (file) => file.endsWith(".agent.md")))
+      ...(await collectFiles(path.join(projectRoot, "agents", "generated"), (file) => file.endsWith(".agent.md"))),
+      ...(await collectFiles(path.join(projectRoot, "agents", "custom"), (file) => file.endsWith(".agent.md"))),
+      ...(await collectFiles(path.join(projectRoot, "agents", "human"), (file) => file.endsWith(".agent.md")))
     ];
     roots.push(projectRoot);
 
@@ -509,18 +543,70 @@ export async function listGlobalAgents() {
     }
   }
 
-  const agents = [...agentsByKey.values()];
+  const localAgentsById = new Map();
+  for (const agent of agentsByKey.values()) {
+    const existing = localAgentsById.get(agent.id);
+    if (!existing || agentRichness(agent) > agentRichness(existing)) localAgentsById.set(agent.id, agent);
+  }
+
   for (const file of remote.files.filter(isAgentMemoryVectorFile)) {
     const vectorAgent = normalizeAgentFromVectorFile(file, openAiConfig.vectorStoreId);
     const key = `${vectorAgent.project}:${vectorAgent.id}`;
     const existing = agentsByKey.get(key);
+    const localAgent = localAgentsById.get(vectorAgent.id);
+    if (!existing && localAgent) {
+      const localKey = `${localAgent.project}:${localAgent.id}`;
+      agentsByKey.set(localKey, mergeVectorFileIntoAgent(localAgent, file, openAiConfig.vectorStoreId));
+      continue;
+    }
     if (!existing || agentRichness(vectorAgent) > agentRichness(existing)) {
       agentsByKey.set(key, vectorAgent);
     }
   }
-  const mergedAgents = [...agentsByKey.values()];
+  const mergedAgents = collapseDisplayDuplicates([...agentsByKey.values()]).map((agent) => {
+    const tokenEconomy = tokenEconomyByAgent[agent.id] || {
+      totalRuns: 0,
+      inputTokens: 0,
+      outputTokens: 0,
+      totalTokens: 0,
+      inputCredits: 0,
+      outputCredits: 0,
+      totalCredits: 0,
+      estimatedUsd: 0,
+      inputEstimatedUsd: 0,
+      outputEstimatedUsd: 0,
+      averageTotalTokens: 0,
+      averageInputTokens: 0,
+      averageOutputTokens: 0,
+      averageUsd: 0,
+      averageAccuracyValue: 0,
+      averageEfficiencyScore: 0,
+      averageAbilityScore: 0,
+      tokensPerAccuracyPoint: 0,
+      usdPerAccuracyPoint: 0,
+      lastRunAt: "",
+      timeline: []
+    };
+    return {
+      ...agent,
+      efficiency: {
+        ...agent.efficiency,
+        accuracy: tokenEconomy.averageAccuracyValue || agent.efficiency?.accuracy || 0,
+        capability: tokenEconomy.averageAbilityScore || agent.efficiency?.capability || 0,
+        economy: tokenEconomy.averageEfficiencyScore || 0
+      },
+      tokenEconomy
+    };
+  });
   const vectorOnlyAgentCount = mergedAgents.filter((agent) => agent.project === "Global Vector Memory").length;
-  mergedAgents.sort((a, b) => `${a.project}:${a.name}`.localeCompare(`${b.project}:${b.name}`));
+  mergedAgents.sort((a, b) => {
+    const lastUsedDiff =
+      new Date(b.tokenEconomy?.lastRunAt || 0).getTime() - new Date(a.tokenEconomy?.lastRunAt || 0).getTime();
+    if (lastUsedDiff) return lastUsedDiff;
+    const runDiff = Number(b.tokenEconomy?.totalRuns || 0) - Number(a.tokenEconomy?.totalRuns || 0);
+    if (runDiff) return runDiff;
+    return `${a.project}:${a.name}`.localeCompare(`${b.project}:${b.name}`);
+  });
   return {
     status: "ok",
     source: {

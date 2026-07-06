@@ -1,12 +1,6 @@
 {
-  "checked_at": "2026-06-25T00:00:00+05:30",
-  "status": "warning",
-  "missing": [
-    "OPENAI_API_KEY",
-    "OPENAI_AGENT_VECTOR_STORE_ID",
-    "NEO4J_URI",
-    "NEO4J_USERNAME",
-    "NEO4J_PASSWORD"
-  ],
+  "checked_at": "2026-06-29T22:53:21+00:00",
+  "status": "success",
+  "missing": [],
   "secrets_logged": false
 }

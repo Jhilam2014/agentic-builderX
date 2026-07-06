@@ -1,3 +1,3 @@
 # Agentic System D3 Page
 
-Open `agentic-system/d3/index.html` through a static server rooted at `agentic-builderX`, or use the `Open Agentic System D3` button inside the BuilderX frontend. The page reads `topology/d3/agentic-system-graph.json` and visualizes the active BuilderX agent, its owned functionality clusters, child feature nodes, services, MCP API, generated-site runtime, memory providers, Neo4j artifact status, and human review node.
+Open `agentic-system/d3/index.html` from a local static server rooted at the repository root. The page reads `topology/d3/agentic-system-graph.json` and visualizes agents, memory, Neo4j graph status, vector status, validation, and ownership relationships.

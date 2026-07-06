@@ -1,2 +1,3 @@
-CREATE INDEX cluster_risk IF NOT EXISTS FOR (n:Cluster) ON (n.risk_level);
-CREATE INDEX service_status IF NOT EXISTS FOR (n:Service) ON (n.status);
+CREATE INDEX agent_status IF NOT EXISTS FOR (n:Agent) ON (n.status);
+CREATE INDEX functionality_status IF NOT EXISTS FOR (n:ApplicationFunctionality) ON (n.status);
+CREATE INDEX workflow_status IF NOT EXISTS FOR (n:Workflow) ON (n.status);

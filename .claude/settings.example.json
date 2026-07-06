@@ -1,0 +1,8 @@
+{
+  "instructions": [
+    "Read CLAUDE.md",
+    "Read AGENTS.md",
+    "Read ROOT_WORKSPACE_GENERATION_POLICY.md",
+    "Use .codex/prompts/task-router.md for task type routing"
+  ]
+}
