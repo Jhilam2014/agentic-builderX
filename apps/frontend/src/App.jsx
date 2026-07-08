@@ -105,25 +105,25 @@ function recommendBrandPalette(context = "") {
   };
 }
 const agentVisuals = {
-  "builderx-fullstack-agent": { color: "#334155", accent: "#38bdf8", label: "Fullstack", initials: "BX" },
-  "builderx-independent-reviewer": { color: "#581c87", accent: "#e879f9", label: "Reviewer", initials: "BR" },
-  "project-execution-agent": { color: "#0f766e", accent: "#22c55e", label: "Execution", initials: "PX" },
-  "human-controller": { color: "#7f1d1d", accent: "#fb7185", label: "Human", initials: "HC" },
-  "agent-memory-sync": { color: "#4c1d95", accent: "#a78bfa", label: "Memory", initials: "AM" },
-  "geofinderx-orchestrator-agent": { color: "#7c3aed", accent: "#2dd4bf", label: "Orchestrator", initials: "GO" },
-  "geofinderx-ui-composition-agent": { color: "#2563eb", accent: "#93c5fd", label: "UI", initials: "GU" },
-  "geofinderx-content-data-agent": { color: "#d97706", accent: "#facc15", label: "Content", initials: "GC" },
-  "geofinderx-runtime-packaging-agent": { color: "#0f766e", accent: "#5eead4", label: "Runtime", initials: "GR" },
-  "geofinderx-local-execution-agent": { color: "#0f766e", accent: "#86efac", label: "Execution", initials: "GX" },
-  "mapex-orchestrator-agent": { color: "#7c3aed", accent: "#c4b5fd", label: "Orchestrator", initials: "MO" },
-  "mapex-ui-composition-agent": { color: "#2563eb", accent: "#60a5fa", label: "UI", initials: "MU" },
-  "mapex-content-data-agent": { color: "#d97706", accent: "#fbbf24", label: "Content", initials: "MC" },
-  "mapex-runtime-packaging-agent": { color: "#0f766e", accent: "#2dd4bf", label: "Runtime", initials: "MR" },
-  "mapex-commerce-catalog-agent": { color: "#be123c", accent: "#fb7185", label: "Commerce", initials: "MS" },
-  "instagram-ocr": { color: "#be185d", accent: "#f9a8d4", label: "OCR", initials: "IO" },
-  "rtt-signal-analysis": { color: "#1d4ed8", accent: "#67e8f9", label: "Signal", initials: "RS" },
-  "whatsapp-auto-reply": { color: "#15803d", accent: "#86efac", label: "Reply", initials: "WA" },
-  "voice-assist": { color: "#0369a1", accent: "#7dd3fc", label: "Voice", initials: "VA" }
+  "builderx-fullstack-agent": { color: "#334155", accent: "#38bdf8", label: "Fullstack", initials: "BX", kind: "fullstack" },
+  "builderx-independent-reviewer": { color: "#581c87", accent: "#e879f9", label: "Reviewer", initials: "BR", kind: "reviewer" },
+  "project-execution-agent": { color: "#0f766e", accent: "#22c55e", label: "Execution", initials: "PX", kind: "execution" },
+  "human-controller": { color: "#7f1d1d", accent: "#fb7185", label: "Human", initials: "HC", kind: "human" },
+  "agent-memory-sync": { color: "#4c1d95", accent: "#a78bfa", label: "Memory", initials: "AM", kind: "memory" },
+  "geofinderx-orchestrator-agent": { color: "#7c3aed", accent: "#2dd4bf", label: "Orchestrator", initials: "GO", kind: "geo-orchestrator" },
+  "geofinderx-ui-composition-agent": { color: "#2563eb", accent: "#93c5fd", label: "UI", initials: "GU", kind: "ui" },
+  "geofinderx-content-data-agent": { color: "#d97706", accent: "#facc15", label: "Content", initials: "GC", kind: "geo-data" },
+  "geofinderx-runtime-packaging-agent": { color: "#0f766e", accent: "#5eead4", label: "Runtime", initials: "GR", kind: "runtime" },
+  "geofinderx-local-execution-agent": { color: "#0f766e", accent: "#86efac", label: "Execution", initials: "GX", kind: "execution" },
+  "mapex-orchestrator-agent": { color: "#7c3aed", accent: "#c4b5fd", label: "Orchestrator", initials: "MO", kind: "commerce-orchestrator" },
+  "mapex-ui-composition-agent": { color: "#2563eb", accent: "#60a5fa", label: "UI", initials: "MU", kind: "ui" },
+  "mapex-content-data-agent": { color: "#d97706", accent: "#fbbf24", label: "Content", initials: "MC", kind: "content" },
+  "mapex-runtime-packaging-agent": { color: "#0f766e", accent: "#2dd4bf", label: "Runtime", initials: "MR", kind: "runtime" },
+  "mapex-commerce-catalog-agent": { color: "#be123c", accent: "#fb7185", label: "Commerce", initials: "MS", kind: "commerce" },
+  "instagram-ocr": { color: "#be185d", accent: "#f9a8d4", label: "OCR", initials: "IO", kind: "ocr" },
+  "rtt-signal-analysis": { color: "#1d4ed8", accent: "#67e8f9", label: "Signal", initials: "RS", kind: "signal" },
+  "whatsapp-auto-reply": { color: "#15803d", accent: "#86efac", label: "Reply", initials: "WA", kind: "reply" },
+  "voice-assist": { color: "#0369a1", accent: "#7dd3fc", label: "Voice", initials: "VA", kind: "voice" }
 };
 const defaultProjectFlowNodes = [
   { id: "intake", label: "Instruction intake", state: "pending", detail: "Waiting for project creation." },
@@ -363,6 +363,7 @@ function agentVisualFromId(agentId, fallback = {}) {
     role: fallback.role || base.label || fallback.domain || "",
     objective: fallback.objective || fallback.instructionSummary || "",
     capabilities: fallback.capabilities || [],
+    kind: base.kind || fallback.profile?.kind || fallback.kind || "",
     variant: hash % 6
   };
 }
@@ -413,16 +414,23 @@ function agentVisualFromEvent(event, selectedProject = null) {
 }
 
 function agentIconKind(avatar = {}) {
+  if (avatar.kind) return String(avatar.kind).toLowerCase().replace(/[^a-z0-9-]+/g, "-");
   const value = `${avatar.id || ""} ${avatar.name || ""} ${avatar.label || ""} ${avatar.role || ""} ${avatar.objective || ""} ${(avatar.capabilities || []).join(" ")}`.toLowerCase();
   if (value.includes("human") || value === "user") return "human";
   if (value.includes("qagent")) return "qagent";
+  if (/ocr|image text|vision|extract/.test(value)) return "ocr";
+  if (/signal|rtt|metric|trend|forecast/.test(value)) return "signal";
+  if (/reply|message|whatsapp|chat automation/.test(value)) return "reply";
   if (/review|audit|validation|verifier|quality/.test(value)) return "reviewer";
   if (/security|auth|permission|compliance|privacy/.test(value)) return "security";
   if (/test|testing|qa|coverage/.test(value)) return "testing";
   if (/memory|vector|knowledge|graph/.test(value)) return "memory";
   if (/api|backend|service|integration|webhook/.test(value)) return "api";
   if (/voice|audio|speech/.test(value)) return "voice";
+  if (/map|geo|location|route/.test(value) && (value.includes("orchestrator") || value.includes("planner"))) return "geo-orchestrator";
+  if (/map|geo|location|route/.test(value) && (value.includes("data") || value.includes("content"))) return "geo-data";
   if (/map|geo|location|route/.test(value)) return "geo";
+  if ((value.includes("commerce") || value.includes("catalog")) && (value.includes("orchestrator") || value.includes("planner"))) return "commerce-orchestrator";
   if (value.includes("orchestrator") || value.includes("builderx") || value.includes("fullstack")) return "orchestrator";
   if (value.includes("ui") || value.includes("composition") || value.includes("frontend")) return "ui";
   if (/content|copy|media|ocr|document/.test(value)) return "content";
@@ -434,6 +442,87 @@ function agentIconKind(avatar = {}) {
 }
 
 function AgentGlyph({ kind }) {
+  if (kind === "fullstack") {
+    return (
+      <g className="agent-glyph">
+        <rect x="18" y="18" width="28" height="20" rx="4" />
+        <path d="M22 25h20M24 32h8M18 43h28M24 43v5M32 38v10M40 43v5" />
+        <circle cx="24" cy="48" r="2.4" />
+        <circle cx="32" cy="48" r="2.4" />
+        <circle cx="40" cy="48" r="2.4" />
+      </g>
+    );
+  }
+  if (kind === "execution") {
+    return (
+      <g className="agent-glyph">
+        <path d="M22 22h20l4 7-14 13-14-13 4-7Z" />
+        <path d="M27 31l4 4 8-9" />
+        <path d="M20 45h24M25 45l-4 5M39 45l4 5" />
+      </g>
+    );
+  }
+  if (kind === "ocr") {
+    return (
+      <g className="agent-glyph">
+        <rect x="18" y="20" width="28" height="24" rx="4" />
+        <path d="M24 28h16M24 35h10M18 28h-4M50 28h-4M18 36h-4M50 36h-4" />
+        <circle cx="40" cy="38" r="4" />
+        <path d="M43 41l5 5" />
+      </g>
+    );
+  }
+  if (kind === "signal") {
+    return (
+      <g className="agent-glyph">
+        <path d="M18 43h28M22 41c4-18 8-18 12 0s8 18 12 0" />
+        <path d="M20 28h6M38 28h6M28 20l4-4 4 4" />
+        <circle cx="32" cy="32" r="3" />
+      </g>
+    );
+  }
+  if (kind === "reply") {
+    return (
+      <g className="agent-glyph">
+        <path d="M18 22h28v18H30l-8 7v-7h-4V22Z" />
+        <path d="M25 30h14M25 36h9" />
+        <path d="M42 42l4 4 6-9" />
+      </g>
+    );
+  }
+  if (kind === "geo-orchestrator") {
+    return (
+      <g className="agent-glyph">
+        <path d="M32 48s12-11 12-21a12 12 0 1 0-24 0c0 10 12 21 12 21Z" />
+        <path d="M32 21v12M26 27h12" />
+        <circle cx="18" cy="18" r="3" />
+        <circle cx="46" cy="18" r="3" />
+        <circle cx="48" cy="43" r="3" />
+        <path d="M21 19l7 4M43 20l-7 4M42 40l-7-5" />
+      </g>
+    );
+  }
+  if (kind === "geo-data") {
+    return (
+      <g className="agent-glyph">
+        <path d="M20 22l9-4 11 4 8-3v25l-8 3-11-4-9 4V22Z" />
+        <path d="M29 18v25M40 22v25" />
+        <circle cx="34" cy="32" r="4" />
+      </g>
+    );
+  }
+  if (kind === "commerce-orchestrator") {
+    return (
+      <g className="agent-glyph">
+        <path d="M20 27h24l-3 14H23l-3-14Z" />
+        <path d="M25 27c1-6 4-9 7-9s6 3 7 9" />
+        <path d="M32 31v8M28 35h8" />
+        <circle cx="18" cy="45" r="3" />
+        <circle cx="46" cy="45" r="3" />
+        <path d="M23 41l-3 3M41 41l3 3" />
+      </g>
+    );
+  }
   if (kind === "reviewer") {
     return <g className="agent-glyph"><path d="M20 19h19l7 7-15 20-15-20 4-7Z" /><path d="M24 31l5 5 11-13" /><circle cx="44" cy="19" r="4" /></g>;
   }

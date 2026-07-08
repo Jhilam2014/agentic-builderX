@@ -207,6 +207,9 @@ function fallbackCapabilities({ role, domain, objective }) {
   const capabilities = [];
   if (haystack.includes("orchestrator")) capabilities.push("task routing", "specialist coordination", "workflow handoff");
   if (haystack.includes("ui") || haystack.includes("react") || haystack.includes("composition")) capabilities.push("React UI", "responsive layout", "interaction states");
+  if (haystack.includes("ocr") || haystack.includes("vision")) capabilities.push("visual text extraction", "media parsing", "image-to-data review");
+  if (haystack.includes("signal") || haystack.includes("rtt")) capabilities.push("signal detection", "metric interpretation", "trend reporting");
+  if (haystack.includes("reply") || haystack.includes("whatsapp") || haystack.includes("message")) capabilities.push("conversation automation", "message drafting", "reply policy handling");
   if (haystack.includes("content") || haystack.includes("data")) capabilities.push("content modeling", "metadata shaping", "copy structure");
   if (haystack.includes("runtime") || haystack.includes("packaging") || haystack.includes("docker")) capabilities.push("runtime packaging", "Vite handoff", "container readiness");
   if (haystack.includes("commerce") || haystack.includes("catalog")) capabilities.push("catalog modeling", "storefront conversion", "product details");
@@ -222,15 +225,22 @@ function scoreFromText(content, label) {
 
 function inferProfile(agent) {
   const haystack = `${agent.name} ${agent.role} ${agent.domain} ${agent.objective} ${agent.capabilities.join(" ")}`.toLowerCase();
-  if (haystack.includes("execution")) return { icon: "🛠️", label: "Execution", color: "#0f766e" };
-  if (haystack.includes("orchestrator")) return { icon: "🧭", label: "Orchestrator", color: "#7c3aed" };
-  if (haystack.includes("fullstack") || haystack.includes("backend")) return { icon: "🧱", label: "Fullstack", color: "#334155" };
-  if (haystack.includes("ui") || haystack.includes("react") || haystack.includes("composition")) return { icon: "🎨", label: "UI / Experience", color: "#2563eb" };
-  if (haystack.includes("runtime") || haystack.includes("docker") || haystack.includes("packaging")) return { icon: "⚙️", label: "Runtime", color: "#0f766e" };
-  if (haystack.includes("content") || haystack.includes("data")) return { icon: "🗂️", label: "Content / Data", color: "#d97706" };
-  if (haystack.includes("commerce") || haystack.includes("catalog")) return { icon: "🛍️", label: "Commerce", color: "#be123c" };
-  if (haystack.includes("map") || haystack.includes("geo") || haystack.includes("search")) return { icon: "🗺️", label: "Geo / Search", color: "#0891b2" };
-  return { icon: "🤖", label: "Agent", color: "#475569" };
+  if (haystack.includes("ocr") || haystack.includes("image text") || haystack.includes("vision")) return { icon: "🔎", label: "OCR / Vision", color: "#be185d", accent: "#f9a8d4", kind: "ocr" };
+  if (haystack.includes("signal") || haystack.includes("rtt") || haystack.includes("metric")) return { icon: "📡", label: "Signal analysis", color: "#1d4ed8", accent: "#67e8f9", kind: "signal" };
+  if (haystack.includes("reply") || haystack.includes("whatsapp") || haystack.includes("message")) return { icon: "💬", label: "Reply automation", color: "#15803d", accent: "#86efac", kind: "reply" };
+  if (haystack.includes("execution")) return { icon: "🛠️", label: "Execution", color: "#0f766e", accent: "#22c55e", kind: "execution" };
+  if ((haystack.includes("map") || haystack.includes("geo") || haystack.includes("location")) && haystack.includes("orchestrator")) return { icon: "🧭", label: "Geo orchestrator", color: "#7c3aed", accent: "#2dd4bf", kind: "geo-orchestrator" };
+  if ((haystack.includes("commerce") || haystack.includes("catalog")) && haystack.includes("orchestrator")) return { icon: "🛒", label: "Commerce orchestrator", color: "#7c3aed", accent: "#fb7185", kind: "commerce-orchestrator" };
+  if (haystack.includes("orchestrator")) return { icon: "🎛️", label: "Orchestrator", color: "#7c3aed", accent: "#c4b5fd", kind: "orchestrator" };
+  if (haystack.includes("fullstack") || haystack.includes("backend")) return { icon: "🧱", label: "Fullstack", color: "#334155", accent: "#38bdf8", kind: "fullstack" };
+  if (haystack.includes("ui") || haystack.includes("react") || haystack.includes("composition")) return { icon: "🎨", label: "UI / Experience", color: "#2563eb", accent: "#93c5fd", kind: "ui" };
+  if (haystack.includes("runtime") || haystack.includes("docker") || haystack.includes("packaging")) return { icon: "⚙️", label: "Runtime", color: "#0f766e", accent: "#5eead4", kind: "runtime" };
+  if ((haystack.includes("map") || haystack.includes("geo") || haystack.includes("location")) && haystack.includes("data")) return { icon: "🗺️", label: "Geo data", color: "#0891b2", accent: "#67e8f9", kind: "geo-data" };
+  if (haystack.includes("content")) return { icon: "📝", label: "Content", color: "#d97706", accent: "#fbbf24", kind: "content" };
+  if (haystack.includes("data")) return { icon: "🗄️", label: "Data", color: "#b45309", accent: "#fde047", kind: "data" };
+  if (haystack.includes("commerce") || haystack.includes("catalog")) return { icon: "🛍️", label: "Commerce", color: "#be123c", accent: "#fb7185", kind: "commerce" };
+  if (haystack.includes("map") || haystack.includes("geo") || haystack.includes("search")) return { icon: "🗺️", label: "Geo / Search", color: "#0891b2", accent: "#67e8f9", kind: "geo" };
+  return { icon: "🤖", label: "Agent", color: "#475569", accent: "#cbd5e1", kind: "agent" };
 }
 
 function agentRichness(agent) {
