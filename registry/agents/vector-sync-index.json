@@ -368,7 +368,42 @@
       "status": "completed",
       "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
       "synced_at": "2026-07-04T19:20:34.053Z"
+    },
+    "agents/generated/protfolio-flyer-content-data-agent.agent.md": {
+      "content_sha256": "f5fe52f00541541d46d6d21d299ad36728315ddb6be88ba487cfc8d459df2b20",
+      "file_id": "file-Eb7ZXiC8opGiC4UGcBcT4P",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-07-08T23:12:09.173Z"
+    },
+    "agents/generated/protfolio-flyer-orchestrator-agent.agent.md": {
+      "content_sha256": "28f6ea38eb75ed9b122a44e29fe592b6385272c6f0d7abe31864a05fb609817f",
+      "file_id": "file-EfKAfFqQC6VDWoX4rNFe2v",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-07-08T23:12:11.559Z"
+    },
+    "agents/generated/protfolio-flyer-qagent-controller.agent.md": {
+      "content_sha256": "a248010197590b2db67df1cb3e7fc6c03d01a8861f4f2b71e77f438d02139095",
+      "file_id": "file-61nRmFXW1s7Y3m8dbfzRnx",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-07-08T23:12:14.862Z"
+    },
+    "agents/generated/protfolio-flyer-runtime-packaging-agent.agent.md": {
+      "content_sha256": "52a14927a154f9eae01bb55cda1d6eb743fc52eaa64613572ec4a2815934790b",
+      "file_id": "file-Y6ZD9arowwzD6H1tmGASKa",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-07-08T23:12:17.336Z"
+    },
+    "agents/generated/protfolio-flyer-ui-composition-agent.agent.md": {
+      "content_sha256": "73dc49f77fc48245a1aabd9c3911676faee5474e5c6f351d957462dd47e863d3",
+      "file_id": "file-CQ4SB6m3XmcH7yzpfJFqQj",
+      "status": "completed",
+      "vector_store_id": "vs_6a38ceb608dc81919bab1a27fdcf2300",
+      "synced_at": "2026-07-08T23:12:21.088Z"
     }
   },
-  "last_sync_at": "2026-07-08T21:23:45.312Z"
+  "last_sync_at": "2026-07-10T00:54:23.263Z"
 }

@@ -59,6 +59,7 @@ const NewProjectSchema = z.object({
   instruction: z.string().min(12).max(8000).optional(),
   taskType: z.enum(["Simple", "Medium", "Large", "Hard", "simple", "medium", "large", "small", "hard", "complex"]).optional(),
   mediaIds: z.array(z.string()).optional(),
+  stagedMediaIds: z.array(z.string()).optional(),
   stagedDocumentIds: z.array(z.string()).optional()
 });
 const ProjectImportSchema = z.object({
@@ -402,6 +403,15 @@ function stagedDocumentIndexPath(user) {
   return path.join(stagedDocumentRoot(user), "index.json");
 }
 
+function stagedMediaRoot(user) {
+  const userId = safeFileBase(user?.id || "anonymous");
+  return path.join(builderxProjectRoot(), "runtime", "staged-project-media", userId);
+}
+
+function stagedMediaIndexPath(user) {
+  return path.join(stagedMediaRoot(user), "index.json");
+}
+
 function documentPurposeFromName(name = "", mimeType = "") {
   const value = `${name} ${mimeType}`.toLowerCase();
   if (value.includes("requirement") || value.includes("prd") || value.includes("scope")) return "requirements";
@@ -470,6 +480,61 @@ async function attachStagedDocumentsToProject(user, project, selectedIds = []) {
   }
   await writeStagedDocuments(user, staged.filter((row) => !selectedIds.includes(row.id)));
   return attached;
+}
+
+async function readStagedMedia(user) {
+  const indexPath = stagedMediaIndexPath(user);
+  if (!fs.existsSync(indexPath)) return [];
+  const rows = await fs.promises.readFile(indexPath, "utf8").then((value) => JSON.parse(value)).catch(() => []);
+  return Array.isArray(rows) ? rows : [];
+}
+
+async function writeStagedMedia(user, rows) {
+  const indexPath = stagedMediaIndexPath(user);
+  await fs.promises.mkdir(path.dirname(indexPath), { recursive: true });
+  await fs.promises.writeFile(indexPath, JSON.stringify(rows, null, 2));
+}
+
+async function stageProjectMedia(user, files = []) {
+  const root = stagedMediaRoot(user);
+  await fs.promises.mkdir(root, { recursive: true });
+  const existing = await readStagedMedia(user);
+  const staged = [];
+  for (const file of files) {
+    const storedName = `reference-${Date.now()}-${safeFileBase(file.originalname)}${safeExtension(file.originalname)}`;
+    const absolutePath = path.join(root, storedName);
+    await fs.promises.copyFile(file.path, absolutePath);
+    await fs.promises.rm(file.path, { force: true });
+    staged.push({
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      originalName: file.originalname,
+      name: storedName,
+      mimeType: file.mimetype,
+      size: file.size,
+      path: absolutePath,
+      relativePath: path.relative(builderxProjectRoot(), absolutePath).split(path.sep).join("/"),
+      purpose: "creation-reference",
+      uploadedAt: new Date().toISOString()
+    });
+  }
+  await writeStagedMedia(user, [...existing, ...staged]);
+  return staged;
+}
+
+async function attachStagedMediaToProject(user, project, selectedIds = []) {
+  if (!project?.id || !selectedIds.length) return { media: [], project };
+  const staged = await readStagedMedia(user);
+  const selected = staged.filter((row) => selectedIds.includes(row.id));
+  if (!selected.length) return { media: [], project };
+  const media = await saveProjectMedia(project, selected.map((row) => ({
+    path: row.path,
+    originalname: row.originalName,
+    mimetype: row.mimeType,
+    size: row.size
+  })), { purpose: "creation-reference" });
+  await writeStagedMedia(user, staged.filter((row) => !selectedIds.includes(row.id)));
+  const refreshedProject = await getProject(project.id, { user });
+  return { media, project: refreshedProject || project };
 }
 
 function graphNodeId(value) {
@@ -1242,6 +1307,15 @@ app.post("/api/auth/google", (req, res) => {
   }
 });
 
+app.get("/api/config", (_req, res) => {
+  res.json({
+    status: "ok",
+    googleClientId: process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || "",
+    runtimeTarget: process.env.AGENTIC_RUNTIME_TARGET || process.env.AGENT_EXECUTION_TARGET || process.env.BUILDERX_RUNTIME_TARGET || "auto",
+    aiProvider: process.env.AI_CLI_PROVIDER || "auto"
+  });
+});
+
 app.get("/api/projects", async (req, res) => {
   res.json({
     status: "ok",
@@ -1299,6 +1373,20 @@ app.post("/api/project-documents/stage", upload.array("documents", 12), async (r
   }
 });
 
+app.post("/api/project-media/stage", upload.array("media", 12), async (req, res) => {
+  const user = userFromRequest(req);
+  try {
+    const media = await stageProjectMedia(user, req.files || []);
+    event("project-media-staged", `Staged ${media.length} creation media reference${media.length === 1 ? "" : "s"}`, {
+      userId: user.id,
+      media: media.map((item) => ({ id: item.id, name: item.originalName, purpose: item.purpose }))
+    });
+    res.json({ status: "succeeded", media });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
 app.post("/api/agents/vector-sync", async (req, res) => {
   return res.status(403).json({
     status: "restricted",
@@ -1339,6 +1427,9 @@ app.post("/api/projects/new", async (req, res) => {
   try {
     project = await createProject(parsed.data.name, null, { emit: event, user });
     const projectDocuments = await attachStagedDocumentsToProject(user, project, parsed.data.stagedDocumentIds || []);
+    const stagedMediaResult = await attachStagedMediaToProject(user, project, parsed.data.stagedMediaIds || []);
+    project = stagedMediaResult.project;
+    const creationMedia = stagedMediaResult.media || [];
     const bootstrap = await runProjectOrchestratorBootstrap(project, { emit: event, setupMode: "new" });
     event("project-instruction-start", `Reading the UI instruction through ${project.name}'s bootstrapped orchestrator`, {
       projectId: project.id,
@@ -1346,7 +1437,10 @@ app.post("/api/projects/new", async (req, res) => {
       taskType: projectTaskType
     });
     const orchestrated = orchestrateBuilderInstruction(projectInstruction);
-    const media = (project.media || []).filter((item) => parsed.data.mediaIds?.includes(item.id));
+    const media = [
+      ...(project.media || []).filter((item) => parsed.data.mediaIds?.includes(item.id)),
+      ...creationMedia
+    ].filter((item, index, rows) => rows.findIndex((candidate) => candidate.id === item.id) === index);
     orchestrated.structuredRequest.media = media;
     orchestrated.structuredRequest.projectDocuments = projectDocuments;
     const projectAgents = await syncProjectAgentTopology(project, orchestrated.structuredRequest);

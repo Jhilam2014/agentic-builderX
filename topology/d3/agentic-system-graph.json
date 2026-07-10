@@ -1,14 +1,14 @@
 {
   "metadata": {
     "project_name": "agentic-builderX",
-    "generated_at": "2026-07-04T19:17:45.616Z",
+    "generated_at": "2026-07-09T02:48:19.620Z",
     "workflow_id": "bootstrap-orchestrator-001",
     "source": "orchestrator",
     "graph_version": "1.2.0",
     "neo4j_status": "ready",
     "vector_provider": "chroma_local_generated",
     "vector_status": "pending_install",
-    "managed_project_count": 5,
+    "managed_project_count": 6,
     "project_agent_source": "runtime/agents/projects"
   },
   "nodes": [
@@ -522,6 +522,115 @@
       }
     },
     {
+      "id": "project:protfolio-flyer-uehPYw",
+      "type": "project",
+      "label": "Protfolio-flyer",
+      "group": "project",
+      "risk_level": "medium",
+      "status": "managed",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw",
+        "folderName": "protfolio-flyer",
+        "workspaceDir": "/workspace/money/apps/protfolio-flyer",
+        "port": 5305,
+        "previewUrl": "http://localhost:5305",
+        "description": "Generate a professional landing page for digital product."
+      }
+    },
+    {
+      "id": "agent:protfolio-flyer-orchestrator-agent",
+      "type": "agent",
+      "label": "Protfolio Flyer Orchestrator Agent",
+      "group": "project-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "protfolio-flyer-orchestrator-agent",
+      "cluster_id": "project-orchestrator",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw",
+        "projectName": "Protfolio-flyer",
+        "supportAgent": false,
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
+        "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
+      }
+    },
+    {
+      "id": "agent:protfolio-flyer-qagent-controller",
+      "type": "agent",
+      "label": "Protfolio Flyer QAgent Controller",
+      "group": "system-support-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "protfolio-flyer-qagent-controller",
+      "cluster_id": "qagent-controller",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw",
+        "projectName": "Protfolio-flyer",
+        "supportAgent": true,
+        "responsibility": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code.",
+        "description": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code."
+      }
+    },
+    {
+      "id": "agent:protfolio-flyer-ui-composition-agent",
+      "type": "agent",
+      "label": "Protfolio Flyer UI Composition Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "protfolio-flyer-ui-composition-agent",
+      "cluster_id": "ui-composition",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw",
+        "projectName": "Protfolio-flyer",
+        "supportAgent": false,
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
+        "description": "Translate the project brief into responsive React views, layout, and interaction states."
+      }
+    },
+    {
+      "id": "agent:protfolio-flyer-content-data-agent",
+      "type": "agent",
+      "label": "Protfolio Flyer Content Data Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "protfolio-flyer-content-data-agent",
+      "cluster_id": "content-data",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw",
+        "projectName": "Protfolio-flyer",
+        "supportAgent": false,
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
+        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+      }
+    },
+    {
+      "id": "agent:protfolio-flyer-runtime-packaging-agent",
+      "type": "agent",
+      "label": "Protfolio Flyer Runtime Packaging Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "protfolio-flyer-runtime-packaging-agent",
+      "cluster_id": "runtime-packaging",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw",
+        "projectName": "Protfolio-flyer",
+        "supportAgent": false,
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
+        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+      }
+    },
+    {
       "id": "project:whatsappmediaanalyser-oAeSvn",
       "type": "project",
       "label": "WhatsappMediaAnalyser",
@@ -964,6 +1073,87 @@
       "metadata": {
         "dynamicProjectGraph": true,
         "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "project:protfolio-flyer-uehPYw",
+      "type": "creates_project",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:builderx-independent-reviewer",
+      "type": "may_request_review_from",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "adaptive": true,
+        "readOnly": true
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:protfolio-flyer-orchestrator-agent",
+      "type": "runtime_delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw"
+      }
+    },
+    {
+      "source": "project:protfolio-flyer-uehPYw",
+      "target": "agent:protfolio-flyer-orchestrator-agent",
+      "type": "has_orchestrator",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw"
+      }
+    },
+    {
+      "source": "agent:protfolio-flyer-orchestrator-agent",
+      "target": "agent:protfolio-flyer-qagent-controller",
+      "type": "uses_qagent_controller",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw"
+      }
+    },
+    {
+      "source": "agent:protfolio-flyer-orchestrator-agent",
+      "target": "agent:protfolio-flyer-ui-composition-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw"
+      }
+    },
+    {
+      "source": "agent:protfolio-flyer-orchestrator-agent",
+      "target": "agent:protfolio-flyer-content-data-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw"
+      }
+    },
+    {
+      "source": "agent:protfolio-flyer-orchestrator-agent",
+      "target": "agent:protfolio-flyer-runtime-packaging-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "protfolio-flyer-uehPYw"
       }
     },
     {

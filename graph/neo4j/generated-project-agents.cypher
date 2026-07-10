@@ -84,6 +84,30 @@ MATCH (a:Agent {id: "mapex-orchestrator-agent"}), (b:Agent {id: "mapex-ui-compos
 MATCH (a:Agent {id: "mapex-orchestrator-agent"}), (b:Agent {id: "mapex-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
 MATCH (a:Agent {id: "mapex-orchestrator-agent"}), (b:Agent {id: "mapex-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
 
+MERGE (p:Project {id: 'project:protfolio-flyer-uehPYw'})
+SET p.name = "Protfolio-flyer", p.folder_name = "protfolio-flyer", p.workspace_dir = "/workspace/money/apps/protfolio-flyer", p.port = 5305
+MERGE (a:Agent {id: "protfolio-flyer-orchestrator-agent"})
+SET a.name = "Protfolio Flyer Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MERGE (a:Agent {id: "protfolio-flyer-qagent-controller"})
+SET a.name = "Protfolio Flyer QAgent Controller", a.role = "qagent-controller", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MERGE (a:Agent {id: "protfolio-flyer-ui-composition-agent"})
+SET a.name = "Protfolio Flyer UI Composition Agent", a.role = "ui-composition", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MERGE (a:Agent {id: "protfolio-flyer-content-data-agent"})
+SET a.name = "Protfolio Flyer Content Data Agent", a.role = "content-data", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MERGE (a:Agent {id: "protfolio-flyer-runtime-packaging-agent"})
+SET a.name = "Protfolio Flyer Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MATCH (a:Agent {id: "builderx-fullstack-agent"}), (b:Agent {id: "protfolio-flyer-orchestrator-agent"}) MERGE (a)-[:RUNTIME_DELEGATES_TO]->(b)
+MATCH (p:Project {id: 'project:protfolio-flyer-uehPYw'}), (a:Agent {id: "protfolio-flyer-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
+MATCH (a:Agent {id: "protfolio-flyer-orchestrator-agent"}), (b:Agent {id: "protfolio-flyer-qagent-controller"}) MERGE (a)-[:USES_QAGENT_CONTROLLER]->(b)
+MATCH (a:Agent {id: "protfolio-flyer-orchestrator-agent"}), (b:Agent {id: "protfolio-flyer-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "protfolio-flyer-orchestrator-agent"}), (b:Agent {id: "protfolio-flyer-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "protfolio-flyer-orchestrator-agent"}), (b:Agent {id: "protfolio-flyer-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+
 MERGE (p:Project {id: 'project:whatsappmediaanalyser-oAeSvn'})
 SET p.name = "WhatsappMediaAnalyser", p.folder_name = "whatsappmediaanalyser", p.workspace_dir = "/workspace/money/apps/whatsappmediaanalyser", p.port = 5304
 MERGE (a:Agent {id: "whatsappmediaanalyser-orchestrator-agent"})

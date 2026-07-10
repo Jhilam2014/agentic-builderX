@@ -1,17 +1,17 @@
 {
-  "workflow_id": "builderx-vector-sync-1783545820699",
+  "workflow_id": "builderx-vector-sync-1783644853708",
   "reason": "periodic",
   "provider": "openai",
-  "started_at": "2026-07-08T21:23:40.698Z",
-  "completed_at": "2026-07-08T21:23:45.314Z",
+  "started_at": "2026-07-10T00:54:13.708Z",
+  "completed_at": "2026-07-10T00:54:23.267Z",
   "vector_store_id": "vs_6a38c…2300",
   "config_source": ".env",
   "scanned_roots": [
     "/workspace/project"
   ],
-  "local_files_scanned": 46,
+  "local_files_scanned": 51,
   "files_uploaded": 0,
-  "files_skipped": 46,
+  "files_skipped": 51,
   "files_failed": 0,
   "pending_sync_count": 0,
   "status": "success",
@@ -19,7 +19,7 @@
   "roots": [
     {
       "project": "project",
-      "scanned": 46,
+      "scanned": 51,
       "uploaded": [],
       "skipped": [
         "agents/generated/agenticongen-content-data-agent.agent.md",
@@ -42,6 +42,11 @@
         "agents/generated/mapex-runtime-packaging-agent.agent.md",
         "agents/generated/mapex-ui-composition-agent.agent.md",
         "agents/generated/project-execution-agent.agent.md",
+        "agents/generated/protfolio-flyer-content-data-agent.agent.md",
+        "agents/generated/protfolio-flyer-orchestrator-agent.agent.md",
+        "agents/generated/protfolio-flyer-qagent-controller.agent.md",
+        "agents/generated/protfolio-flyer-runtime-packaging-agent.agent.md",
+        "agents/generated/protfolio-flyer-ui-composition-agent.agent.md",
         "agents/generated/whatsappmediaanalyser-content-data-agent.agent.md",
         "agents/generated/whatsappmediaanalyser-orchestrator-agent.agent.md",
         "agents/generated/whatsappmediaanalyser-qagent-controller.agent.md",

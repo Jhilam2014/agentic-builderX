@@ -2813,6 +2813,8 @@ Agentic BuilderX should progressively become more self-sustaining: each run must
 
 When Agentic BuilderX creates a new app, it must generate the best suitable application for the user objective, not a thin demo, placeholder, or proof of concept unless the user explicitly asks for a demo or POC.
 
+Agentic BuilderX is not limited to classic web apps. It may generate or maintain web apps, mobile-app surfaces/prototypes, flyers, posters, PDF-style documents embedded inside webpages, downloadable/print-oriented document pages, Swagger/OpenAPI documentation pages, API reference portals, dashboards, landing pages, commerce flows, and other digital artifacts when the instruction or business use case calls for them. The orchestrator must classify the requested artifact type before planning and must not force every instruction into a generic website template.
+
 The orchestrator must extract direct and indirect functionality from:
 
 - the initial instruction prompt,

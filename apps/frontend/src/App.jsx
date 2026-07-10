@@ -36,6 +36,7 @@ import {
   Smartphone,
   Tablet,
   TerminalSquare,
+  Timer,
   Trash2,
   Upload,
   UserRound,
@@ -313,6 +314,16 @@ function gothamText(value) {
 
 function displayEventType(value) {
   return gothamText(value).replaceAll(/[_-]/g, " ");
+}
+
+function formatElapsedMs(value = 0) {
+  const totalSeconds = Math.max(0, Math.floor(Number(value || 0) / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return hours
+    ? `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+    : `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
 function agentIdFromProjectName(projectName) {
@@ -2372,6 +2383,7 @@ export default function App() {
   const [projectFlowPath, setProjectFlowPath] = useState(null);
   const [isFlowExpanded, setFlowExpanded] = useState(false);
   const [isCreatingProject, setCreatingProject] = useState(false);
+  const [stagedCreationMedia, setStagedCreationMedia] = useState([]);
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [isSelectingProject, setSelectingProject] = useState(false);
@@ -2388,6 +2400,8 @@ export default function App() {
   const [resolvedTheme, setResolvedTheme] = useState(() => document.documentElement.dataset.theme || "light");
   const [isGoogleSsoReady, setGoogleSsoReady] = useState(false);
   const [googleSignInMessage, setGoogleSignInMessage] = useState("");
+  const [publicConfig, setPublicConfig] = useState({});
+  const [elapsedNow, setElapsedNow] = useState(Date.now());
   const previewFrameRef = useRef(null);
   const googleIdentityRef = useRef(null);
   const googleButtonRef = useRef(null);
@@ -2407,7 +2421,8 @@ export default function App() {
   const canCreateProject = projectName.trim().length > 1 && !isCreatingProject && !selectedProject;
   const workflowRunning = isGenerating || generatedStatus === "working" || isCreatingProject || isSelectingProject;
   const mcpWorkflowRunning = isGenerating || isCreatingProject;
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.GOOGLE_CLIENT_ID;
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.GOOGLE_CLIENT_ID || publicConfig.googleClientId || "";
+  const workflowElapsedLabel = sessionStartedAt ? formatElapsedMs(elapsedNow - sessionStartedAt) : "0:00";
   const latestPersistedFlowPath = projectInstructions.find((entry) => (!selectedProjectId || entry.projectId === selectedProjectId) && entry?.flowPath?.decisionTree)?.flowPath || null;
   const activeProjectFlowPath = projectResult?.flowPath || projectFlowPath || latestPersistedFlowPath;
   const selectedProjectFlowPath = activeProjectFlowPath || (selectedProject ? {
@@ -2462,10 +2477,33 @@ export default function App() {
       setCurrentUser(event.detail || getStoredUser());
       setSelectedProjectId("");
       setProjects([]);
+      setStagedCreationMedia([]);
     }
     window.addEventListener("builderx-user-updated", syncUser);
     return () => window.removeEventListener("builderx-user-updated", syncUser);
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${BACKEND_URL}/api/config`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data?.status === "ok") setPublicConfig(data);
+      })
+      .catch(() => {
+        if (!cancelled) setPublicConfig({});
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mcpWorkflowRunning || !sessionStartedAt) return undefined;
+    setElapsedNow(Date.now());
+    const timer = window.setInterval(() => setElapsedNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [mcpWorkflowRunning, sessionStartedAt]);
 
   useEffect(() => {
     setGoogleSsoReady(false);
@@ -2473,7 +2511,7 @@ export default function App() {
     googleIdentityRef.current = null;
     if (currentUser) return undefined;
     if (!googleClientId) {
-      setGoogleSignInMessage("Google client ID is missing. Set VITE_GOOGLE_CLIENT_ID or GOOGLE_CLIENT_ID and restart the frontend.");
+      setGoogleSignInMessage("Google client ID is missing. Set GOOGLE_CLIENT_ID in backend .env or VITE_GOOGLE_CLIENT_ID in frontend env, then restart the app.");
       return undefined;
     }
     let attempts = 0;
@@ -2927,11 +2965,13 @@ export default function App() {
     const submittedInstruction = [
       baseInstruction,
       activePalette ? `Branding colours: ${activePalette.name} (${activePalette.colors.join(", ")}). ${activePalette.reason || "Selected manually."} Use these as brand direction while maintaining accessible text/background contrast.` : "",
-      activeAppIcon ? `Use uploaded app icon asset "${activeAppIcon.name}" at ${activeAppIcon.urlPath || activeAppIcon.path}.` : ""
+      activeAppIcon ? `Use uploaded app icon asset "${activeAppIcon.name}" at ${activeAppIcon.urlPath || activeAppIcon.path}.` : "",
+      stagedCreationMedia.length ? `Use staged creation media as project references: ${stagedCreationMedia.map((item) => item.originalName || item.name).join(", ")}.` : ""
     ].filter(Boolean).join("\n\n");
     const submittedPrompt = `Task Type: ${taskType}\nTask: ${submittedInstruction}`;
     setInstruction("");
     setSessionStartedAt(startedAt);
+    setElapsedNow(startedAt);
     const queuedEvent = {
       id: `queued-${Date.now()}`,
       type: "queued",
@@ -3058,6 +3098,8 @@ export default function App() {
       };
       setChatPrompts((current) => normalizeRuntimeRows([userMessage, ...current]));
     }
+    setSessionStartedAt(startedAt);
+    setElapsedNow(startedAt);
     setCreatingProject(true);
     setGeneratedStatus("working");
     setFlowExpanded(true);
@@ -3092,7 +3134,8 @@ export default function App() {
           name: projectName.trim(),
           instruction: submittedInstruction.length > 12 ? submittedInstruction : undefined,
           taskType,
-          mediaIds: selectedProject?.media?.map((item) => item.id) || []
+          mediaIds: selectedProject?.media?.map((item) => item.id) || [],
+          stagedMediaIds: stagedCreationMedia.map((item) => item.id)
         })
       });
       const data = await res.json();
@@ -3102,6 +3145,7 @@ export default function App() {
       await loadProjects();
       await loadProjectInstructions(data.project?.id || selectedProjectId);
       applyReadyProject(data.project);
+      setStagedCreationMedia([]);
     } catch (error) {
       setProjectResult((current) => ({
         ...(current || { projectName: projectName.trim(), previewUrl: GENERATED_SITE_URL }),
@@ -3120,18 +3164,25 @@ export default function App() {
   async function uploadMedia(event) {
     const files = Array.from(event.target.files || []);
     event.target.value = "";
-    if (!files.length || !selectedProject || selectedProject.isDefault) return;
+    if (!files.length || selectedProject?.isDefault) return;
     setUploadingMedia(true);
     try {
       const body = new FormData();
       for (const file of files) body.append("media", file);
-      const res = await authFetch(`${BACKEND_URL}/api/projects/${selectedProject.id}/media`, {
+      const url = selectedProject
+        ? `${BACKEND_URL}/api/projects/${selectedProject.id}/media`
+        : `${BACKEND_URL}/api/project-media/stage`;
+      const res = await authFetch(url, {
         method: "POST",
         body
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Media upload failed");
-      await loadProjects();
+      if (selectedProject) {
+        await loadProjects();
+      } else {
+        setStagedCreationMedia((current) => [...current, ...(data.media || [])].slice(-12));
+      }
     } catch (error) {
       setRuntimeLogs((current) =>
         mergeRuntimeRows(
@@ -3498,9 +3549,24 @@ export default function App() {
 
       <aside className="control-panel">
         <section className={`composer chat-card ${mcpWorkflowRunning ? "mcp-running-border" : ""}`} aria-busy={mcpWorkflowRunning}>
-          <div className="section-heading">
-            <TerminalSquare size={18} />
-            <h2>Gotham Builder chat</h2>
+          <div className="section-heading gotham-chat-heading">
+            <span className="gotham-ai-mark" aria-hidden="true">
+              <svg viewBox="0 0 32 32" focusable="false">
+                <path className="gotham-bat" d="M3 11c3 0 5 1 7 4l2-6 4 5 4-5 2 6c2-3 4-4 7-4-1 5-4 8-9 9l-4 5-4-5c-5-1-8-4-9-9Z" />
+                <path className="gotham-circuit" d="M10 20h4m4 0h4M16 14v9" />
+                <circle cx="10" cy="20" r="1.5" />
+                <circle cx="22" cy="20" r="1.5" />
+                <circle cx="16" cy="23" r="1.5" />
+              </svg>
+            </span>
+            <div>
+              <h2>Gotham Builder chat</h2>
+              <small>Batman-grade orchestration · agentic AI system</small>
+            </div>
+            <span className={`workflow-timer ${mcpWorkflowRunning ? "active" : ""}`} title="Current instruction elapsed time">
+              <Timer size={14} />
+              {workflowElapsedLabel}
+            </span>
           </div>
           <div className="project-onboarding">
             <input
@@ -3529,10 +3595,10 @@ export default function App() {
             </button>
           </div>
           <div className="project-tools">
-            <label className={`tool-action ${!selectedProject || selectedProject.isDefault ? "disabled" : ""}`}>
+            <label className={`tool-action ${selectedProject?.isDefault ? "disabled" : ""}`}>
               {isUploadingMedia ? <Loader2 className="spin" size={16} /> : <Upload size={16} />}
-              Media
-              <input type="file" multiple onChange={uploadMedia} disabled={!selectedProject || selectedProject.isDefault || isUploadingMedia} />
+              {selectedProject ? "Media" : "Reference"}
+              <input type="file" multiple onChange={uploadMedia} disabled={Boolean(selectedProject?.isDefault) || isUploadingMedia} />
             </label>
             <label className="tool-action">
               {isImportingProject ? <Loader2 className="spin" size={16} /> : <FolderUp size={16} />}
@@ -3556,9 +3622,12 @@ export default function App() {
               Delete
             </button>
           </div>
-          {selectedProject?.media?.length ? (
+          {selectedProject?.media?.length || stagedCreationMedia.length ? (
             <div className="media-strip">
-              {selectedProject.media.slice(-4).map((item) => (
+              {stagedCreationMedia.map((item) => (
+                <span key={item.id} className="staged-reference">Reference: {item.originalName || item.name}</span>
+              ))}
+              {(selectedProject?.media || []).slice(-4).map((item) => (
                 <span key={item.id}>{item.name}</span>
               ))}
             </div>

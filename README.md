@@ -63,22 +63,37 @@ node run-node.mjs --help
 
 Press `Ctrl+C` in the runner terminal to stop every service it started.
 
-### Codex And Claude Code
+### Agent Runtime: Local Codex/Claude Or Server OpenAI
 
-BuilderX chooses an available agent CLI in this order: an explicitly configured binary, Codex, then Claude Code. To force a provider:
+BuilderX chooses the execution provider from environment:
+
+- Local development uses the authenticated VS Code/local agent CLI path: Codex first, then Claude Code.
+- Server or droplet deployment should use OpenAI API by setting `AGENTIC_RUNTIME_TARGET=droplet` and `OPENAI_API_KEY`.
+- Any provider can still be forced for debugging.
+
+To force a local provider:
 
 ```bash
 AI_CLI_PROVIDER=claude npm start
 AI_CLI_PROVIDER=codex npm start
 ```
 
+To force the server API provider:
+
+```bash
+AGENTIC_RUNTIME_TARGET=droplet AI_CLI_PROVIDER=openai OPENAI_API_KEY=... npm start
+```
+
 Supported configuration:
 
 ```dotenv
-AI_CLI_PROVIDER=auto  # auto | codex | claude
+AGENTIC_RUNTIME_TARGET=local # local | droplet | server | cloud
+AI_CLI_PROVIDER=auto         # auto | codex | claude | openai
 AI_CLI_BIN=           # optional executable override
 CODEX_BIN=codex
 CLAUDE_BIN=claude
+OPENAI_API_KEY=
+OPENAI_DEFAULT_MODEL=gpt-5
 ```
 
 Claude Code reads `CLAUDE.md`, which preserves `AGENTS.md` as the canonical BuilderX orchestration policy. The execution adapter uses Claude Code's non-interactive streaming JSON mode while keeping the same BuilderX workflow, agent attribution, validation, and snapshot behavior.
@@ -109,7 +124,7 @@ Submit an instruction in the BuilderX chat. The frontend sends it to the backend
 
 New and imported projects are stored as named sibling folders directly under the parent `money` root, assigned an exclusive port from `PROJECT_PORT_START` to `PROJECT_PORT_END`, and shown in the Playground project dropdown. For example, a project named `Travel CRM` is created at `../travel-crm`; another project with the same name becomes `../travel-crm-2`. Agentic BuilderX remains the host/control app; selecting a project inspects its dedicated runtime container, starts or recreates it when necessary, waits for the assigned port to become healthy, and then switches the iframe preview. Set `PROJECT_RUNTIME_MODE=process` only for local development without Docker.
 
-Use the `Media` upload control after selecting a project to attach files under `public/uploads`; those paths are included in the Codex workflow instruction context. Use the `Project` upload control to import an existing `.zip` app into a new managed workspace. BuilderX writes each managed project folder under the parent workspace `apps/` directory and adds that specific folder to `.gitignore` so projects stay detachable and untracked. Use `Export` to download the selected app as a zip containing source, frontend Dockerfile, backend service, PostgreSQL database service, `.env`, and `docker-compose.yml`.
+Use the `Reference` upload control before creating a project to stage media files as creation references; BuilderX attaches those files to the new project before the first orchestration/generation prompt. After selecting an existing project, the same control becomes `Media` and attaches files under `public/uploads`; those paths are included in the workflow instruction context. Use the `Project` upload control to import an existing `.zip` app into a new managed workspace. BuilderX writes each managed project folder under the parent workspace `apps/` directory and adds that specific folder to `.gitignore` so projects stay detachable and untracked. Use `Export` to download the selected app as a zip containing source, frontend Dockerfile, backend service, PostgreSQL database service, `.env`, and `docker-compose.yml`.
 
 Every created or imported app keeps project-scoped execution guidance inside `.agentic/orchestrator-agent.md`. BuilderX Fullstack Agent remains the global planning and completion authority; it loads that local policy as context and delegates bounded work to project agents. Root `AGENTS.md` and `CLAUDE.md` continue to provide repository rules without allowing a project agent to redefine the BuilderX parent task.
 
