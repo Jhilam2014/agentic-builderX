@@ -1,14 +1,14 @@
 {
   "metadata": {
     "project_name": "agentic-builderX",
-    "generated_at": "2026-07-09T02:48:19.620Z",
+    "generated_at": "2026-07-10T02:10:01.971Z",
     "workflow_id": "bootstrap-orchestrator-001",
     "source": "orchestrator",
     "graph_version": "1.2.0",
     "neo4j_status": "ready",
     "vector_provider": "chroma_local_generated",
     "vector_status": "pending_install",
-    "managed_project_count": 6,
+    "managed_project_count": 7,
     "project_agent_source": "runtime/agents/projects"
   },
   "nodes": [
@@ -519,6 +519,133 @@
         "supportAgent": false,
         "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
         "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+      }
+    },
+    {
+      "id": "project:mycv-D9-MeK",
+      "type": "project",
+      "label": "mycv",
+      "group": "project",
+      "risk_level": "medium",
+      "status": "managed",
+      "agent_id": "",
+      "cluster_id": "",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK",
+        "folderName": "mycv",
+        "workspaceDir": "/workspace/money/apps/mycv",
+        "port": 5306,
+        "previewUrl": "http://localhost:5306",
+        "description": "Generate a professional landing page for digital product."
+      }
+    },
+    {
+      "id": "agent:mycv-orchestrator-agent",
+      "type": "agent",
+      "label": "Mycv Orchestrator Agent",
+      "group": "project-agent",
+      "risk_level": "medium",
+      "status": "active",
+      "agent_id": "mycv-orchestrator-agent",
+      "cluster_id": "project-orchestrator",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK",
+        "projectName": "mycv",
+        "supportAgent": false,
+        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
+        "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
+      }
+    },
+    {
+      "id": "agent:mycv-qagent-controller",
+      "type": "agent",
+      "label": "Mycv QAgent Controller",
+      "group": "system-support-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mycv-qagent-controller",
+      "cluster_id": "qagent-controller",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK",
+        "projectName": "mycv",
+        "supportAgent": true,
+        "responsibility": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code.",
+        "description": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code."
+      }
+    },
+    {
+      "id": "agent:mycv-ui-composition-agent",
+      "type": "agent",
+      "label": "Mycv UI Composition Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mycv-ui-composition-agent",
+      "cluster_id": "ui-composition",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK",
+        "projectName": "mycv",
+        "supportAgent": false,
+        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
+        "description": "Translate the project brief into responsive React views, layout, and interaction states."
+      }
+    },
+    {
+      "id": "agent:mycv-content-data-agent",
+      "type": "agent",
+      "label": "Mycv Content Data Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mycv-content-data-agent",
+      "cluster_id": "content-data",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK",
+        "projectName": "mycv",
+        "supportAgent": false,
+        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
+        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
+      }
+    },
+    {
+      "id": "agent:mycv-runtime-packaging-agent",
+      "type": "agent",
+      "label": "Mycv Runtime Packaging Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mycv-runtime-packaging-agent",
+      "cluster_id": "runtime-packaging",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK",
+        "projectName": "mycv",
+        "supportAgent": false,
+        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
+        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
+      }
+    },
+    {
+      "id": "agent:mycv-media-asset-agent",
+      "type": "agent",
+      "label": "Mycv Media Asset Agent",
+      "group": "project-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "mycv-media-asset-agent",
+      "cluster_id": "media-asset",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK",
+        "projectName": "mycv",
+        "supportAgent": false,
+        "responsibility": "Track uploaded media references and expose them safely to the project generation workflow.",
+        "description": "Track uploaded media references and expose them safely to the project generation workflow."
       }
     },
     {
@@ -1073,6 +1200,97 @@
       "metadata": {
         "dynamicProjectGraph": true,
         "projectId": "mapex-M6rGkR"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "project:mycv-D9-MeK",
+      "type": "creates_project",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK"
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:builderx-independent-reviewer",
+      "type": "may_request_review_from",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "adaptive": true,
+        "readOnly": true
+      }
+    },
+    {
+      "source": "agent:builderx-fullstack-agent",
+      "target": "agent:mycv-orchestrator-agent",
+      "type": "runtime_delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK"
+      }
+    },
+    {
+      "source": "project:mycv-D9-MeK",
+      "target": "agent:mycv-orchestrator-agent",
+      "type": "has_orchestrator",
+      "weight": 2,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK"
+      }
+    },
+    {
+      "source": "agent:mycv-orchestrator-agent",
+      "target": "agent:mycv-qagent-controller",
+      "type": "uses_qagent_controller",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK"
+      }
+    },
+    {
+      "source": "agent:mycv-orchestrator-agent",
+      "target": "agent:mycv-ui-composition-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK"
+      }
+    },
+    {
+      "source": "agent:mycv-orchestrator-agent",
+      "target": "agent:mycv-content-data-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK"
+      }
+    },
+    {
+      "source": "agent:mycv-orchestrator-agent",
+      "target": "agent:mycv-runtime-packaging-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK"
+      }
+    },
+    {
+      "source": "agent:mycv-orchestrator-agent",
+      "target": "agent:mycv-media-asset-agent",
+      "type": "delegates_to",
+      "weight": 1,
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "mycv-D9-MeK"
       }
     },
     {

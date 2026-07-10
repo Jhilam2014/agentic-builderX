@@ -84,6 +84,34 @@ MATCH (a:Agent {id: "mapex-orchestrator-agent"}), (b:Agent {id: "mapex-ui-compos
 MATCH (a:Agent {id: "mapex-orchestrator-agent"}), (b:Agent {id: "mapex-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
 MATCH (a:Agent {id: "mapex-orchestrator-agent"}), (b:Agent {id: "mapex-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
 
+MERGE (p:Project {id: 'project:mycv-D9-MeK'})
+SET p.name = "mycv", p.folder_name = "mycv", p.workspace_dir = "/workspace/money/apps/mycv", p.port = 5306
+MERGE (a:Agent {id: "mycv-orchestrator-agent"})
+SET a.name = "Mycv Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "mycv-D9-MeK", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MERGE (a:Agent {id: "mycv-qagent-controller"})
+SET a.name = "Mycv QAgent Controller", a.role = "qagent-controller", a.project_id = "mycv-D9-MeK", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MERGE (a:Agent {id: "mycv-ui-composition-agent"})
+SET a.name = "Mycv UI Composition Agent", a.role = "ui-composition", a.project_id = "mycv-D9-MeK", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MERGE (a:Agent {id: "mycv-content-data-agent"})
+SET a.name = "Mycv Content Data Agent", a.role = "content-data", a.project_id = "mycv-D9-MeK", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MERGE (a:Agent {id: "mycv-runtime-packaging-agent"})
+SET a.name = "Mycv Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "mycv-D9-MeK", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MERGE (a:Agent {id: "mycv-media-asset-agent"})
+SET a.name = "Mycv Media Asset Agent", a.role = "media-asset", a.project_id = "mycv-D9-MeK", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MATCH (a:Agent {id: "builderx-fullstack-agent"}), (b:Agent {id: "mycv-orchestrator-agent"}) MERGE (a)-[:RUNTIME_DELEGATES_TO]->(b)
+MATCH (p:Project {id: 'project:mycv-D9-MeK'}), (a:Agent {id: "mycv-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
+MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-qagent-controller"}) MERGE (a)-[:USES_QAGENT_CONTROLLER]->(b)
+MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-media-asset-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+
 MERGE (p:Project {id: 'project:protfolio-flyer-uehPYw'})
 SET p.name = "Protfolio-flyer", p.folder_name = "protfolio-flyer", p.workspace_dir = "/workspace/money/apps/protfolio-flyer", p.port = 5305
 MERGE (a:Agent {id: "protfolio-flyer-orchestrator-agent"})

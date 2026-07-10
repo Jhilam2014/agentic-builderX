@@ -1,17 +1,17 @@
 {
-  "workflow_id": "builderx-vector-sync-1783644853708",
+  "workflow_id": "builderx-vector-sync-1783649354454",
   "reason": "periodic",
   "provider": "openai",
-  "started_at": "2026-07-10T00:54:13.708Z",
-  "completed_at": "2026-07-10T00:54:23.267Z",
+  "started_at": "2026-07-10T02:09:14.442Z",
+  "completed_at": "2026-07-10T02:09:57.086Z",
   "vector_store_id": "vs_6a38c…2300",
   "config_source": ".env",
   "scanned_roots": [
     "/workspace/project"
   ],
-  "local_files_scanned": 51,
+  "local_files_scanned": 56,
   "files_uploaded": 0,
-  "files_skipped": 51,
+  "files_skipped": 56,
   "files_failed": 0,
   "pending_sync_count": 0,
   "status": "success",
@@ -19,7 +19,7 @@
   "roots": [
     {
       "project": "project",
-      "scanned": 51,
+      "scanned": 56,
       "uploaded": [],
       "skipped": [
         "agents/generated/agenticongen-content-data-agent.agent.md",
@@ -41,6 +41,11 @@
         "agents/generated/mapex-orchestrator-agent.agent.md",
         "agents/generated/mapex-runtime-packaging-agent.agent.md",
         "agents/generated/mapex-ui-composition-agent.agent.md",
+        "agents/generated/mycv-content-data-agent.agent.md",
+        "agents/generated/mycv-orchestrator-agent.agent.md",
+        "agents/generated/mycv-qagent-controller.agent.md",
+        "agents/generated/mycv-runtime-packaging-agent.agent.md",
+        "agents/generated/mycv-ui-composition-agent.agent.md",
         "agents/generated/project-execution-agent.agent.md",
         "agents/generated/protfolio-flyer-content-data-agent.agent.md",
         "agents/generated/protfolio-flyer-orchestrator-agent.agent.md",
