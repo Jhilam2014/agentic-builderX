@@ -1,6 +1,6 @@
 {
   "provider": "chroma",
-  "checked_at": "2026-06-29T22:53:21+00:00",
+  "checked_at": "2026-07-11T20:18:23+00:00",
   "status": "pending_install",
   "reason": "ChromaDB fallback files generated; no live ChromaDB server was started by bootstrap."
 }

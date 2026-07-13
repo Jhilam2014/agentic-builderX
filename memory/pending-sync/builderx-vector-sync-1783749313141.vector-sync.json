@@ -1,0 +1,15 @@
+{
+  "workflow_id": "builderx-vector-sync-1783749313141",
+  "reason": "periodic",
+  "status": "failed",
+  "started_at": "2026-07-11T05:55:13.164Z",
+  "completed_at": "2026-07-11T05:55:13.216Z",
+  "errors": [
+    "fetch failed"
+  ],
+  "local_files_scanned": 0,
+  "files_uploaded": 0,
+  "files_skipped": 0,
+  "files_failed": 1,
+  "pending_sync_count": 1
+}

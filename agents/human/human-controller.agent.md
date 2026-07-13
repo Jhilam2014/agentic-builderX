@@ -5,8 +5,8 @@ version: 1.0.0
 domain: human_governance
 level: 0H
 status: active
-createdAt: 2026-06-29T22:53:21+00:00
-updatedAt: 2026-06-29T22:53:21+00:00
+createdAt: 2026-07-11T20:18:23+00:00
+updatedAt: 2026-07-11T20:18:23+00:00
 ---
 
 # Human Controller

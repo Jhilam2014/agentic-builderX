@@ -5,6 +5,8 @@ import fs from "fs-extra";
 import { nanoid } from "nanoid";
 import { estimateTokens, recordAgentTokenUsage } from "./tokenEconomy.js";
 import { agentCliInvocation } from "./agentCli.js";
+import { sanitizeAgentProcessEnv } from "./providerAuth.js";
+import { classifyCodexError, markCodexProfileUnavailable, recordCodexProfileResult } from "./codexProfiles.js";
 
 const ignoredDirs = new Set(["node_modules", "dist", ".git"]);
 const openaiAllowedGeneratedFiles = new Set([
@@ -328,7 +330,12 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
   const projectOrchestratorPath = path.join(generatedSiteDir, ".agentic", "orchestrator-agent.md");
   const hasProjectOrchestrator = await fs.pathExists(projectOrchestratorPath);
   const promptText = codexPrompt(sourceInstruction, orchestratedRequest, hasProjectOrchestrator);
-  const invocation = agentCliInvocation({ prompt: promptText, cwd: generatedSiteDir });
+  const invocation = agentCliInvocation({
+    prompt: promptText,
+    cwd: generatedSiteDir,
+    codexProfileId: options.codexProfileId || orchestratedRequest.codexProfileId,
+    codexProfileSelectionMode: options.codexProfileSelectionMode || orchestratedRequest.codexProfileSelectionMode
+  });
 
   await fs.ensureDir(generatedSourceDir);
   const before = await collectFileHashes(generatedSourceDir);
@@ -341,6 +348,7 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
     generatedSourceDir,
     codexBin: invocation.command,
     cliProvider: invocation.provider,
+    codexProfileId: invocation.codexProfile?.id || "",
     agentId: executionAgentId,
     orchestrationAuthority: orchestratedRequest.orchestrationEnvelope ? "builderx-global" : hasProjectOrchestrator ? "project-local-legacy" : "builderx-default",
     parentWorkflowId: orchestratedRequest.orchestrationEnvelope?.parentWorkflowId || buildId,
@@ -367,7 +375,7 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
       const child = spawn(invocation.command, invocation.args, {
         cwd: generatedSiteDir,
         env: {
-          ...process.env,
+          ...(invocation.env || sanitizeAgentProcessEnv(process.env)),
           CI: "1",
           NO_COLOR: "1"
         },
@@ -403,10 +411,15 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
       child.on("close", (code) => {
         clearTimeout(timer);
         if (code === 0) {
+          if (invocation.codexProfile?.id) recordCodexProfileResult(invocation.codexProfile.id, true);
           resolve();
           return;
         }
-        reject(new Error(`Gotham workflow exited with code ${code}: ${errors.join("").slice(-2000)}`));
+        const errorText = errors.join("").slice(-2000);
+        const errorCode = invocation.codexProfile?.id ? classifyCodexError(errorText) : "";
+        if (errorCode === "usage_limit") markCodexProfileUnavailable(invocation.codexProfile.id, errorCode);
+        if (invocation.codexProfile?.id) recordCodexProfileResult(invocation.codexProfile.id, false);
+        reject(new Error(`Gotham workflow exited with code ${code}: ${errorText}`));
       });
     });
   }
@@ -463,6 +476,7 @@ export async function runCodexWorkflow(orchestratedRequest, options = {}) {
     codex: {
       command: invocation.command,
       provider: invocation.provider,
+      profile: invocation.codexProfile || null,
       durationMs,
       openAIUsage,
       outputTail: outputText.slice(-4000)
@@ -496,7 +510,12 @@ Rules:
 - Reject missing requested behavior, unrelated destructive changes, unsafe credential handling, or clearly invalid code.
 - Do not reject merely for optional polish.
 - End with exactly one marker on its own line: BUILDERX_REVIEW: PASS or BUILDERX_REVIEW: FAIL: <concise reason>`;
-  const invocation = agentCliInvocation({ prompt: promptText, cwd: generatedSiteDir });
+  const invocation = agentCliInvocation({
+    prompt: promptText,
+    cwd: generatedSiteDir,
+    codexProfileId: options.codexProfileId || orchestratedRequest.codexProfileId,
+    codexProfileSelectionMode: options.codexProfileSelectionMode || orchestratedRequest.codexProfileSelectionMode
+  });
 
   const before = await collectFileHashes(generatedSiteDir);
   const output = [];
@@ -517,7 +536,7 @@ Rules:
     await new Promise((resolve, reject) => {
       const child = spawn(invocation.command, invocation.args, {
         cwd: generatedSiteDir,
-        env: { ...process.env, CI: "1", NO_COLOR: "1" },
+        env: { ...(invocation.env || sanitizeAgentProcessEnv(process.env)), CI: "1", NO_COLOR: "1" },
         stdio: ["ignore", "pipe", "pipe"]
       });
       let timer;
@@ -536,7 +555,16 @@ Rules:
       child.on("error", (error) => { clearTimeout(timer); reject(error); });
       child.on("close", (code) => {
         clearTimeout(timer);
-        code === 0 ? resolve() : reject(new Error(`Independent review exited with code ${code}: ${errors.join("").slice(-2000)}`));
+        if (code === 0) {
+          if (invocation.codexProfile?.id) recordCodexProfileResult(invocation.codexProfile.id, true);
+          resolve();
+          return;
+        }
+        const errorText = errors.join("").slice(-2000);
+        const errorCode = invocation.codexProfile?.id ? classifyCodexError(errorText) : "";
+        if (errorCode === "usage_limit") markCodexProfileUnavailable(invocation.codexProfile.id, errorCode);
+        if (invocation.codexProfile?.id) recordCodexProfileResult(invocation.codexProfile.id, false);
+        reject(new Error(`Independent review exited with code ${code}: ${errorText}`));
       });
     });
   }

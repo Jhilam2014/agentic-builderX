@@ -6,7 +6,7 @@ domain: "orchestration"
 workflow_class: "ai_agent_system"
 content_type: "agent_knowledge"
 status: "active"
-created_at: "2026-06-29T22:53:21+00:00"
+created_at: "2026-07-11T20:18:23+00:00"
 ---
 
 # Agent Knowledge Record

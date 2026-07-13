@@ -5,6 +5,7 @@ import fs from "fs-extra";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { agentCliInvocation } from "./agentCli.js";
+import { sanitizeAgentProcessEnv } from "./providerAuth.js";
 
 const builderxSourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 
@@ -372,7 +373,11 @@ export async function runProjectOrchestratorBootstrap(project, options = {}) {
   }
   const emit = typeof options.emit === "function" ? options.emit : () => {};
   const workspaceDir = project.workspaceDir;
-  const invocationProvider = agentCliInvocation({ prompt: "provider-check", cwd: workspaceDir }).provider;
+  const profileOptions = {
+    codexProfileId: options.codexProfileId,
+    codexProfileSelectionMode: options.codexProfileSelectionMode
+  };
+  const invocationProvider = agentCliInvocation({ prompt: "provider-check", cwd: workspaceDir, ...profileOptions }).provider;
   const setupMode = options.setupMode === "existing" ? "existing" : "new";
   const bootstrapCommand = invocationProvider === "claude" ? claudeBootstrapCommands[setupMode] : codexBootstrapCommand;
   const promptRelativePath = invocationProvider === "claude"
@@ -391,13 +396,13 @@ export async function runProjectOrchestratorBootstrap(project, options = {}) {
     setupMode
   });
 
-  const invocation = agentCliInvocation({ prompt: bootstrapCommand, cwd: workspaceDir });
+  const invocation = agentCliInvocation({ prompt: bootstrapCommand, cwd: workspaceDir, ...profileOptions });
   const stderr = [];
   let bootstrapError = null;
   await new Promise((resolve, reject) => {
     const child = spawn(invocation.command, invocation.args, {
       cwd: workspaceDir,
-      env: { ...process.env, CI: "1", NO_COLOR: "1" },
+      env: { ...(invocation.env || sanitizeAgentProcessEnv(process.env)), CI: "1", NO_COLOR: "1" },
       stdio: ["ignore", "pipe", "pipe"]
     });
     const timer = setTimeout(() => {

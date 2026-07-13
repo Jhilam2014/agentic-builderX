@@ -1,4 +1,6 @@
 import { spawnSync } from "node:child_process";
+import { providerConfig, sanitizeAgentProcessEnv } from "./providerAuth.js";
+import { buildCodexProfileEnv, recordCodexProfileUsed, selectCodexProfile } from "./codexProfiles.js";
 
 function truthyEnv(value = "") {
   return /^(1|true|yes|on)$/i.test(String(value || "").trim());
@@ -33,9 +35,13 @@ export function resolveAgentCli() {
     return { provider: "openai", command: "openai-api" };
   }
   if (requested === "codex") {
+    const auth = providerConfig("codex");
+    if (!auth.enabled) throw new Error("Codex provider authentication is disabled.");
     return { provider: "codex", command: explicitBin || process.env.CODEX_BIN || "codex" };
   }
   if (requested === "claude") {
+    const auth = providerConfig("claude");
+    if (!auth.enabled) throw new Error("Claude provider authentication is disabled.");
     return { provider: "claude", command: explicitBin || process.env.CLAUDE_BIN || "claude" };
   }
   if (requested !== "auto") {
@@ -50,21 +56,23 @@ export function resolveAgentCli() {
   }
 
   // Preserve test/custom binary compatibility and prefer an explicitly configured tool.
-  if (process.env.CODEX_BIN) return { provider: "codex", command: process.env.CODEX_BIN };
-  if (process.env.CLAUDE_BIN) return { provider: "claude", command: process.env.CLAUDE_BIN };
+  if (process.env.CODEX_BIN && providerConfig("codex").enabled) return { provider: "codex", command: process.env.CODEX_BIN };
+  if (process.env.CLAUDE_BIN && providerConfig("claude").enabled) return { provider: "claude", command: process.env.CLAUDE_BIN };
   if (explicitBin) {
     const provider = /claude/i.test(explicitBin) ? "claude" : "codex";
+    const auth = providerConfig(provider);
+    if (!auth.enabled) throw new Error(`${provider} provider authentication is disabled.`);
     return { provider, command: explicitBin };
   }
-  if (commandAvailable("codex")) return { provider: "codex", command: "codex" };
-  if (commandAvailable("claude")) return { provider: "claude", command: "claude" };
+  if (providerConfig("codex").enabled && commandAvailable("codex")) return { provider: "codex", command: "codex" };
+  if (providerConfig("claude").enabled && commandAvailable("claude")) return { provider: "claude", command: "claude" };
   throw new Error(
     "No supported local agent CLI was found. Install and authenticate Codex or Claude Code, " +
     "set AI_CLI_PROVIDER and AI_CLI_BIN, or set AI_CLI_PROVIDER=openai with OPENAI_API_KEY."
   );
 }
 
-export function agentCliInvocation({ prompt, cwd }) {
+export function agentCliInvocation({ prompt, cwd, codexProfileId, codexProfileSelectionMode }) {
   const cli = resolveAgentCli();
   if (cli.provider === "openai") {
     return {
@@ -73,6 +81,16 @@ export function agentCliInvocation({ prompt, cwd }) {
       prompt,
       cwd
     };
+  }
+  let codexProfile = null;
+  let env = sanitizeAgentProcessEnv(process.env);
+  if (cli.provider === "codex") {
+    codexProfile = selectCodexProfile({
+      requestedProfileId: codexProfileId,
+      strategy: codexProfileSelectionMode
+    });
+    recordCodexProfileUsed(codexProfile.id);
+    env = buildCodexProfileEnv(codexProfile, process.env);
   }
   if (cli.provider === "claude") {
     return {
@@ -85,7 +103,8 @@ export function agentCliInvocation({ prompt, cwd }) {
         "--verbose",
         "--dangerously-skip-permissions"
       ],
-      cwd
+      cwd,
+      env
     };
   }
   return {
@@ -100,6 +119,13 @@ export function agentCliInvocation({ prompt, cwd }) {
       "--dangerously-bypass-approvals-and-sandbox",
       prompt
     ],
-    cwd
+    cwd,
+    env,
+    codexProfile: codexProfile ? {
+      id: codexProfile.id,
+      displayName: codexProfile.displayName,
+      status: codexProfile.status,
+      isDefault: codexProfile.isDefault
+    } : null
   };
 }

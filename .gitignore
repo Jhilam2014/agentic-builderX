@@ -7,3 +7,5 @@ __pycache__/
 apps/*/node_modules/
 apps/*/dist/
 runtime/
+runtime/codex-profiles/
+runtime/codex-profiles.json

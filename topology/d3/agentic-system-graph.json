@@ -1,14 +1,14 @@
 {
   "metadata": {
     "project_name": "agentic-builderX",
-    "generated_at": "2026-07-10T02:10:01.971Z",
+    "generated_at": "2026-07-13T04:31:01.201Z",
     "workflow_id": "bootstrap-orchestrator-001",
     "source": "orchestrator",
     "graph_version": "1.2.0",
     "neo4j_status": "ready",
     "vector_provider": "chroma_local_generated",
     "vector_status": "pending_install",
-    "managed_project_count": 7,
+    "managed_project_count": 2,
     "project_agent_source": "runtime/agents/projects"
   },
   "nodes": [
@@ -84,21 +84,6 @@
       }
     },
     {
-      "id": "functionality:interactive-cloud-hosting",
-      "type": "feature",
-      "label": "Interactive Cloud Hosting",
-      "group": "deployment",
-      "risk_level": "medium",
-      "status": "implemented",
-      "agent_id": "builderx-fullstack-agent",
-      "cluster_id": "deployment",
-      "metadata": {
-        "page": "Cloud Hosting",
-        "credentialStorage": "sanitized_metadata_only",
-        "deploymentMode": "mock_safe"
-      }
-    },
-    {
       "id": "validation:bootstrap-artifacts",
       "type": "validation",
       "label": "Bootstrap Artifact Validation",
@@ -125,9 +110,9 @@
       }
     },
     {
-      "id": "project:agenticongen-9TUSjQ",
+      "id": "project:porny-RuQJlr",
       "type": "project",
-      "label": "AgentIconGen",
+      "label": "porny",
       "group": "project",
       "risk_level": "medium",
       "status": "managed",
@@ -135,12 +120,12 @@
       "cluster_id": "",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ",
-        "folderName": "agenticongen",
-        "workspaceDir": "/workspace/money/apps/agenticongen",
-        "port": 5302,
-        "previewUrl": "http://localhost:5302",
-        "description": "Generate a professional landing page for digital product."
+        "projectId": "porny-RuQJlr",
+        "folderName": "porny",
+        "workspaceDir": "/workspace/money/apps/porny",
+        "port": 5301,
+        "previewUrl": "http://localhost:5301",
+        "description": "Create and maintain porny."
       }
     },
     {
@@ -159,81 +144,99 @@
       }
     },
     {
-      "id": "agent:agenticongen-orchestrator-agent",
+      "id": "agent:porny-orchestrator-agent",
       "type": "agent",
-      "label": "Agenticongen Orchestrator Agent",
+      "label": "Porny Orchestrator Agent",
       "group": "project-agent",
       "risk_level": "medium",
       "status": "active",
-      "agent_id": "agenticongen-orchestrator-agent",
+      "agent_id": "porny-orchestrator-agent",
       "cluster_id": "project-orchestrator",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ",
-        "projectName": "AgentIconGen",
+        "projectId": "porny-RuQJlr",
+        "projectName": "porny",
         "supportAgent": false,
         "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
         "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
       }
     },
     {
-      "id": "agent:agenticongen-ui-composition-agent",
+      "id": "agent:porny-qagent-controller",
       "type": "agent",
-      "label": "Agenticongen UI Composition Agent",
+      "label": "Porny QAgent Controller",
+      "group": "system-support-agent",
+      "risk_level": "low",
+      "status": "active",
+      "agent_id": "porny-qagent-controller",
+      "cluster_id": "qagent-controller",
+      "metadata": {
+        "dynamicProjectGraph": true,
+        "projectId": "porny-RuQJlr",
+        "projectName": "porny",
+        "supportAgent": true,
+        "responsibility": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code.",
+        "description": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code."
+      }
+    },
+    {
+      "id": "agent:porny-ui-composition-agent",
+      "type": "agent",
+      "label": "Porny UI Composition Agent",
       "group": "project-agent",
       "risk_level": "low",
       "status": "active",
-      "agent_id": "agenticongen-ui-composition-agent",
+      "agent_id": "porny-ui-composition-agent",
       "cluster_id": "ui-composition",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ",
-        "projectName": "AgentIconGen",
+        "projectId": "porny-RuQJlr",
+        "projectName": "porny",
         "supportAgent": false,
         "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
         "description": "Translate the project brief into responsive React views, layout, and interaction states."
       }
     },
     {
-      "id": "agent:agenticongen-content-data-agent",
+      "id": "agent:porny-content-data-agent",
       "type": "agent",
-      "label": "Agenticongen Content Data Agent",
+      "label": "Porny Content Data Agent",
       "group": "project-agent",
       "risk_level": "low",
       "status": "active",
-      "agent_id": "agenticongen-content-data-agent",
+      "agent_id": "porny-content-data-agent",
       "cluster_id": "content-data",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ",
-        "projectName": "AgentIconGen",
+        "projectId": "porny-RuQJlr",
+        "projectName": "porny",
         "supportAgent": false,
         "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
         "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
       }
     },
     {
-      "id": "agent:agenticongen-runtime-packaging-agent",
+      "id": "agent:porny-runtime-packaging-agent",
       "type": "agent",
-      "label": "Agenticongen Runtime Packaging Agent",
+      "label": "Porny Runtime Packaging Agent",
       "group": "project-agent",
       "risk_level": "low",
       "status": "active",
-      "agent_id": "agenticongen-runtime-packaging-agent",
+      "agent_id": "porny-runtime-packaging-agent",
       "cluster_id": "runtime-packaging",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ",
-        "projectName": "AgentIconGen",
+        "projectId": "porny-RuQJlr",
+        "projectName": "porny",
         "supportAgent": false,
         "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
         "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
       }
     },
     {
-      "id": "project:geofinderx-2yFsDY",
+      "id": "project:ramo-Fbo8Fr",
       "type": "project",
-      "label": "GeoFinderX",
+      "label": "Ramo",
       "group": "project",
       "risk_level": "medium",
       "status": "managed",
@@ -241,626 +244,99 @@
       "cluster_id": "",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY",
-        "folderName": "geofinderx",
-        "workspaceDir": "/workspace/money/apps/geofinderx",
+        "projectId": "ramo-Fbo8Fr",
+        "folderName": "ramo",
+        "workspaceDir": "/workspace/money/apps/ramo",
         "port": 5300,
         "previewUrl": "http://localhost:5300",
         "description": "Generate a professional landing page for digital product."
       }
     },
     {
-      "id": "agent:geofinderx-orchestrator-agent",
+      "id": "agent:ramo-orchestrator-agent",
       "type": "agent",
-      "label": "Geofinderx Orchestrator Agent",
+      "label": "Ramo Orchestrator Agent",
       "group": "project-agent",
       "risk_level": "medium",
       "status": "active",
-      "agent_id": "geofinderx-orchestrator-agent",
+      "agent_id": "ramo-orchestrator-agent",
       "cluster_id": "project-orchestrator",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY",
-        "projectName": "GeoFinderX",
-        "supportAgent": false,
-        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff.",
-        "description": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
-      }
-    },
-    {
-      "id": "agent:geofinderx-ui-composition-agent",
-      "type": "agent",
-      "label": "Geofinderx UI Composition Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "geofinderx-ui-composition-agent",
-      "cluster_id": "ui-composition",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY",
-        "projectName": "GeoFinderX",
-        "supportAgent": false,
-        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
-        "description": "Translate the project brief into responsive React views, layout, and interaction states."
-      }
-    },
-    {
-      "id": "agent:geofinderx-content-data-agent",
-      "type": "agent",
-      "label": "Geofinderx Content Data Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "geofinderx-content-data-agent",
-      "cluster_id": "content-data",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY",
-        "projectName": "GeoFinderX",
-        "supportAgent": false,
-        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
-        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
-      }
-    },
-    {
-      "id": "agent:geofinderx-runtime-packaging-agent",
-      "type": "agent",
-      "label": "Geofinderx Runtime Packaging Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "geofinderx-runtime-packaging-agent",
-      "cluster_id": "runtime-packaging",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY",
-        "projectName": "GeoFinderX",
-        "supportAgent": false,
-        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
-        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
-      }
-    },
-    {
-      "id": "project:investmentfinderx-z8rTq_",
-      "type": "project",
-      "label": "InvestmentFinderX",
-      "group": "project",
-      "risk_level": "medium",
-      "status": "managed",
-      "agent_id": "",
-      "cluster_id": "",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_",
-        "folderName": "investmentfinderx",
-        "workspaceDir": "/workspace/money/apps/investmentfinderx",
-        "port": 5303,
-        "previewUrl": "http://localhost:5303",
-        "description": "Generate a portfolio page for digital product."
-      }
-    },
-    {
-      "id": "agent:investmentfinderx-orchestrator-agent",
-      "type": "agent",
-      "label": "Investmentfinderx Orchestrator Agent",
-      "group": "project-agent",
-      "risk_level": "medium",
-      "status": "active",
-      "agent_id": "investmentfinderx-orchestrator-agent",
-      "cluster_id": "project-orchestrator",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_",
-        "projectName": "InvestmentFinderX",
+        "projectId": "ramo-Fbo8Fr",
+        "projectName": "Ramo",
         "supportAgent": false,
         "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
         "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
       }
     },
     {
-      "id": "agent:investmentfinderx-qagent-controller",
+      "id": "agent:ramo-qagent-controller",
       "type": "agent",
-      "label": "Investmentfinderx QAgent Controller",
+      "label": "Ramo QAgent Controller",
       "group": "system-support-agent",
       "risk_level": "low",
       "status": "active",
-      "agent_id": "investmentfinderx-qagent-controller",
+      "agent_id": "ramo-qagent-controller",
       "cluster_id": "qagent-controller",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_",
-        "projectName": "InvestmentFinderX",
+        "projectId": "ramo-Fbo8Fr",
+        "projectName": "Ramo",
         "supportAgent": true,
         "responsibility": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code.",
         "description": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code."
       }
     },
     {
-      "id": "agent:investmentfinderx-ui-composition-agent",
+      "id": "agent:ramo-ui-composition-agent",
       "type": "agent",
-      "label": "Investmentfinderx UI Composition Agent",
+      "label": "Ramo UI Composition Agent",
       "group": "project-agent",
       "risk_level": "low",
       "status": "active",
-      "agent_id": "investmentfinderx-ui-composition-agent",
+      "agent_id": "ramo-ui-composition-agent",
       "cluster_id": "ui-composition",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_",
-        "projectName": "InvestmentFinderX",
+        "projectId": "ramo-Fbo8Fr",
+        "projectName": "Ramo",
         "supportAgent": false,
         "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
         "description": "Translate the project brief into responsive React views, layout, and interaction states."
       }
     },
     {
-      "id": "agent:investmentfinderx-content-data-agent",
+      "id": "agent:ramo-content-data-agent",
       "type": "agent",
-      "label": "Investmentfinderx Content Data Agent",
+      "label": "Ramo Content Data Agent",
       "group": "project-agent",
       "risk_level": "low",
       "status": "active",
-      "agent_id": "investmentfinderx-content-data-agent",
+      "agent_id": "ramo-content-data-agent",
       "cluster_id": "content-data",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_",
-        "projectName": "InvestmentFinderX",
+        "projectId": "ramo-Fbo8Fr",
+        "projectName": "Ramo",
         "supportAgent": false,
         "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
         "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
       }
     },
     {
-      "id": "agent:investmentfinderx-runtime-packaging-agent",
+      "id": "agent:ramo-runtime-packaging-agent",
       "type": "agent",
-      "label": "Investmentfinderx Runtime Packaging Agent",
+      "label": "Ramo Runtime Packaging Agent",
       "group": "project-agent",
       "risk_level": "low",
       "status": "active",
-      "agent_id": "investmentfinderx-runtime-packaging-agent",
+      "agent_id": "ramo-runtime-packaging-agent",
       "cluster_id": "runtime-packaging",
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_",
-        "projectName": "InvestmentFinderX",
-        "supportAgent": false,
-        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
-        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
-      }
-    },
-    {
-      "id": "project:mapex-M6rGkR",
-      "type": "project",
-      "label": "mapEx",
-      "group": "project",
-      "risk_level": "medium",
-      "status": "managed",
-      "agent_id": "",
-      "cluster_id": "",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR",
-        "folderName": "mapex",
-        "workspaceDir": "/workspace/money/mapex",
-        "port": 5301,
-        "previewUrl": "http://localhost:5301",
-        "description": "Generate a professional landing page for digital product."
-      }
-    },
-    {
-      "id": "agent:mapex-orchestrator-agent",
-      "type": "agent",
-      "label": "Mapex Orchestrator Agent",
-      "group": "project-agent",
-      "risk_level": "medium",
-      "status": "active",
-      "agent_id": "mapex-orchestrator-agent",
-      "cluster_id": "project-orchestrator",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR",
-        "projectName": "mapEx",
-        "supportAgent": false,
-        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff.",
-        "description": "Read the project instruction, decide required specialist agents, and coordinate Codex workflow handoff."
-      }
-    },
-    {
-      "id": "agent:mapex-ui-composition-agent",
-      "type": "agent",
-      "label": "Mapex UI Composition Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "mapex-ui-composition-agent",
-      "cluster_id": "ui-composition",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR",
-        "projectName": "mapEx",
-        "supportAgent": false,
-        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
-        "description": "Translate the project brief into responsive React views, layout, and interaction states."
-      }
-    },
-    {
-      "id": "agent:mapex-content-data-agent",
-      "type": "agent",
-      "label": "Mapex Content Data Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "mapex-content-data-agent",
-      "cluster_id": "content-data",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR",
-        "projectName": "mapEx",
-        "supportAgent": false,
-        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
-        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
-      }
-    },
-    {
-      "id": "agent:mapex-runtime-packaging-agent",
-      "type": "agent",
-      "label": "Mapex Runtime Packaging Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "mapex-runtime-packaging-agent",
-      "cluster_id": "runtime-packaging",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR",
-        "projectName": "mapEx",
-        "supportAgent": false,
-        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
-        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
-      }
-    },
-    {
-      "id": "project:mycv-D9-MeK",
-      "type": "project",
-      "label": "mycv",
-      "group": "project",
-      "risk_level": "medium",
-      "status": "managed",
-      "agent_id": "",
-      "cluster_id": "",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK",
-        "folderName": "mycv",
-        "workspaceDir": "/workspace/money/apps/mycv",
-        "port": 5306,
-        "previewUrl": "http://localhost:5306",
-        "description": "Generate a professional landing page for digital product."
-      }
-    },
-    {
-      "id": "agent:mycv-orchestrator-agent",
-      "type": "agent",
-      "label": "Mycv Orchestrator Agent",
-      "group": "project-agent",
-      "risk_level": "medium",
-      "status": "active",
-      "agent_id": "mycv-orchestrator-agent",
-      "cluster_id": "project-orchestrator",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK",
-        "projectName": "mycv",
-        "supportAgent": false,
-        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
-        "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
-      }
-    },
-    {
-      "id": "agent:mycv-qagent-controller",
-      "type": "agent",
-      "label": "Mycv QAgent Controller",
-      "group": "system-support-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "mycv-qagent-controller",
-      "cluster_id": "qagent-controller",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK",
-        "projectName": "mycv",
-        "supportAgent": true,
-        "responsibility": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code.",
-        "description": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code."
-      }
-    },
-    {
-      "id": "agent:mycv-ui-composition-agent",
-      "type": "agent",
-      "label": "Mycv UI Composition Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "mycv-ui-composition-agent",
-      "cluster_id": "ui-composition",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK",
-        "projectName": "mycv",
-        "supportAgent": false,
-        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
-        "description": "Translate the project brief into responsive React views, layout, and interaction states."
-      }
-    },
-    {
-      "id": "agent:mycv-content-data-agent",
-      "type": "agent",
-      "label": "Mycv Content Data Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "mycv-content-data-agent",
-      "cluster_id": "content-data",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK",
-        "projectName": "mycv",
-        "supportAgent": false,
-        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
-        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
-      }
-    },
-    {
-      "id": "agent:mycv-runtime-packaging-agent",
-      "type": "agent",
-      "label": "Mycv Runtime Packaging Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "mycv-runtime-packaging-agent",
-      "cluster_id": "runtime-packaging",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK",
-        "projectName": "mycv",
-        "supportAgent": false,
-        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
-        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
-      }
-    },
-    {
-      "id": "agent:mycv-media-asset-agent",
-      "type": "agent",
-      "label": "Mycv Media Asset Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "mycv-media-asset-agent",
-      "cluster_id": "media-asset",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK",
-        "projectName": "mycv",
-        "supportAgent": false,
-        "responsibility": "Track uploaded media references and expose them safely to the project generation workflow.",
-        "description": "Track uploaded media references and expose them safely to the project generation workflow."
-      }
-    },
-    {
-      "id": "project:protfolio-flyer-uehPYw",
-      "type": "project",
-      "label": "Protfolio-flyer",
-      "group": "project",
-      "risk_level": "medium",
-      "status": "managed",
-      "agent_id": "",
-      "cluster_id": "",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw",
-        "folderName": "protfolio-flyer",
-        "workspaceDir": "/workspace/money/apps/protfolio-flyer",
-        "port": 5305,
-        "previewUrl": "http://localhost:5305",
-        "description": "Generate a professional landing page for digital product."
-      }
-    },
-    {
-      "id": "agent:protfolio-flyer-orchestrator-agent",
-      "type": "agent",
-      "label": "Protfolio Flyer Orchestrator Agent",
-      "group": "project-agent",
-      "risk_level": "medium",
-      "status": "active",
-      "agent_id": "protfolio-flyer-orchestrator-agent",
-      "cluster_id": "project-orchestrator",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw",
-        "projectName": "Protfolio-flyer",
-        "supportAgent": false,
-        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
-        "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
-      }
-    },
-    {
-      "id": "agent:protfolio-flyer-qagent-controller",
-      "type": "agent",
-      "label": "Protfolio Flyer QAgent Controller",
-      "group": "system-support-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "protfolio-flyer-qagent-controller",
-      "cluster_id": "qagent-controller",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw",
-        "projectName": "Protfolio-flyer",
-        "supportAgent": true,
-        "responsibility": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code.",
-        "description": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code."
-      }
-    },
-    {
-      "id": "agent:protfolio-flyer-ui-composition-agent",
-      "type": "agent",
-      "label": "Protfolio Flyer UI Composition Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "protfolio-flyer-ui-composition-agent",
-      "cluster_id": "ui-composition",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw",
-        "projectName": "Protfolio-flyer",
-        "supportAgent": false,
-        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
-        "description": "Translate the project brief into responsive React views, layout, and interaction states."
-      }
-    },
-    {
-      "id": "agent:protfolio-flyer-content-data-agent",
-      "type": "agent",
-      "label": "Protfolio Flyer Content Data Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "protfolio-flyer-content-data-agent",
-      "cluster_id": "content-data",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw",
-        "projectName": "Protfolio-flyer",
-        "supportAgent": false,
-        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
-        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
-      }
-    },
-    {
-      "id": "agent:protfolio-flyer-runtime-packaging-agent",
-      "type": "agent",
-      "label": "Protfolio Flyer Runtime Packaging Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "protfolio-flyer-runtime-packaging-agent",
-      "cluster_id": "runtime-packaging",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw",
-        "projectName": "Protfolio-flyer",
-        "supportAgent": false,
-        "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
-        "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
-      }
-    },
-    {
-      "id": "project:whatsappmediaanalyser-oAeSvn",
-      "type": "project",
-      "label": "WhatsappMediaAnalyser",
-      "group": "project",
-      "risk_level": "medium",
-      "status": "managed",
-      "agent_id": "",
-      "cluster_id": "",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn",
-        "folderName": "whatsappmediaanalyser",
-        "workspaceDir": "/workspace/money/apps/whatsappmediaanalyser",
-        "port": 5304,
-        "previewUrl": "http://localhost:5304",
-        "description": "Generate a professional landing page for digital product."
-      }
-    },
-    {
-      "id": "agent:whatsappmediaanalyser-orchestrator-agent",
-      "type": "agent",
-      "label": "Whatsappmediaanalyser Orchestrator Agent",
-      "group": "project-agent",
-      "risk_level": "medium",
-      "status": "active",
-      "agent_id": "whatsappmediaanalyser-orchestrator-agent",
-      "cluster_id": "project-orchestrator",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn",
-        "projectName": "WhatsappMediaAnalyser",
-        "supportAgent": false,
-        "responsibility": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff.",
-        "description": "Read the project instruction, decide required specialist agents, and coordinate Gotham workflow handoff."
-      }
-    },
-    {
-      "id": "agent:whatsappmediaanalyser-qagent-controller",
-      "type": "agent",
-      "label": "Whatsappmediaanalyser QAgent Controller",
-      "group": "system-support-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "whatsappmediaanalyser-qagent-controller",
-      "cluster_id": "qagent-controller",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn",
-        "projectName": "WhatsappMediaAnalyser",
-        "supportAgent": true,
-        "responsibility": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code.",
-        "description": "Evaluate end-of-response objective gaps and produce stop decisions or strict next-instruction packets without directly implementing code."
-      }
-    },
-    {
-      "id": "agent:whatsappmediaanalyser-ui-composition-agent",
-      "type": "agent",
-      "label": "Whatsappmediaanalyser UI Composition Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "whatsappmediaanalyser-ui-composition-agent",
-      "cluster_id": "ui-composition",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn",
-        "projectName": "WhatsappMediaAnalyser",
-        "supportAgent": false,
-        "responsibility": "Translate the project brief into responsive React views, layout, and interaction states.",
-        "description": "Translate the project brief into responsive React views, layout, and interaction states."
-      }
-    },
-    {
-      "id": "agent:whatsappmediaanalyser-content-data-agent",
-      "type": "agent",
-      "label": "Whatsappmediaanalyser Content Data Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "whatsappmediaanalyser-content-data-agent",
-      "cluster_id": "content-data",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn",
-        "projectName": "WhatsappMediaAnalyser",
-        "supportAgent": false,
-        "responsibility": "Shape generated copy, metadata, reusable data modules, and handoff documentation.",
-        "description": "Shape generated copy, metadata, reusable data modules, and handoff documentation."
-      }
-    },
-    {
-      "id": "agent:whatsappmediaanalyser-runtime-packaging-agent",
-      "type": "agent",
-      "label": "Whatsappmediaanalyser Runtime Packaging Agent",
-      "group": "project-agent",
-      "risk_level": "low",
-      "status": "active",
-      "agent_id": "whatsappmediaanalyser-runtime-packaging-agent",
-      "cluster_id": "runtime-packaging",
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn",
-        "projectName": "WhatsappMediaAnalyser",
+        "projectId": "ramo-Fbo8Fr",
+        "projectName": "Ramo",
         "supportAgent": false,
         "responsibility": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files.",
         "description": "Maintain Vite scripts, environment defaults, export readiness, and container handoff files."
@@ -940,276 +416,12 @@
     },
     {
       "source": "agent:builderx-fullstack-agent",
-      "target": "functionality:interactive-cloud-hosting",
-      "type": "owns",
-      "weight": 2,
-      "metadata": {
-        "sanitized": true,
-        "noCredentialData": true
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "project:agenticongen-9TUSjQ",
+      "target": "project:porny-RuQJlr",
       "type": "creates_project",
       "weight": 2,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "agent:builderx-independent-reviewer",
-      "type": "may_request_review_from",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "adaptive": true,
-        "readOnly": true
-      }
-    },
-    {
-      "source": "project:agenticongen-9TUSjQ",
-      "target": "agent:agenticongen-orchestrator-agent",
-      "type": "has_orchestrator",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ"
-      }
-    },
-    {
-      "source": "agent:agenticongen-orchestrator-agent",
-      "target": "agent:agenticongen-ui-composition-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ"
-      }
-    },
-    {
-      "source": "agent:agenticongen-orchestrator-agent",
-      "target": "agent:agenticongen-content-data-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ"
-      }
-    },
-    {
-      "source": "agent:agenticongen-orchestrator-agent",
-      "target": "agent:agenticongen-runtime-packaging-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "agenticongen-9TUSjQ"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "project:geofinderx-2yFsDY",
-      "type": "creates_project",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "agent:builderx-independent-reviewer",
-      "type": "may_request_review_from",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "adaptive": true,
-        "readOnly": true
-      }
-    },
-    {
-      "source": "project:geofinderx-2yFsDY",
-      "target": "agent:geofinderx-orchestrator-agent",
-      "type": "has_orchestrator",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY"
-      }
-    },
-    {
-      "source": "agent:geofinderx-orchestrator-agent",
-      "target": "agent:geofinderx-ui-composition-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY"
-      }
-    },
-    {
-      "source": "agent:geofinderx-orchestrator-agent",
-      "target": "agent:geofinderx-content-data-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY"
-      }
-    },
-    {
-      "source": "agent:geofinderx-orchestrator-agent",
-      "target": "agent:geofinderx-runtime-packaging-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "geofinderx-2yFsDY"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "project:investmentfinderx-z8rTq_",
-      "type": "creates_project",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "agent:builderx-independent-reviewer",
-      "type": "may_request_review_from",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "adaptive": true,
-        "readOnly": true
-      }
-    },
-    {
-      "source": "project:investmentfinderx-z8rTq_",
-      "target": "agent:investmentfinderx-orchestrator-agent",
-      "type": "has_orchestrator",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_"
-      }
-    },
-    {
-      "source": "agent:investmentfinderx-orchestrator-agent",
-      "target": "agent:investmentfinderx-qagent-controller",
-      "type": "uses_qagent_controller",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_"
-      }
-    },
-    {
-      "source": "agent:investmentfinderx-orchestrator-agent",
-      "target": "agent:investmentfinderx-ui-composition-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_"
-      }
-    },
-    {
-      "source": "agent:investmentfinderx-orchestrator-agent",
-      "target": "agent:investmentfinderx-content-data-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_"
-      }
-    },
-    {
-      "source": "agent:investmentfinderx-orchestrator-agent",
-      "target": "agent:investmentfinderx-runtime-packaging-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "investmentfinderx-z8rTq_"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "project:mapex-M6rGkR",
-      "type": "creates_project",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "agent:builderx-independent-reviewer",
-      "type": "may_request_review_from",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "adaptive": true,
-        "readOnly": true
-      }
-    },
-    {
-      "source": "project:mapex-M6rGkR",
-      "target": "agent:mapex-orchestrator-agent",
-      "type": "has_orchestrator",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR"
-      }
-    },
-    {
-      "source": "agent:mapex-orchestrator-agent",
-      "target": "agent:mapex-ui-composition-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR"
-      }
-    },
-    {
-      "source": "agent:mapex-orchestrator-agent",
-      "target": "agent:mapex-content-data-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR"
-      }
-    },
-    {
-      "source": "agent:mapex-orchestrator-agent",
-      "target": "agent:mapex-runtime-packaging-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mapex-M6rGkR"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "project:mycv-D9-MeK",
-      "type": "creates_project",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK"
+        "projectId": "porny-RuQJlr"
       }
     },
     {
@@ -1225,82 +437,72 @@
     },
     {
       "source": "agent:builderx-fullstack-agent",
-      "target": "agent:mycv-orchestrator-agent",
+      "target": "agent:porny-orchestrator-agent",
       "type": "runtime_delegates_to",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK"
+        "projectId": "porny-RuQJlr"
       }
     },
     {
-      "source": "project:mycv-D9-MeK",
-      "target": "agent:mycv-orchestrator-agent",
+      "source": "project:porny-RuQJlr",
+      "target": "agent:porny-orchestrator-agent",
       "type": "has_orchestrator",
       "weight": 2,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK"
+        "projectId": "porny-RuQJlr"
       }
     },
     {
-      "source": "agent:mycv-orchestrator-agent",
-      "target": "agent:mycv-qagent-controller",
+      "source": "agent:porny-orchestrator-agent",
+      "target": "agent:porny-qagent-controller",
       "type": "uses_qagent_controller",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK"
+        "projectId": "porny-RuQJlr"
       }
     },
     {
-      "source": "agent:mycv-orchestrator-agent",
-      "target": "agent:mycv-ui-composition-agent",
+      "source": "agent:porny-orchestrator-agent",
+      "target": "agent:porny-ui-composition-agent",
       "type": "delegates_to",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK"
+        "projectId": "porny-RuQJlr"
       }
     },
     {
-      "source": "agent:mycv-orchestrator-agent",
-      "target": "agent:mycv-content-data-agent",
+      "source": "agent:porny-orchestrator-agent",
+      "target": "agent:porny-content-data-agent",
       "type": "delegates_to",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK"
+        "projectId": "porny-RuQJlr"
       }
     },
     {
-      "source": "agent:mycv-orchestrator-agent",
-      "target": "agent:mycv-runtime-packaging-agent",
+      "source": "agent:porny-orchestrator-agent",
+      "target": "agent:porny-runtime-packaging-agent",
       "type": "delegates_to",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK"
-      }
-    },
-    {
-      "source": "agent:mycv-orchestrator-agent",
-      "target": "agent:mycv-media-asset-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "mycv-D9-MeK"
+        "projectId": "porny-RuQJlr"
       }
     },
     {
       "source": "agent:builderx-fullstack-agent",
-      "target": "project:protfolio-flyer-uehPYw",
+      "target": "project:ramo-Fbo8Fr",
       "type": "creates_project",
       "weight": 2,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw"
+        "projectId": "ramo-Fbo8Fr"
       }
     },
     {
@@ -1316,143 +518,62 @@
     },
     {
       "source": "agent:builderx-fullstack-agent",
-      "target": "agent:protfolio-flyer-orchestrator-agent",
+      "target": "agent:ramo-orchestrator-agent",
       "type": "runtime_delegates_to",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw"
+        "projectId": "ramo-Fbo8Fr"
       }
     },
     {
-      "source": "project:protfolio-flyer-uehPYw",
-      "target": "agent:protfolio-flyer-orchestrator-agent",
+      "source": "project:ramo-Fbo8Fr",
+      "target": "agent:ramo-orchestrator-agent",
       "type": "has_orchestrator",
       "weight": 2,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw"
+        "projectId": "ramo-Fbo8Fr"
       }
     },
     {
-      "source": "agent:protfolio-flyer-orchestrator-agent",
-      "target": "agent:protfolio-flyer-qagent-controller",
+      "source": "agent:ramo-orchestrator-agent",
+      "target": "agent:ramo-qagent-controller",
       "type": "uses_qagent_controller",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw"
+        "projectId": "ramo-Fbo8Fr"
       }
     },
     {
-      "source": "agent:protfolio-flyer-orchestrator-agent",
-      "target": "agent:protfolio-flyer-ui-composition-agent",
+      "source": "agent:ramo-orchestrator-agent",
+      "target": "agent:ramo-ui-composition-agent",
       "type": "delegates_to",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw"
+        "projectId": "ramo-Fbo8Fr"
       }
     },
     {
-      "source": "agent:protfolio-flyer-orchestrator-agent",
-      "target": "agent:protfolio-flyer-content-data-agent",
+      "source": "agent:ramo-orchestrator-agent",
+      "target": "agent:ramo-content-data-agent",
       "type": "delegates_to",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw"
+        "projectId": "ramo-Fbo8Fr"
       }
     },
     {
-      "source": "agent:protfolio-flyer-orchestrator-agent",
-      "target": "agent:protfolio-flyer-runtime-packaging-agent",
+      "source": "agent:ramo-orchestrator-agent",
+      "target": "agent:ramo-runtime-packaging-agent",
       "type": "delegates_to",
       "weight": 1,
       "metadata": {
         "dynamicProjectGraph": true,
-        "projectId": "protfolio-flyer-uehPYw"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "project:whatsappmediaanalyser-oAeSvn",
-      "type": "creates_project",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn"
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "agent:builderx-independent-reviewer",
-      "type": "may_request_review_from",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "adaptive": true,
-        "readOnly": true
-      }
-    },
-    {
-      "source": "agent:builderx-fullstack-agent",
-      "target": "agent:whatsappmediaanalyser-orchestrator-agent",
-      "type": "runtime_delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn"
-      }
-    },
-    {
-      "source": "project:whatsappmediaanalyser-oAeSvn",
-      "target": "agent:whatsappmediaanalyser-orchestrator-agent",
-      "type": "has_orchestrator",
-      "weight": 2,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn"
-      }
-    },
-    {
-      "source": "agent:whatsappmediaanalyser-orchestrator-agent",
-      "target": "agent:whatsappmediaanalyser-qagent-controller",
-      "type": "uses_qagent_controller",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn"
-      }
-    },
-    {
-      "source": "agent:whatsappmediaanalyser-orchestrator-agent",
-      "target": "agent:whatsappmediaanalyser-ui-composition-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn"
-      }
-    },
-    {
-      "source": "agent:whatsappmediaanalyser-orchestrator-agent",
-      "target": "agent:whatsappmediaanalyser-content-data-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn"
-      }
-    },
-    {
-      "source": "agent:whatsappmediaanalyser-orchestrator-agent",
-      "target": "agent:whatsappmediaanalyser-runtime-packaging-agent",
-      "type": "delegates_to",
-      "weight": 1,
-      "metadata": {
-        "dynamicProjectGraph": true,
-        "projectId": "whatsappmediaanalyser-oAeSvn"
+        "projectId": "ramo-Fbo8Fr"
       }
     }
   ]

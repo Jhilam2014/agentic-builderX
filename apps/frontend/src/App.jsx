@@ -16,6 +16,7 @@ import {
   FolderUp,
   Gauge,
   GitBranch,
+  LogIn,
   Loader2,
   Monitor,
   Maximize2,
@@ -1024,6 +1025,294 @@ function MarkdownSourceModal({ source, onClose }) {
   );
 }
 
+function MetricLineGraph({ rows, valueKey, fallbackRow, ariaLabel, titleForRow }) {
+  const chartRows = rows.length ? rows : [fallbackRow];
+  const width = 240;
+  const height = 76;
+  const padding = 10;
+  const values = chartRows.map((row) => Number(row[valueKey] || 0));
+  const max = Math.max(...values, 1);
+  const points = chartRows.map((row, index) => {
+    const x = chartRows.length === 1
+      ? width / 2
+      : padding + (index * (width - padding * 2)) / (chartRows.length - 1);
+    const y = height - padding - (Number(row[valueKey] || 0) / max) * (height - padding * 2);
+    return { x, y, row };
+  });
+  const linePoints = points.length === 1
+    ? `${padding},${points[0].y} ${width - padding},${points[0].y}`
+    : points.map((point) => `${point.x},${point.y}`).join(" ");
+
+  return (
+    <svg className="metric-line-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-label={ariaLabel}>
+      <line className="metric-line-grid" x1={padding} y1={padding} x2={width - padding} y2={padding} />
+      <line className="metric-line-grid" x1={padding} y1={height / 2} x2={width - padding} y2={height / 2} />
+      <line className="metric-line-grid" x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} />
+      <polyline className="metric-line-path" points={linePoints} />
+      {points.map((point, index) => (
+        <circle className="metric-line-point" cx={point.x} cy={point.y} r="3.4" key={`${point.row.createdAt || "empty"}-${index}`}>
+          <title>{titleForRow(point.row)}</title>
+        </circle>
+      ))}
+    </svg>
+  );
+}
+
+function percentRemaining(value) {
+  const used = Number(value?.usedPercent ?? value?.used_percent);
+  if (!Number.isFinite(used)) return null;
+  return Math.max(0, Math.min(100, 100 - used));
+}
+
+function resetLabel(epochSeconds) {
+  const value = Number(epochSeconds);
+  if (!Number.isFinite(value) || value <= 0) return "";
+  return new Date(value * 1000).toLocaleString();
+}
+
+function limitWindowLabel(minutes) {
+  const value = Number(minutes);
+  if (!Number.isFinite(value) || value <= 0) return "Limit";
+  if (Math.abs(value - 300) <= 15) return "5h";
+  if (Math.abs(value - 10080) <= 504) return "Weekly";
+  if (Math.abs(value - 43200) <= 2160) return "Monthly";
+  if (value >= 1440) return `${Math.round(value / 1440)}d`;
+  if (value >= 60) return `${Math.round(value / 60)}h`;
+  return `${Math.round(value)}m`;
+}
+
+function usageLimitRows(usageLimit) {
+  const rows = [];
+  const entries = Object.entries(usageLimit?.rateLimitsByLimitId || {});
+  const fallback = usageLimit?.rateLimits ? [["codex", usageLimit.rateLimits]] : [];
+  for (const [limitId, limit] of entries.length ? entries : fallback) {
+    for (const key of ["primary", "secondary"]) {
+      const bucket = limit?.[key];
+      if (!bucket) continue;
+      rows.push({
+        key: `${limitId}-${key}`,
+        label: `${limit.limitName || limitId || "Codex"} ${limitWindowLabel(bucket.windowDurationMins)}`,
+        remainingPercent: percentRemaining(bucket),
+        usedPercent: Number(bucket.usedPercent ?? 0),
+        resetsAt: bucket.resetsAt
+      });
+    }
+  }
+  return rows;
+}
+
+function compactTokens(value) {
+  const number = Number(value || 0);
+  if (!Number.isFinite(number) || number <= 0) return "0";
+  if (number >= 1_000_000) return `${(number / 1_000_000).toFixed(number >= 10_000_000 ? 0 : 1)}M`;
+  if (number >= 1_000) return `${(number / 1_000).toFixed(number >= 10_000 ? 0 : 1)}K`;
+  return String(Math.round(number));
+}
+
+function CodexUsageLimitStrip({ usageLimit, onRefresh, loading }) {
+  const rows = usageLimitRows(usageLimit);
+  const resetCredits = usageLimit?.rateLimitResetCredits?.availableCount;
+  const lifetimeTokens = usageLimit?.usage?.summary?.lifetimeTokens;
+  if (!rows.length) {
+    return (
+      <div className="codex-usage-strip empty">
+        <span>{usageLimit?.status === "error" ? usageLimit.error || "Usage unavailable" : "Usage remaining not loaded"}</span>
+        <button type="button" onClick={onRefresh} disabled={loading}>
+          {loading ? <Loader2 className="spin" size={12} /> : <RefreshCcw size={12} />}
+          Usage
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="codex-usage-strip">
+      <div className="codex-usage-bars">
+        {rows.slice(0, 4).map((row) => {
+          const remaining = row.remainingPercent ?? 0;
+          return (
+            <div className="codex-usage-bar" key={row.key} title={row.resetsAt ? `Resets ${resetLabel(row.resetsAt)}` : ""}>
+              <span>{row.label}</span>
+              <progress max="100" value={remaining} aria-label={`${row.label} usage remaining`} />
+              <b>{Math.round(remaining)}% left</b>
+            </div>
+          );
+        })}
+      </div>
+      <div className="codex-usage-meta">
+        {Number.isFinite(Number(resetCredits)) ? <span>Reset credits {resetCredits}</span> : null}
+        {Number.isFinite(Number(lifetimeTokens)) ? <span>Lifetime {compactTokens(lifetimeTokens)} tokens</span> : null}
+        {usageLimit?.lastCheckedAt ? <span>Checked {new Date(usageLimit.lastCheckedAt).toLocaleTimeString()}</span> : null}
+        <button type="button" onClick={onRefresh} disabled={loading}>
+          {loading ? <Loader2 className="spin" size={12} /> : <RefreshCcw size={12} />}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ModelConnectionPanel({
+  codexProfiles,
+  selectedCodexProfileId,
+  runningCodexProfileId,
+  loadingCodexProfiles,
+  validatingCodexProfile,
+  loadingCodexUsage,
+  profileForm,
+  onProfileFormChange,
+  onSelectProfile,
+  onRefreshProfiles,
+  onCreateProfile,
+  onValidateProfile,
+  onLoginProfile,
+  onRefreshUsageProfile,
+  onSetDefaultProfile,
+  onToggleProfile,
+  onDeleteProfile,
+  isOpen,
+  onToggle
+}) {
+  const profiles = Array.isArray(codexProfiles) ? codexProfiles : [];
+  const selected = profiles.find((profile) => profile.id === selectedCodexProfileId) || profiles.find((profile) => profile.isDefault) || profiles[0];
+  const runningProfile = profiles.find((profile) => profile.id === runningCodexProfileId);
+  const connectedCount = profiles.filter((profile) => profile.enabled && profile.status === "connected").length;
+
+  return (
+    <div className="model-connection-menu">
+      <button
+        type="button"
+        className={`model-connection-trigger ${isOpen ? "active" : ""}`}
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+        title="Codex profile connections"
+      >
+        <Bot size={15} />
+        <span>Profiles</span>
+        <b>{connectedCount}/{Math.max(profiles.length, 1)}</b>
+        <ChevronDown size={14} />
+      </button>
+      {isOpen ? (
+        <section className="model-connection-card" aria-label="Codex profile connections">
+          <div className="model-connection-heading">
+            <div>
+              <strong>Codex profiles</strong>
+              <small>
+                {runningProfile
+                  ? `Running: ${runningProfile.displayName}`
+                  : selected
+                    ? `Selected: ${selected.displayName}`
+                    : "Create or validate an isolated CODEX_HOME."}
+              </small>
+            </div>
+            <button type="button" onClick={onRefreshProfiles} disabled={loadingCodexProfiles} title="Refresh profile status">
+              {loadingCodexProfiles ? <Loader2 className="spin" size={15} /> : <RefreshCcw size={15} />}
+            </button>
+          </div>
+          <label className="model-profile-selector">
+            <span>Active profile</span>
+            <select value={selectedCodexProfileId || selected?.id || ""} onChange={(event) => onSelectProfile(event.target.value)}>
+              {profiles.map((profile) => (
+                <option value={profile.id} key={profile.id}>
+                  {profile.displayName}{profile.isDefault ? " (default)" : ""} · {profile.status}
+                </option>
+              ))}
+            </select>
+          </label>
+          <form className="model-profile-form" onSubmit={onCreateProfile}>
+            <input
+              type="text"
+              value={profileForm.id}
+              onChange={(event) => onProfileFormChange("id", event.target.value)}
+              placeholder="profile id, e.g. jhilam-main"
+              autoComplete="off"
+            />
+            <input
+              type="text"
+              value={profileForm.displayName}
+              onChange={(event) => onProfileFormChange("displayName", event.target.value)}
+              placeholder="display name"
+              autoComplete="off"
+            />
+            <button type="submit">
+              <Plus size={13} />
+              Add
+            </button>
+          </form>
+          <div className="model-connection-list">
+            {profiles.map((profile) => {
+              const connected = profile.status === "connected";
+              const disabled = !profile.enabled;
+              const needsLogin = !connected;
+              const isRunning = profile.id === runningCodexProfileId;
+              return (
+                <div className={`model-connection-row ${connected ? "connected" : "disconnected"} ${isRunning ? "running" : ""}`} key={profile.id}>
+                  <span className="model-provider-mark">
+                    <TerminalSquare size={15} />
+                    {profile.displayName}
+                    {isRunning ? <span className="codex-running-badge"><Activity size={12} />Running</span> : null}
+                  </span>
+                  {needsLogin ? (
+                    <button
+                      type="button"
+                      className="model-connect-button"
+                      onClick={() => onLoginProfile(profile.id)}
+                      disabled={validatingCodexProfile === profile.id}
+                      title="Open Codex login for this profile"
+                    >
+                      <LogIn size={13} />
+                      Login
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    className="model-connect-button"
+                    onClick={() => onValidateProfile(profile.id)}
+                    disabled={validatingCodexProfile === profile.id}
+                  >
+                    {validatingCodexProfile === profile.id ? <Loader2 className="spin" size={13} /> : <ShieldCheck size={13} />}
+                    Validate
+                  </button>
+                  <button
+                    type="button"
+                    className="model-disconnect-button"
+                    onClick={() => onSetDefaultProfile(profile.id)}
+                    disabled={profile.isDefault}
+                  >
+                    Default
+                  </button>
+                  <button type="button" className="model-disconnect-button" onClick={() => onToggleProfile(profile.id, !profile.enabled)}>
+                    {profile.enabled ? "Disable" : "Enable"}
+                  </button>
+                  <button type="button" className="model-disconnect-button" onClick={() => onDeleteProfile(profile.id)} disabled={profile.isDefault}>
+                    <Trash2 size={13} />
+                  </button>
+                  <span className={`model-connection-status ${connected ? "connected" : "disconnected"}`}>
+                    {connected ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
+                    {disabled ? "disabled" : connected ? "connected" : profile.status || "unknown"}
+                  </span>
+                  <small>
+                    {profile.usesDefaultCodexHome ? "Compatibility profile for the default Codex CLI session" : `Alias ${profile.id}${profile.relativeDirectory ? ` · directory ${profile.relativeDirectory}` : ""}`}
+                    {profile.isDefault ? " · default" : ""}
+                    {isRunning ? " · currently running workflow" : ""}
+                    {!connected ? " · login required before enable" : ""}
+                    {profile.lastCheckedAt ? ` · checked ${new Date(profile.lastCheckedAt).toLocaleString()}` : ""}
+                  </small>
+                  <CodexUsageLimitStrip
+                    usageLimit={profile.usageLimit}
+                    loading={loadingCodexUsage === profile.id || loadingCodexUsage === "all"}
+                    onRefresh={() => onRefreshUsageProfile(profile.id)}
+                  />
+                  <code>{profile.loginCommand}</code>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
 function AgentDetailModal({ agent, onClose }) {
   const [selectedSource, setSelectedSource] = useState(null);
   if (!agent) return null;
@@ -1171,30 +1460,22 @@ function AgentDetailModal({ agent, onClose }) {
               </div>
             </div>
             <div className="token-economy-timeline" aria-label="Token economy timeline">
-              {(tokenTimeline.length ? tokenTimeline : [{ totalTokens: 0, inputTokens: 0, outputTokens: 0, estimatedUsd: 0, createdAt: "" }]).map((row, index, rows) => {
-                const max = Math.max(...rows.map((item) => Number(item.totalTokens || 0)), 1);
-                const height = Math.max(8, Math.round((Number(row.totalTokens || 0) / max) * 58));
-                return (
-                  <span
-                    key={`${row.createdAt || "empty"}-${index}`}
-                    style={{ "--bar-height": `${height}px` }}
-                    title={`${row.createdAt || "No runs yet"} · ${compactNumber(row.totalTokens)} tokens · ${money(row.estimatedUsd)}`}
-                  />
-                );
-              })}
+              <MetricLineGraph
+                rows={tokenTimeline}
+                valueKey="totalTokens"
+                fallbackRow={{ totalTokens: 0, inputTokens: 0, outputTokens: 0, estimatedUsd: 0, createdAt: "" }}
+                ariaLabel="Token economy total token line graph"
+                titleForRow={(row) => `${row.createdAt || "No runs yet"} · ${compactNumber(row.totalTokens)} tokens · ${money(row.estimatedUsd)}`}
+              />
             </div>
             <div className="agent-efficiency-timeline" aria-label="Agentic efficiency timeline">
-              {(efficiencyTimeline.length ? efficiencyTimeline : [{ efficiencyScore: 0, accuracyValue: 0, abilityScore: 0, createdAt: "" }]).map((row, index, rows) => {
-                const max = Math.max(...rows.map((item) => Number(item.efficiencyScore || 0)), 1);
-                const height = Math.max(8, Math.round((Number(row.efficiencyScore || 0) / max) * 58));
-                return (
-                  <span
-                    key={`${row.createdAt || "eff-empty"}-${index}`}
-                    style={{ "--bar-height": `${height}px` }}
-                    title={`${row.createdAt || "No runs yet"} · efficiency ${row.efficiencyScore || 0}/100 · accuracy ${row.accuracyValue || 0}/100 · ability ${row.abilityScore || 0}/100`}
-                  />
-                );
-              })}
+              <MetricLineGraph
+                rows={efficiencyTimeline}
+                valueKey="efficiencyScore"
+                fallbackRow={{ efficiencyScore: 0, accuracyValue: 0, abilityScore: 0, createdAt: "" }}
+                ariaLabel="Agentic efficiency score line graph"
+                titleForRow={(row) => `${row.createdAt || "No runs yet"} · efficiency ${row.efficiencyScore || 0}/100 · accuracy ${row.accuracyValue || 0}/100 · ability ${row.abilityScore || 0}/100`}
+              />
             </div>
             {tokenTimeline.length ? (
               <div className="token-execution-list">
@@ -2352,6 +2633,15 @@ function ProjectFlowPanel({ projectId = "", flowPath, decisionHistory = [], expa
 export default function App() {
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState("builder");
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+  const [codexProfiles, setCodexProfiles] = useState([]);
+  const [selectedCodexProfileId, setSelectedCodexProfileId] = useState(() => localStorage.getItem("builderx-codex-profile-id") || "");
+  const [runningCodexProfileId, setRunningCodexProfileId] = useState("");
+  const [loadingCodexProfiles, setLoadingCodexProfiles] = useState(false);
+  const [validatingCodexProfile, setValidatingCodexProfile] = useState("");
+  const [loadingCodexUsage, setLoadingCodexUsage] = useState("");
+  const codexLoginPollRef = useRef(new Map());
+  const [codexProfileForm, setCodexProfileForm] = useState({ id: "", displayName: "" });
+  const [isModelConnectionOpen, setModelConnectionOpen] = useState(false);
   const [themeMode, setThemeMode] = useState(() => localStorage.getItem("builderx-theme") || "system");
   const [instruction, setInstruction] = useState(starterPrompt);
   const [taskType, setTaskType] = useState("Medium");
@@ -2417,7 +2707,9 @@ export default function App() {
     ? { name: "Custom", colors: customPalette, reason: "Custom palette selected manually." }
     : brandingPalette || recommendedPalette;
   const activeAppIcon = selectedProject?.appIcon || selectedProject?.media?.find((item) => item.purpose === "app-icon");
-  const canSubmit = Boolean(selectedProject) && instruction.trim().length > 12 && !isGenerating;
+  const selectedCodexProfile = codexProfiles.find((profile) => profile.id === selectedCodexProfileId) || codexProfiles.find((profile) => profile.isDefault) || codexProfiles[0];
+  const codexProfileBlocksSubmit = selectedCodexProfile && (!selectedCodexProfile.enabled || selectedCodexProfile.status !== "connected");
+  const canSubmit = Boolean(selectedProject) && instruction.trim().length > 12 && !isGenerating && !codexProfileBlocksSubmit;
   const canCreateProject = projectName.trim().length > 1 && !isCreatingProject && !selectedProject;
   const workflowRunning = isGenerating || generatedStatus === "working" || isCreatingProject || isSelectingProject;
   const mcpWorkflowRunning = isGenerating || isCreatingProject;
@@ -2471,6 +2763,15 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("builderx-tech-stack-snapshots", JSON.stringify(techStackSnapshots.slice(-24)));
   }, [techStackSnapshots]);
+
+  useEffect(() => {
+    localStorage.setItem("builderx-codex-profile-id", selectedCodexProfileId || "");
+  }, [selectedCodexProfileId]);
+
+  useEffect(() => () => {
+    for (const timer of codexLoginPollRef.current.values()) window.clearTimeout(timer);
+    codexLoginPollRef.current.clear();
+  }, []);
 
   useEffect(() => {
     function syncUser(event) {
@@ -2664,6 +2965,208 @@ export default function App() {
       chatMessages.find((event) => event.role !== "user" && event.type !== "connected");
     return activeEvent ? agentVisualFromEvent(activeEvent, selectedProject) : agentVisualFromId("builderx-fullstack-agent", { name: "BuilderX Fullstack Agent" });
   }, [chatMessages, selectedProject]);
+
+  function updateCodexProfileForm(field, value) {
+    setCodexProfileForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function loadCodexProfiles() {
+    setLoadingCodexProfiles(true);
+    try {
+      const res = await authFetch(`${BACKEND_URL}/api/codex/profiles`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Codex profiles could not be loaded.");
+      const profiles = Array.isArray(data.profiles) ? data.profiles : [];
+      setCodexProfiles(profiles);
+      setSelectedCodexProfileId((current) => current || profiles.find((profile) => profile.isDefault)?.id || profiles[0]?.id || "");
+    } catch (error) {
+      setRuntimeLogs((current) =>
+        mergeRuntimeRows([{ id: `codex-profile-${Date.now()}`, type: "error", message: error.message, createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+      );
+    } finally {
+      setLoadingCodexProfiles(false);
+    }
+  }
+
+  async function refreshCodexUsage(profileId = "") {
+    const target = profileId || "all";
+    setLoadingCodexUsage(target);
+    try {
+      const path = profileId
+        ? `/api/codex/profiles/${profileId}/usage`
+        : "/api/codex/profiles/refresh-usage";
+      const res = await authFetch(`${BACKEND_URL}${path}`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Codex usage limits could not be loaded.");
+      if (Array.isArray(data.profiles)) setCodexProfiles(data.profiles);
+    } catch (error) {
+      setRuntimeLogs((current) =>
+        mergeRuntimeRows([{ id: `codex-usage-${Date.now()}`, type: "error", message: error.message, createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+      );
+    } finally {
+      setLoadingCodexUsage("");
+    }
+  }
+
+  async function refreshCodexProfilesAndUsage() {
+    await loadCodexProfiles();
+    await refreshCodexUsage();
+  }
+
+  async function createCodexProfile(event) {
+    event.preventDefault();
+    try {
+      const payload = {
+        id: codexProfileForm.id.trim(),
+        displayName: codexProfileForm.displayName.trim()
+      };
+      const res = await authFetch(`${BACKEND_URL}/api/codex/profiles`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Codex profile could not be created.");
+      setCodexProfiles(Array.isArray(data.profiles) ? data.profiles : []);
+      setSelectedCodexProfileId(data.profile?.id || payload.id);
+      setCodexProfileForm({ id: "", displayName: "" });
+      const loginCommand = data.login?.command || data.loginCommand;
+      if (loginCommand) {
+        setRuntimeLogs((current) =>
+          mergeRuntimeRows([{ id: `codex-profile-${Date.now()}`, type: "codex", message: `Login command: ${loginCommand}`, createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+        );
+      }
+    } catch (error) {
+      setRuntimeLogs((current) =>
+        mergeRuntimeRows([{ id: `codex-profile-${Date.now()}`, type: "error", message: error.message, createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+      );
+    }
+  }
+
+  async function validateCodexProfile(profileId) {
+    setValidatingCodexProfile(profileId);
+    try {
+      const res = await authFetch(`${BACKEND_URL}/api/codex/profiles/${profileId}/validate`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Codex profile validation failed.");
+      setCodexProfiles(Array.isArray(data.profiles) ? data.profiles : []);
+      if (data.result?.ok || data.status === "connected") refreshCodexUsage(profileId);
+    } catch (error) {
+      setRuntimeLogs((current) =>
+        mergeRuntimeRows([{ id: `codex-profile-${Date.now()}`, type: "error", message: error.message, createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+      );
+    } finally {
+      setValidatingCodexProfile("");
+    }
+  }
+
+  function pollCodexProfileAfterLogin(profileId, loginSessionId) {
+    const existing = codexLoginPollRef.current.get(profileId);
+    if (existing) window.clearTimeout(existing);
+    setValidatingCodexProfile(profileId);
+    const timer = window.setTimeout(async () => {
+      try {
+        const res = await authFetch(`${BACKEND_URL}/api/codex/profiles/${profileId}/login-sessions/${loginSessionId}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Codex login session could not be read.");
+        const loginStatus = data.login?.status || "";
+        if (Array.isArray(data.profiles)) setCodexProfiles(data.profiles);
+        if (loginStatus === "connected") {
+          codexLoginPollRef.current.delete(profileId);
+          setValidatingCodexProfile("");
+          refreshCodexUsage(profileId);
+          setRuntimeLogs((current) =>
+            mergeRuntimeRows([{ id: `codex-profile-connected-${Date.now()}`, type: "codex", message: "Codex profile connected. BuilderX refreshed the profile status.", createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+          );
+          return;
+        }
+        if (["failed", "expired"].includes(loginStatus)) {
+          codexLoginPollRef.current.delete(profileId);
+          setValidatingCodexProfile("");
+          setRuntimeLogs((current) =>
+            mergeRuntimeRows([{ id: `codex-profile-login-${Date.now()}`, type: "error", message: data.login?.error || `Codex login ${loginStatus}.`, createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+          );
+          return;
+        }
+        pollCodexProfileAfterLogin(profileId, loginSessionId);
+      } catch {
+        pollCodexProfileAfterLogin(profileId, loginSessionId);
+      }
+    }, 2500);
+    codexLoginPollRef.current.set(profileId, timer);
+  }
+
+  async function loginCodexProfile(profileId) {
+    const loginWindow = window.open("about:blank", "_blank");
+    try {
+      const res = await authFetch(`${BACKEND_URL}/api/codex/profiles/${profileId}/login`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        const error = new Error(data.error || "Codex login could not be opened.");
+        error.code = data.code || "";
+        error.settingsUrl = data.settingsUrl || "";
+        throw error;
+      }
+      if (data.login?.authorizationUrl && loginWindow) {
+        loginWindow.location.replace(data.login.authorizationUrl);
+      } else if (data.login?.authorizationUrl) {
+        window.open(data.login.authorizationUrl, "_blank", "noopener,noreferrer");
+      } else if (loginWindow) {
+        loginWindow.close();
+      }
+      setCodexProfiles(Array.isArray(data.profiles) ? data.profiles : []);
+      if (data.login?.loginSessionId) pollCodexProfileAfterLogin(profileId, data.login.loginSessionId);
+      const message = data.login?.message || "Codex login opened. Finish the login, then validate this profile.";
+      const code = data.login?.deviceCode ? ` Code: ${data.login.deviceCode}.` : "";
+      const url = data.login?.authorizationUrl ? ` URL: ${data.login.authorizationUrl}.` : "";
+      const command = data.login?.command ? ` ${data.login.command}` : "";
+      setRuntimeLogs((current) =>
+        mergeRuntimeRows([{ id: `codex-profile-${Date.now()}`, type: "codex", message: `${message}${code}${url}${command}`, createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+      );
+    } catch (error) {
+      if (error.code === "unexpected_device_auth" && error.settingsUrl) {
+        if (loginWindow) loginWindow.location.replace(error.settingsUrl);
+        else window.open(error.settingsUrl, "_blank", "noopener,noreferrer");
+      } else if (loginWindow) {
+        loginWindow.close();
+      }
+      setRuntimeLogs((current) =>
+        mergeRuntimeRows([{ id: `codex-profile-${Date.now()}`, type: "error", message: error.message, createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+      );
+    }
+  }
+
+  async function mutateCodexProfile(profileId, action, body = null) {
+    const method = action === "delete" ? "DELETE" : action === "patch" ? "PATCH" : "POST";
+    const suffix = action === "delete" || action === "patch" ? "" : `/${action}`;
+    try {
+      const res = await authFetch(`${BACKEND_URL}/api/codex/profiles/${profileId}${suffix}`, {
+        method,
+        headers: body ? { "Content-Type": "application/json" } : undefined,
+        body: body ? JSON.stringify(body) : undefined
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (data.code === "CODEX_PROFILE_LOGIN_REQUIRED" && data.login?.command) {
+          throw new Error(`${data.error} Run ${data.login.command} or press Login, then validate and enable again.`);
+        }
+        throw new Error(data.error || "Codex profile update failed.");
+      }
+      const profiles = Array.isArray(data.profiles) ? data.profiles : [];
+      setCodexProfiles(profiles);
+      if (!profiles.some((profile) => profile.id === selectedCodexProfileId)) {
+        setSelectedCodexProfileId(profiles.find((profile) => profile.isDefault)?.id || profiles[0]?.id || "");
+      }
+    } catch (error) {
+      setRuntimeLogs((current) =>
+        mergeRuntimeRows([{ id: `codex-profile-${Date.now()}`, type: "error", message: error.message, createdAt: new Date().toISOString(), time: formatIstTime() }], current)
+      );
+    }
+  }
+
+  useEffect(() => {
+    loadCodexProfiles().then(() => refreshCodexUsage());
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -2919,7 +3422,14 @@ export default function App() {
         }
         if (event.type === "generated") {
           setGeneratedStatus("ready");
+          setRunningCodexProfileId("");
           setPreviewKey(Date.now());
+        }
+        if (event.type === "codex-start" && event.codexProfileId) {
+          setRunningCodexProfileId(event.codexProfileId);
+        }
+        if (["builderx-complete", "builderx-failed", "error"].includes(event.type)) {
+          setRunningCodexProfileId("");
         }
         if (
           [
@@ -3007,6 +3517,7 @@ export default function App() {
     }));
     setGenerating(true);
     setGeneratedStatus("working");
+    setRunningCodexProfileId(selectedCodexProfile?.id || "");
     try {
       const res = await authFetch(`${BACKEND_URL}/api/generate`, {
         method: "POST",
@@ -3015,6 +3526,7 @@ export default function App() {
           instruction: submittedInstruction,
           taskType,
           projectId: selectedProjectId,
+          codexProfileId: selectedCodexProfile?.id || "",
           mediaIds: selectedProject?.media?.map((item) => item.id) || []
         })
       });
@@ -3072,6 +3584,7 @@ export default function App() {
       setGenerating(false);
       setFlowExpanded(false);
       setGeneratedStatus("ready");
+      setRunningCodexProfileId("");
     }
   }
 
@@ -3365,6 +3878,27 @@ export default function App() {
             );
           })}
         </div>
+        <ModelConnectionPanel
+          codexProfiles={codexProfiles}
+          selectedCodexProfileId={selectedCodexProfileId}
+          runningCodexProfileId={runningCodexProfileId}
+          loadingCodexProfiles={loadingCodexProfiles}
+          validatingCodexProfile={validatingCodexProfile}
+          loadingCodexUsage={loadingCodexUsage}
+          profileForm={codexProfileForm}
+          onProfileFormChange={updateCodexProfileForm}
+          onSelectProfile={setSelectedCodexProfileId}
+          onRefreshProfiles={refreshCodexProfilesAndUsage}
+          onCreateProfile={createCodexProfile}
+          onValidateProfile={validateCodexProfile}
+          onLoginProfile={loginCodexProfile}
+          onRefreshUsageProfile={refreshCodexUsage}
+          onSetDefaultProfile={(profileId) => mutateCodexProfile(profileId, "set-default")}
+          onToggleProfile={(profileId, enabled) => mutateCodexProfile(profileId, enabled ? "enable" : "patch", enabled ? null : { enabled: false })}
+          onDeleteProfile={(profileId) => mutateCodexProfile(profileId, "delete")}
+          isOpen={isModelConnectionOpen}
+          onToggle={() => setModelConnectionOpen((value) => !value)}
+        />
         {mcpWorkflowRunning ? <span className="workspace-running"><i />Gotham workflow running</span> : null}
         <div className="user-profile-control">
           {currentUser ? (
@@ -3684,7 +4218,12 @@ export default function App() {
               : `Task Type: ${taskType}. BuilderX will structure this as “Task Type” and “Task” before handoff.`}
           </p>
           <div className="composer-actions">
-            <button className="primary-action" onClick={generatePage} disabled={!canSubmit}>
+            <button
+              className="primary-action"
+              onClick={generatePage}
+              disabled={!canSubmit}
+              title={codexProfileBlocksSubmit ? "Validate or switch the selected Codex profile before running." : "Run workflow"}
+            >
               {isGenerating ? <Loader2 className="spin" size={18} /> : <Play size={18} />}
               Run workflow
             </button>

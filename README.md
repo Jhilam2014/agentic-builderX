@@ -132,7 +132,7 @@ For a newly created project, BuilderX safely extracts `orchestrator-temp/orchest
 
 Use `Delete` on a non-default selected project to permanently remove its workspace, managed runtime containers, project/Compose database containers, volumes and networks, dependency volume, exports, registry record, generated agent records, and D3/Neo4j topology artifacts. The shared default generated site cannot be deleted.
 
-## Codex MCP
+## Codex Profiles And CLI Auth
 
 BuilderX no longer exposes a local `/mcp` server. Use the real Codex MCP integration from Codex itself, for example:
 
@@ -141,7 +141,32 @@ codex mcp-server
 ```
 
 BuilderX uses `POST /api/generate` for its Run workflow action and reports `codexMcp: external` from `GET /api/status`.
-Inside Docker, the backend image installs the current Codex CLI package and mounts `${HOME}/.codex` at `/workspace/codex-home`, so `Run workflow` uses your authenticated Codex configuration. If Codex completes without changing generated-site files, the request fails instead of falling back to local code generation.
+Codex authentication is local and profile-based. BuilderX does not start provider SSO flows, does not store Codex tokens, and never reads `auth.json`. Configure `CODEX_AUTH_MODE=existing_cli_session` and set `CODEX_PROFILES_ROOT` to the local directory that should contain isolated Codex profiles. On macOS this is typically similar to `/Users/<local-user>/.codex-profiles`.
+
+Create any safe BuilderX-managed profile alias, then log in from your terminal for that isolated profile:
+
+```bash
+CODEX_HOME="$HOME/.codex-profiles/jhilam-main" codex login
+CODEX_HOME="$HOME/.codex-profiles/jhilam-main" codex login status
+```
+
+Profile IDs are aliases, not OpenAI account IDs, emails, organizations, tokens, or credentials. The Codex account is determined only by the normal Codex CLI login flow inside that profile's `CODEX_HOME`.
+
+The navbar `Profiles` dropdown reads `GET /api/codex/profiles`, lets you create/select a profile used for workflow execution, and validates a profile by running `codex login status` with that profile's derived `CODEX_HOME`. Requests send only `codexProfileId`; raw filesystem paths are not accepted in generation payloads. The backend sets `CODEX_HOME` only on the spawned child process before `codex exec`, so global `process.env` is not mutated.
+
+Useful helper scripts:
+
+```bash
+scripts/codex-profile-login.sh jhilam-main
+scripts/codex-profile-status.sh jhilam-main
+scripts/open-vscode-with-codex-profile.sh account.03 /path/to/workspace
+```
+
+Docker mounts only the profile root at `/home/agentic/.codex-profiles` via `${CODEX_PROFILES_ROOT:-./runtime/codex-profiles}`. Do not mount the host's default `~/.codex` into a shared or multi-user container. If Codex completes without changing generated-site files, the request fails instead of falling back to local code generation.
+
+If no dynamic registry exists and the normal `~/.codex` directory is present, BuilderX exposes a compatibility profile with ID `default`. That profile reuses the existing local Codex CLI session without moving or copying credentials. New profiles are isolated under `CODEX_PROFILES_ROOT/<profile-id>`.
+
+Migration note: remove any previous provider SSO variables, fixed profile home variables, and unsupported auth modes from local env files. Supported provider modes are `api_key`, `existing_cli_session`, and `disabled`; Claude remains provider-level only and does not use the Codex profile switcher.
 
 Every generation response includes `orchestrated`, which shows the orchestrator agent's normalized objective, page type, topic, audience, tone, sections, constraints, and handoff metadata.
 

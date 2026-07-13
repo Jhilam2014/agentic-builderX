@@ -4,159 +4,51 @@ MERGE (:Agent {id: 'builderx-fullstack-agent', name: 'BuilderX Fullstack Agent',
 MERGE (:Agent {id: 'builderx-independent-reviewer', name: 'BuilderX Independent Reviewer', role: 'reviewer', status: 'available', read_only: true})
 MATCH (o:Agent {id: 'builderx-fullstack-agent'}), (r:Agent {id: 'builderx-independent-reviewer'}) MERGE (o)-[:MAY_REQUEST_REVIEW_FROM {adaptive: true}]->(r)
 
-MERGE (p:Project {id: 'project:agenticongen-9TUSjQ'})
-SET p.name = "AgentIconGen", p.folder_name = "agenticongen", p.workspace_dir = "/workspace/money/apps/agenticongen", p.port = 5302
-MERGE (a:Agent {id: "agenticongen-orchestrator-agent"})
-SET a.name = "Agenticongen Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "agenticongen-9TUSjQ", a.status = 'active'
+MERGE (p:Project {id: 'project:porny-RuQJlr'})
+SET p.name = "porny", p.folder_name = "porny", p.workspace_dir = "/workspace/money/apps/porny", p.port = 5301
+MERGE (a:Agent {id: "porny-orchestrator-agent"})
+SET a.name = "Porny Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "porny-RuQJlr", a.status = 'active'
 MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "agenticongen-ui-composition-agent"})
-SET a.name = "Agenticongen UI Composition Agent", a.role = "ui-composition", a.project_id = "agenticongen-9TUSjQ", a.status = 'active'
+MERGE (a:Agent {id: "porny-qagent-controller"})
+SET a.name = "Porny QAgent Controller", a.role = "qagent-controller", a.project_id = "porny-RuQJlr", a.status = 'active'
 MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "agenticongen-content-data-agent"})
-SET a.name = "Agenticongen Content Data Agent", a.role = "content-data", a.project_id = "agenticongen-9TUSjQ", a.status = 'active'
+MERGE (a:Agent {id: "porny-ui-composition-agent"})
+SET a.name = "Porny UI Composition Agent", a.role = "ui-composition", a.project_id = "porny-RuQJlr", a.status = 'active'
 MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "agenticongen-runtime-packaging-agent"})
-SET a.name = "Agenticongen Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "agenticongen-9TUSjQ", a.status = 'active'
+MERGE (a:Agent {id: "porny-content-data-agent"})
+SET a.name = "Porny Content Data Agent", a.role = "content-data", a.project_id = "porny-RuQJlr", a.status = 'active'
 MERGE (p)-[:OWNS]->(a)
-MATCH (p:Project {id: 'project:agenticongen-9TUSjQ'}), (a:Agent {id: "agenticongen-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
-MATCH (a:Agent {id: "agenticongen-orchestrator-agent"}), (b:Agent {id: "agenticongen-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "agenticongen-orchestrator-agent"}), (b:Agent {id: "agenticongen-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "agenticongen-orchestrator-agent"}), (b:Agent {id: "agenticongen-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MERGE (a:Agent {id: "porny-runtime-packaging-agent"})
+SET a.name = "Porny Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "porny-RuQJlr", a.status = 'active'
+MERGE (p)-[:OWNS]->(a)
+MATCH (a:Agent {id: "builderx-fullstack-agent"}), (b:Agent {id: "porny-orchestrator-agent"}) MERGE (a)-[:RUNTIME_DELEGATES_TO]->(b)
+MATCH (p:Project {id: 'project:porny-RuQJlr'}), (a:Agent {id: "porny-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
+MATCH (a:Agent {id: "porny-orchestrator-agent"}), (b:Agent {id: "porny-qagent-controller"}) MERGE (a)-[:USES_QAGENT_CONTROLLER]->(b)
+MATCH (a:Agent {id: "porny-orchestrator-agent"}), (b:Agent {id: "porny-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "porny-orchestrator-agent"}), (b:Agent {id: "porny-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "porny-orchestrator-agent"}), (b:Agent {id: "porny-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
 
-MERGE (p:Project {id: 'project:geofinderx-2yFsDY'})
-SET p.name = "GeoFinderX", p.folder_name = "geofinderx", p.workspace_dir = "/workspace/money/apps/geofinderx", p.port = 5300
-MERGE (a:Agent {id: "geofinderx-orchestrator-agent"})
-SET a.name = "Geofinderx Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "geofinderx-2yFsDY", a.status = 'active'
+MERGE (p:Project {id: 'project:ramo-Fbo8Fr'})
+SET p.name = "Ramo", p.folder_name = "ramo", p.workspace_dir = "/workspace/money/apps/ramo", p.port = 5300
+MERGE (a:Agent {id: "ramo-orchestrator-agent"})
+SET a.name = "Ramo Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "ramo-Fbo8Fr", a.status = 'active'
 MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "geofinderx-ui-composition-agent"})
-SET a.name = "Geofinderx UI Composition Agent", a.role = "ui-composition", a.project_id = "geofinderx-2yFsDY", a.status = 'active'
+MERGE (a:Agent {id: "ramo-qagent-controller"})
+SET a.name = "Ramo QAgent Controller", a.role = "qagent-controller", a.project_id = "ramo-Fbo8Fr", a.status = 'active'
 MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "geofinderx-content-data-agent"})
-SET a.name = "Geofinderx Content Data Agent", a.role = "content-data", a.project_id = "geofinderx-2yFsDY", a.status = 'active'
+MERGE (a:Agent {id: "ramo-ui-composition-agent"})
+SET a.name = "Ramo UI Composition Agent", a.role = "ui-composition", a.project_id = "ramo-Fbo8Fr", a.status = 'active'
 MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "geofinderx-runtime-packaging-agent"})
-SET a.name = "Geofinderx Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "geofinderx-2yFsDY", a.status = 'active'
+MERGE (a:Agent {id: "ramo-content-data-agent"})
+SET a.name = "Ramo Content Data Agent", a.role = "content-data", a.project_id = "ramo-Fbo8Fr", a.status = 'active'
 MERGE (p)-[:OWNS]->(a)
-MATCH (p:Project {id: 'project:geofinderx-2yFsDY'}), (a:Agent {id: "geofinderx-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
-MATCH (a:Agent {id: "geofinderx-orchestrator-agent"}), (b:Agent {id: "geofinderx-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "geofinderx-orchestrator-agent"}), (b:Agent {id: "geofinderx-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "geofinderx-orchestrator-agent"}), (b:Agent {id: "geofinderx-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-
-MERGE (p:Project {id: 'project:investmentfinderx-z8rTq_'})
-SET p.name = "InvestmentFinderX", p.folder_name = "investmentfinderx", p.workspace_dir = "/workspace/money/apps/investmentfinderx", p.port = 5303
-MERGE (a:Agent {id: "investmentfinderx-orchestrator-agent"})
-SET a.name = "Investmentfinderx Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "investmentfinderx-z8rTq_", a.status = 'active'
+MERGE (a:Agent {id: "ramo-runtime-packaging-agent"})
+SET a.name = "Ramo Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "ramo-Fbo8Fr", a.status = 'active'
 MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "investmentfinderx-qagent-controller"})
-SET a.name = "Investmentfinderx QAgent Controller", a.role = "qagent-controller", a.project_id = "investmentfinderx-z8rTq_", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "investmentfinderx-ui-composition-agent"})
-SET a.name = "Investmentfinderx UI Composition Agent", a.role = "ui-composition", a.project_id = "investmentfinderx-z8rTq_", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "investmentfinderx-content-data-agent"})
-SET a.name = "Investmentfinderx Content Data Agent", a.role = "content-data", a.project_id = "investmentfinderx-z8rTq_", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "investmentfinderx-runtime-packaging-agent"})
-SET a.name = "Investmentfinderx Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "investmentfinderx-z8rTq_", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MATCH (p:Project {id: 'project:investmentfinderx-z8rTq_'}), (a:Agent {id: "investmentfinderx-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
-MATCH (a:Agent {id: "investmentfinderx-orchestrator-agent"}), (b:Agent {id: "investmentfinderx-qagent-controller"}) MERGE (a)-[:USES_QAGENT_CONTROLLER]->(b)
-MATCH (a:Agent {id: "investmentfinderx-orchestrator-agent"}), (b:Agent {id: "investmentfinderx-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "investmentfinderx-orchestrator-agent"}), (b:Agent {id: "investmentfinderx-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "investmentfinderx-orchestrator-agent"}), (b:Agent {id: "investmentfinderx-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-
-MERGE (p:Project {id: 'project:mapex-M6rGkR'})
-SET p.name = "mapEx", p.folder_name = "mapex", p.workspace_dir = "/workspace/money/mapex", p.port = 5301
-MERGE (a:Agent {id: "mapex-orchestrator-agent"})
-SET a.name = "Mapex Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "mapex-M6rGkR", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "mapex-ui-composition-agent"})
-SET a.name = "Mapex UI Composition Agent", a.role = "ui-composition", a.project_id = "mapex-M6rGkR", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "mapex-content-data-agent"})
-SET a.name = "Mapex Content Data Agent", a.role = "content-data", a.project_id = "mapex-M6rGkR", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "mapex-runtime-packaging-agent"})
-SET a.name = "Mapex Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "mapex-M6rGkR", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MATCH (p:Project {id: 'project:mapex-M6rGkR'}), (a:Agent {id: "mapex-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
-MATCH (a:Agent {id: "mapex-orchestrator-agent"}), (b:Agent {id: "mapex-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "mapex-orchestrator-agent"}), (b:Agent {id: "mapex-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "mapex-orchestrator-agent"}), (b:Agent {id: "mapex-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-
-MERGE (p:Project {id: 'project:mycv-D9-MeK'})
-SET p.name = "mycv", p.folder_name = "mycv", p.workspace_dir = "/workspace/money/apps/mycv", p.port = 5306
-MERGE (a:Agent {id: "mycv-orchestrator-agent"})
-SET a.name = "Mycv Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "mycv-D9-MeK", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "mycv-qagent-controller"})
-SET a.name = "Mycv QAgent Controller", a.role = "qagent-controller", a.project_id = "mycv-D9-MeK", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "mycv-ui-composition-agent"})
-SET a.name = "Mycv UI Composition Agent", a.role = "ui-composition", a.project_id = "mycv-D9-MeK", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "mycv-content-data-agent"})
-SET a.name = "Mycv Content Data Agent", a.role = "content-data", a.project_id = "mycv-D9-MeK", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "mycv-runtime-packaging-agent"})
-SET a.name = "Mycv Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "mycv-D9-MeK", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "mycv-media-asset-agent"})
-SET a.name = "Mycv Media Asset Agent", a.role = "media-asset", a.project_id = "mycv-D9-MeK", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MATCH (a:Agent {id: "builderx-fullstack-agent"}), (b:Agent {id: "mycv-orchestrator-agent"}) MERGE (a)-[:RUNTIME_DELEGATES_TO]->(b)
-MATCH (p:Project {id: 'project:mycv-D9-MeK'}), (a:Agent {id: "mycv-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
-MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-qagent-controller"}) MERGE (a)-[:USES_QAGENT_CONTROLLER]->(b)
-MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "mycv-orchestrator-agent"}), (b:Agent {id: "mycv-media-asset-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-
-MERGE (p:Project {id: 'project:protfolio-flyer-uehPYw'})
-SET p.name = "Protfolio-flyer", p.folder_name = "protfolio-flyer", p.workspace_dir = "/workspace/money/apps/protfolio-flyer", p.port = 5305
-MERGE (a:Agent {id: "protfolio-flyer-orchestrator-agent"})
-SET a.name = "Protfolio Flyer Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "protfolio-flyer-qagent-controller"})
-SET a.name = "Protfolio Flyer QAgent Controller", a.role = "qagent-controller", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "protfolio-flyer-ui-composition-agent"})
-SET a.name = "Protfolio Flyer UI Composition Agent", a.role = "ui-composition", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "protfolio-flyer-content-data-agent"})
-SET a.name = "Protfolio Flyer Content Data Agent", a.role = "content-data", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "protfolio-flyer-runtime-packaging-agent"})
-SET a.name = "Protfolio Flyer Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "protfolio-flyer-uehPYw", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MATCH (a:Agent {id: "builderx-fullstack-agent"}), (b:Agent {id: "protfolio-flyer-orchestrator-agent"}) MERGE (a)-[:RUNTIME_DELEGATES_TO]->(b)
-MATCH (p:Project {id: 'project:protfolio-flyer-uehPYw'}), (a:Agent {id: "protfolio-flyer-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
-MATCH (a:Agent {id: "protfolio-flyer-orchestrator-agent"}), (b:Agent {id: "protfolio-flyer-qagent-controller"}) MERGE (a)-[:USES_QAGENT_CONTROLLER]->(b)
-MATCH (a:Agent {id: "protfolio-flyer-orchestrator-agent"}), (b:Agent {id: "protfolio-flyer-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "protfolio-flyer-orchestrator-agent"}), (b:Agent {id: "protfolio-flyer-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "protfolio-flyer-orchestrator-agent"}), (b:Agent {id: "protfolio-flyer-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-
-MERGE (p:Project {id: 'project:whatsappmediaanalyser-oAeSvn'})
-SET p.name = "WhatsappMediaAnalyser", p.folder_name = "whatsappmediaanalyser", p.workspace_dir = "/workspace/money/apps/whatsappmediaanalyser", p.port = 5304
-MERGE (a:Agent {id: "whatsappmediaanalyser-orchestrator-agent"})
-SET a.name = "Whatsappmediaanalyser Orchestrator Agent", a.role = "project-orchestrator", a.project_id = "whatsappmediaanalyser-oAeSvn", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "whatsappmediaanalyser-qagent-controller"})
-SET a.name = "Whatsappmediaanalyser QAgent Controller", a.role = "qagent-controller", a.project_id = "whatsappmediaanalyser-oAeSvn", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "whatsappmediaanalyser-ui-composition-agent"})
-SET a.name = "Whatsappmediaanalyser UI Composition Agent", a.role = "ui-composition", a.project_id = "whatsappmediaanalyser-oAeSvn", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "whatsappmediaanalyser-content-data-agent"})
-SET a.name = "Whatsappmediaanalyser Content Data Agent", a.role = "content-data", a.project_id = "whatsappmediaanalyser-oAeSvn", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MERGE (a:Agent {id: "whatsappmediaanalyser-runtime-packaging-agent"})
-SET a.name = "Whatsappmediaanalyser Runtime Packaging Agent", a.role = "runtime-packaging", a.project_id = "whatsappmediaanalyser-oAeSvn", a.status = 'active'
-MERGE (p)-[:OWNS]->(a)
-MATCH (a:Agent {id: "builderx-fullstack-agent"}), (b:Agent {id: "whatsappmediaanalyser-orchestrator-agent"}) MERGE (a)-[:RUNTIME_DELEGATES_TO]->(b)
-MATCH (p:Project {id: 'project:whatsappmediaanalyser-oAeSvn'}), (a:Agent {id: "whatsappmediaanalyser-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
-MATCH (a:Agent {id: "whatsappmediaanalyser-orchestrator-agent"}), (b:Agent {id: "whatsappmediaanalyser-qagent-controller"}) MERGE (a)-[:USES_QAGENT_CONTROLLER]->(b)
-MATCH (a:Agent {id: "whatsappmediaanalyser-orchestrator-agent"}), (b:Agent {id: "whatsappmediaanalyser-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "whatsappmediaanalyser-orchestrator-agent"}), (b:Agent {id: "whatsappmediaanalyser-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
-MATCH (a:Agent {id: "whatsappmediaanalyser-orchestrator-agent"}), (b:Agent {id: "whatsappmediaanalyser-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "builderx-fullstack-agent"}), (b:Agent {id: "ramo-orchestrator-agent"}) MERGE (a)-[:RUNTIME_DELEGATES_TO]->(b)
+MATCH (p:Project {id: 'project:ramo-Fbo8Fr'}), (a:Agent {id: "ramo-orchestrator-agent"}) MERGE (p)-[:HAS_ORCHESTRATOR]->(a)
+MATCH (a:Agent {id: "ramo-orchestrator-agent"}), (b:Agent {id: "ramo-qagent-controller"}) MERGE (a)-[:USES_QAGENT_CONTROLLER]->(b)
+MATCH (a:Agent {id: "ramo-orchestrator-agent"}), (b:Agent {id: "ramo-ui-composition-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "ramo-orchestrator-agent"}), (b:Agent {id: "ramo-content-data-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
+MATCH (a:Agent {id: "ramo-orchestrator-agent"}), (b:Agent {id: "ramo-runtime-packaging-agent"}) MERGE (a)-[:DELEGATES_TO]->(b)
 

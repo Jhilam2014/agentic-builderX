@@ -14,13 +14,13 @@
     "successCount": 0,
     "failureCount": 0,
     "repeatedCorrectionCount": 0,
-    "lastCalculatedAt": "2026-06-29T22:53:21+00:00"
+    "lastCalculatedAt": "2026-07-11T20:18:23+00:00"
   },
   "reuse_decision": {
     "decisionType": "create_new_agent",
     "reuseConfidenceScore": 40,
     "similarityScore": 0.0,
     "reason": "Bootstrap required a default local memory-bearing execution agent and no local agent existed.",
-    "createdAt": "2026-06-29T22:53:21+00:00"
+    "createdAt": "2026-07-11T20:18:23+00:00"
   }
 }

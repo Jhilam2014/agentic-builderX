@@ -29,6 +29,13 @@ REQUIRED = [
   'tests/agent-memory/agent-scoring.test.ts',
   'tests/agent-memory/repeated-request-detector.test.ts',
   'tests/agent-memory/vector-store-sync.test.ts',
+  'qagentic-support/README.md',
+  'qagentic-support/qagent-controller.md',
+  'qagentic-support/qagent-stop-rules.md',
+  'schemas/qagent-next-instruction.schema.json',
+  '.codex/prompts/task-qagentic.md',
+  '.codex/prompts/bootstrap-orchestrator-qagentic.md',
+  'observability/qagentic/latest-qagentic-bootstrap.json',
 ]
 JSON_FILES = [
   'registry/agents/project-execution-agent.registry.json',
@@ -44,6 +51,8 @@ JSON_FILES = [
   'schemas/agent-knowledge-record.schema.json',
   'schemas/agent-capability-score.schema.json',
   'schemas/agent-vector-memory.schema.json',
+  'schemas/qagent-next-instruction.schema.json',
+  'observability/qagentic/latest-qagentic-bootstrap.json',
 ]
 
 missing = [path for path in REQUIRED if not (ROOT / path).exists()]

@@ -49,50 +49,10 @@
       }
     },
     "memory_update": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "store",
-        "summary",
-        "tags"
-      ],
-      "properties": {
-        "store": {
-          "type": "boolean"
-        },
-        "summary": {
-          "type": "string"
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
+      "type": "object"
     },
     "iteration_control": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "current_iteration",
-        "max_iterations",
-        "stop_if_next_validation_passes"
-      ],
-      "properties": {
-        "current_iteration": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "max_iterations": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 8
-        },
-        "stop_if_next_validation_passes": {
-          "type": "boolean"
-        }
-      }
+      "type": "object"
     }
   }
 }

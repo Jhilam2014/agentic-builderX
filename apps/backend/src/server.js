@@ -29,6 +29,23 @@ import { scheduleAgentMemorySync, syncKnownAgentKnowledgeRoots } from "./vectorM
 import { registerHostingRoutes } from "./hosting/hosting-conversation.controller.js";
 import { authenticateGooglePayload, restrictedIntent, userFromRequest } from "./auth.js";
 import { readAgentEfficiencySummary } from "./tokenEconomy.js";
+import { authConfigurationDiagnostics, listProviderConfigs, providerConfig } from "./providerAuth.js";
+import {
+  createCodexProfile,
+  deleteCodexProfile,
+  enableCodexProfile,
+  getCodexProfileLoginSession,
+  listCodexProfiles,
+  loginCommandForProfile,
+  markCodexProfileAvailable,
+  markCodexProfileUnavailable,
+  openCodexProfileLogin,
+  refreshAllCodexProfileUsage,
+  refreshCodexProfileUsage,
+  setDefaultCodexProfile,
+  updateCodexProfile,
+  validateCodexProfile
+} from "./codexProfiles.js";
 
 const app = express();
 const port = Number(process.env.PORT || 8080);
@@ -52,7 +69,8 @@ const GenerateSchema = z.object({
   instruction: z.string().min(12).max(8000),
   projectId: z.string().optional(),
   taskType: z.enum(["Simple", "Medium", "Large", "Hard", "simple", "medium", "large", "hard", "small", "complex"]).optional(),
-  mediaIds: z.array(z.string()).optional()
+  mediaIds: z.array(z.string()).optional(),
+  codexProfileId: z.string().optional()
 });
 const NewProjectSchema = z.object({
   name: z.string().min(2).max(80),
@@ -64,6 +82,13 @@ const NewProjectSchema = z.object({
 });
 const ProjectImportSchema = z.object({
   name: z.string().min(2).max(80)
+});
+const CodexProfileSchema = z.object({
+  id: z.string().min(1).max(64).optional(),
+  displayName: z.string().min(1).max(80).optional(),
+  enabled: z.boolean().optional(),
+  isDefault: z.boolean().optional(),
+  priority: z.number().optional()
 });
 
 app.use(cors());
@@ -1247,8 +1272,174 @@ app.get("/api/status", (_req, res) => {
     orchestratorAgent: "ready",
     generatedSiteDir: process.env.GENERATED_SITE_DIR || "/workspace/generated-site",
     generatedSiteContainer: process.env.GENERATED_SITE_CONTAINER || "agentic-builderx-generated-site",
-    restartMode: String(process.env.RESTART_GENERATED_CONTAINER || "false").toLowerCase() === "true" ? "docker-socket" : "vite-hot-reload"
+    restartMode: String(process.env.RESTART_GENERATED_CONTAINER || "false").toLowerCase() === "true" ? "docker-socket" : "vite-hot-reload",
+    authProviders: authConfigurationDiagnostics().map(({ provider, enabled, authMode, configured, connected, diagnostics }) => ({
+      provider,
+      enabled,
+      authMode,
+      configured,
+      connected,
+      diagnostics
+    }))
   });
+});
+
+app.get("/api/auth/providers", (req, res) => {
+  res.json({ status: "ok", providers: listProviderConfigs(userFromRequest(req)) });
+});
+
+app.get("/api/auth/:provider/status", (req, res) => {
+  try {
+    res.json({ status: "ok", provider: providerConfig(req.params.provider, userFromRequest(req)) });
+  } catch {
+    res.status(404).json({ status: "failed", error: "Unsupported provider." });
+  }
+});
+
+app.post("/api/auth/:provider/disconnect", (_req, res) => {
+  try {
+    res.json({ status: "ok", message: "Provider disconnect is managed by the local CLI profile, not BuilderX.", provider: _req.params.provider });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message || "Provider disconnect failed." });
+  }
+});
+
+app.get("/api/codex/profiles", (_req, res) => {
+  try {
+    const profiles = listCodexProfiles();
+    res.json({
+      status: "ok",
+      selectionMode: process.env.CODEX_PROFILE_SELECTION_MODE || "manual",
+      automaticFallback: process.env.CODEX_ALLOW_AUTOMATIC_PROFILE_FALLBACK === "true",
+      profiles: profiles.map((profile) => ({ ...profile, loginCommand: loginCommandForProfile(profile) }))
+    });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.post("/api/codex/profiles", (req, res) => {
+  try {
+    const payload = CodexProfileSchema.extend({ id: z.string().min(1).max(64) }).parse(req.body || {});
+    const result = createCodexProfile(payload);
+    res.json({ status: "ok", ...result });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.patch("/api/codex/profiles/:profileId", (req, res) => {
+  try {
+    const payload = CodexProfileSchema.parse(req.body || {});
+    const profiles = updateCodexProfile(req.params.profileId, payload);
+    res.json({ status: "ok", profiles });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.delete("/api/codex/profiles/:profileId", (req, res) => {
+  try {
+    const result = deleteCodexProfile(req.params.profileId);
+    res.json({ status: "ok", ...result });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.post("/api/codex/profiles/:profileId/validate", async (req, res) => {
+  try {
+    const result = await validateCodexProfile(req.params.profileId);
+    res.json({ status: result.status, result, profiles: listCodexProfiles() });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.post("/api/codex/profiles/refresh-usage", async (_req, res) => {
+  try {
+    const profiles = await refreshAllCodexProfileUsage();
+    res.json({ status: "ok", profiles });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.post("/api/codex/profiles/:profileId/usage", async (req, res) => {
+  try {
+    const result = await refreshCodexProfileUsage(req.params.profileId);
+    res.json({ status: "ok", ...result });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.post("/api/codex/profiles/:profileId/login", async (req, res) => {
+  try {
+    const login = await openCodexProfileLogin(req.params.profileId);
+    res.json({ status: "ok", login, profiles: listCodexProfiles() });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message, code: error.code || "", settingsUrl: error.settingsUrl || "", output: error.output || "" });
+  }
+});
+
+app.get("/api/codex/profiles/:profileId/login-sessions/:loginSessionId", (req, res) => {
+  try {
+    const login = getCodexProfileLoginSession(req.params.profileId, req.params.loginSessionId);
+    res.json({ status: "ok", login, profiles: login.profiles || listCodexProfiles() });
+  } catch (error) {
+    res.status(error.code === "CODEX_LOGIN_SESSION_NOT_FOUND" ? 404 : 400).json({ status: "failed", error: error.message, code: error.code || "" });
+  }
+});
+
+app.post("/api/codex/profiles/:profileId/set-default", (req, res) => {
+  try {
+    const profiles = setDefaultCodexProfile(req.params.profileId);
+    res.json({ status: "ok", profiles });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.post("/api/codex/profiles/:profileId/enable", (req, res) => {
+  enableCodexProfile(req.params.profileId).then((profiles) => {
+    res.json({ status: "ok", profiles });
+  }).catch((error) => {
+    res.status(error.statusCode || 400).json({
+      status: "failed",
+      error: error.message,
+      code: error.code,
+      result: error.result,
+      login: error.login
+    });
+  });
+});
+
+app.post("/api/codex/profiles/:profileId/disable", (req, res) => {
+  try {
+    const profiles = updateCodexProfile(req.params.profileId, { enabled: false });
+    res.json({ status: "ok", profiles });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.post("/api/codex/profiles/:profileId/mark-available", (req, res) => {
+  try {
+    const profiles = markCodexProfileAvailable(req.params.profileId);
+    res.json({ status: "ok", profiles });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
+});
+
+app.post("/api/codex/profiles/:profileId/mark-unavailable", (req, res) => {
+  try {
+    const profiles = markCodexProfileUnavailable(req.params.profileId, "manual_unavailable");
+    res.json({ status: "ok", profiles });
+  } catch (error) {
+    res.status(400).json({ status: "failed", error: error.message });
+  }
 });
 
 app.get("/api/runtime-log", (_req, res) => {
@@ -1800,6 +1991,7 @@ app.post("/api/generate", async (req, res) => {
       }
     : orchestrateBuilderInstruction(instructionWithMedia);
   orchestrated.structuredRequest.media = media;
+  orchestrated.structuredRequest.codexProfileId = parsed.data.codexProfileId || "";
   orchestrated.structuredRequest.rawTextBoxInstruction = parsed.data.instruction;
   orchestrated.structuredRequest.executionInstructionFormat = useProjectOrchestrator
     ? "builderx-delegated-project-task"
@@ -1902,6 +2094,7 @@ app.post("/api/generate", async (req, res) => {
       generatedSiteDir: selectedProject?.workspaceDir,
       agentId: "builderx-fullstack-agent",
       agentName: "BuilderX Fullstack Agent",
+      codexProfileId: parsed.data.codexProfileId || "",
       projectId: selectedProject?.id || "",
       projectName: selectedProject?.name || "BuilderX default workspace",
       taskType: parsed.data.taskType || "Medium"

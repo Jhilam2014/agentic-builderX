@@ -26,6 +26,10 @@ services:
     container_name: agentic-builderx-backend
     ports:
       - "${BACKEND_PORT:-8080}:8080"
+      # Codex CLI starts its browser OAuth callback server on localhost:1455.
+      # Expose the same port from the backend container so the host browser can
+      # complete the redirect at http://localhost:1455/auth/callback.
+      - "${CODEX_LOGIN_CALLBACK_PORT:-1455}:${CODEX_LOGIN_CALLBACK_PROXY_PORT:-1456}"
     environment:
       - PORT=8080
       - GENERATED_SITE_DIR=/workspace/generated-site
@@ -50,8 +54,28 @@ services:
       - BUILDERX_PROJECT_ROOT=/workspace/project
       - BUILDERX_WORKSPACE_ROOT=/workspace/money
       - BUILDERX_BACKEND_CONTAINER=agentic-builderx-backend
-      - CODEX_HOME=/workspace/codex-home
       - CODEX_BIN=codex
+      - CLAUDE_BIN=${CLAUDE_BIN:-claude}
+      - AI_CLI_PROVIDER=${AI_CLI_PROVIDER:-auto}
+      - AI_CLI_BIN=${AI_CLI_BIN:-}
+      - CODEX_AUTH_MODE=${CODEX_AUTH_MODE:-existing_cli_session}
+      - CODEX_PROFILES_ROOT=${CODEX_PROFILES_ROOT:-/home/agentic/.codex-profiles}
+      - CODEX_PROFILE_REGISTRY_PATH=${CODEX_PROFILE_REGISTRY_PATH:-runtime/codex-profiles.json}
+      - CODEX_LOGIN_CALLBACK_PORT=${CODEX_LOGIN_CALLBACK_PORT:-1455}
+      - CODEX_LOGIN_CALLBACK_PROXY_PORT=${CODEX_LOGIN_CALLBACK_PROXY_PORT:-1456}
+      - CODEX_DEFAULT_PROFILE_ID=${CODEX_DEFAULT_PROFILE_ID:-}
+      - CODEX_PROFILE_SELECTION_MODE=${CODEX_PROFILE_SELECTION_MODE:-manual}
+      - CODEX_ALLOW_AUTOMATIC_PROFILE_FALLBACK=${CODEX_ALLOW_AUTOMATIC_PROFILE_FALLBACK:-false}
+      - CODEX_PROFILE_FALLBACK_ORDER=${CODEX_PROFILE_FALLBACK_ORDER:-}
+      - CODEX_PROFILE_MAX_FALLBACK_ATTEMPTS=${CODEX_PROFILE_MAX_FALLBACK_ATTEMPTS:-1}
+      - CODEX_PROFILE_LIMIT_COOLDOWN_MINUTES=${CODEX_PROFILE_LIMIT_COOLDOWN_MINUTES:-60}
+      - CLAUDE_AUTH_MODE=${CLAUDE_AUTH_MODE:-existing_cli_session}
+      - PUBLIC_APP_URL=${PUBLIC_APP_URL:-}
+      - AUTH_CALLBACK_BASE_URL=${AUTH_CALLBACK_BASE_URL:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - ALLOW_SHARED_PROVIDER_KEY_FALLBACK=${ALLOW_SHARED_PROVIDER_KEY_FALLBACK:-false}
+      - EXISTING_CLI_SESSION_ISOLATED=${EXISTING_CLI_SESSION_ISOLATED:-false}
       - CODEX_WORKFLOW_TIMEOUT_MS=${CODEX_WORKFLOW_TIMEOUT_MS:-600000}
       - ORCHESTRATOR_ARCHIVE_PATH=${ORCHESTRATOR_ARCHIVE_PATH:-/workspace/project/orchestrator-temp/orchestrator-agent-001-main.zip}
       - ORCHESTRATOR_INSTALL_ENABLED=${ORCHESTRATOR_INSTALL_ENABLED:-true}
@@ -65,7 +89,7 @@ services:
       - ..:/workspace/money
       - ./apps/generated-site:/workspace/generated-site
       - ./runtime:/workspace/runtime
-      - ${HOME}/.codex:/workspace/codex-home
+      - ${CODEX_PROFILES_ROOT:-./runtime/codex-profiles}:/home/agentic/.codex-profiles
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - builderx

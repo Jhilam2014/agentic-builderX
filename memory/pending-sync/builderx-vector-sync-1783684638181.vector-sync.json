@@ -1,0 +1,16 @@
+{
+  "workflow_id": "builderx-vector-sync-1783684638181",
+  "reason": "periodic",
+  "started_at": "2026-07-10T11:57:18.181Z",
+  "completed_at": "2026-07-10T11:57:18.203Z",
+  "status": "failed",
+  "errors": [
+    "Missing OPENAI_API_KEY or OPENAI_AGENT_VECTOR_STORE_ID."
+  ],
+  "vector_store_id": null,
+  "local_files_scanned": 0,
+  "files_uploaded": 0,
+  "files_skipped": 0,
+  "files_failed": 0,
+  "pending_sync_count": 0
+}
